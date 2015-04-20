@@ -1,0 +1,148 @@
+package com.mercadopago;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.mercadopago.adapters.PaymentMethodsAdapter;
+import com.mercadopago.core.MercadoPago;
+import com.mercadopago.decorations.DividerItemDecoration;
+import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.util.ApiUtil;
+import com.mercadopago.util.JsonUtil;
+import com.mercadopago.util.LayoutUtil;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+public class PaymentMethodsActivity extends ActionBarActivity {
+
+    private Activity mActivity;
+    private String mMerchantPublicKey;
+    private RecyclerView mRecyclerView;
+    private List<String> mSupportedPaymentTypes;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView();
+
+        mActivity = this;
+
+        // Get activity parameters
+        mMerchantPublicKey = this.getIntent().getStringExtra("merchantPublicKey");
+        if (mMerchantPublicKey == null) {
+            Intent returnIntent = new Intent();
+            setResult(RESULT_CANCELED, returnIntent);
+            finish();
+            return;
+        }
+        if (this.getIntent().getStringExtra("supportedPaymentTypes") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
+        }
+
+        // Set recycler view
+        mRecyclerView = (RecyclerView) findViewById(R.id.payment_methods_list);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+
+        // Set a linear layout manager
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Load payment methods
+        getPaymentMethodsAsync(mMerchantPublicKey);
+    }
+
+    protected void setContentView() {
+
+        setContentView(R.layout.activity_payment_methods);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("backButtonPressed", true);
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    public void refreshLayout(View view) {
+
+        getPaymentMethodsAsync(mMerchantPublicKey);
+    }
+
+    private void getPaymentMethodsAsync(String merchantPublicKey) {
+
+        LayoutUtil.showProgressLayout(mActivity);
+
+        MercadoPago mercadoPago = new MercadoPago.Builder()
+                .setContext(mActivity)
+                .setPublicKey(merchantPublicKey)
+                .build();
+
+        mercadoPago.getPaymentMethods(new Callback <List<PaymentMethod>>() {
+            @Override
+            public void success(List<PaymentMethod> paymentMethods, Response response) {
+
+                mRecyclerView.setAdapter(new PaymentMethodsAdapter(mActivity, getSupportedPaymentMethods(paymentMethods), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        // Return to parent
+                        Intent returnIntent = new Intent();
+                        setResult(RESULT_OK, returnIntent);
+                        PaymentMethod selectedPaymentMethod = (PaymentMethod) view.getTag();
+                        returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(selectedPaymentMethod));
+                        finish();
+                    }
+                }));
+                LayoutUtil.showRegularLayout(mActivity);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+                ApiUtil.finishWithApiException(mActivity, error);
+            }
+        });
+    }
+
+    private List<PaymentMethod> getSupportedPaymentMethods(List<PaymentMethod> paymentMethods) {
+
+        if (mSupportedPaymentTypes != null) {
+
+            List<PaymentMethod> spm = new ArrayList<>();
+
+            for (int i = 0; i < paymentMethods.size(); i++) {
+                for (int j = 0; j < mSupportedPaymentTypes.size(); j++) {
+                    if (paymentMethods.get(i).getPaymentTypeId().equals(mSupportedPaymentTypes.get(j))) {
+                        spm.add(paymentMethods.get(i));
+                        break;
+                    }
+                }
+            }
+
+            return spm;
+
+        } else {
+
+            return paymentMethods;
+        }
+    }
+}
+
