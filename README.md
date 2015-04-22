@@ -1,8 +1,9 @@
 #MercadoPago - Android SDK
 
-The MercadoPago Android SDK make it easy to collect your users' credit card details inside your android app. By creating [tokens](https://coming-soon), MercadoPago handles the bulk of PCI compliance by preventing sensitive card data from hitting your server.
+The MercadoPago Android SDK make it easy to collect your user's credit card details inside your android app. By creating tokens, MercadoPago handles the bulk of PCI compliance by preventing sensitive card data from hitting your server.
 
-![Screenshot of MercadoPago](screenshot.png)
+![Screenshot of MercadoPago](https://raw.githubusercontent.com/mercadopago/sdk-android/master/screenshot.png)
+
 ##Installation
 
 ###Android Studio
@@ -36,13 +37,13 @@ This project includes five examples you can follow to understand how MercadoPago
 
 ## Documentation
 
-+ [Read more about this 5 steps integration.] (http://labs.mercadopago.com.ar/developers/es/solutions/payments/custom-checkout/charge-with-creditcard/android/)
-+ [Check out MercadoPago Developers Site!] (http://labs.mercadopago.com.ar/developers)
++ [Read more about this 5 steps integration.](http://labs.mercadopago.com.ar/developers/es/solutions/payments/custom-checkout/charge-with-creditcard/android/)
++ [Check out MercadoPago Developers Site!](http://labs.mercadopago.com.ar/developers)
 
 ## Feedback
 
 You can join the MercadoPago Developers Community on MercadoPago Developers Site:
 
-+ [English] (http://developers.mercadopago.com/developers-forum?lang=en_US)
-+ [Español] (http://developers.mercadopago.com/foro-de-desarrolladores?lang=es_AR)
-+ [Português] (http://developers.mercadopago.com/foro-de-desenvolvedores?lang=pt_BR)
++ [English](http://developers.mercadopago.com/developers-forum?lang=en_US)
++ [Español](http://developers.mercadopago.com/foro-de-desarrolladores?lang=es_AR)
++ [Português](http://developers.mercadopago.com/foro-de-desenvolvedores?lang=pt_BR)
