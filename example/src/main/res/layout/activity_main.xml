@@ -27,9 +27,9 @@
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:textSize="22dp"
             android:singleLine="false"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            style="@style/big_label"/>
 
         <Button
             android:layout_width="match_parent"
@@ -37,7 +37,8 @@
             android:layout_marginTop="25dp"
             android:gravity="center"
             android:text="@string/title_activity_step1"
-            android:onClick="runStep1"/>
+            android:onClick="runStep1"
+            style="@style/button_normal"/>
 
         <Button
             android:layout_width="match_parent"
@@ -45,7 +46,8 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step2"
-            android:onClick="runStep2"/>
+            android:onClick="runStep2"
+            style="@style/button_normal"/>
 
         <Button
             android:layout_width="match_parent"
@@ -53,7 +55,8 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step3"
-            android:onClick="runStep3"/>
+            android:onClick="runStep3"
+            style="@style/button_normal"/>
 
         <Button
             android:layout_width="match_parent"
@@ -61,7 +64,8 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step4"
-            android:onClick="runStep4"/>
+            android:onClick="runStep4"
+            style="@style/button_normal"/>
 
         <Button
             android:layout_width="match_parent"
@@ -69,7 +73,8 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step5"
-            android:onClick="runStep5"/>
+            android:onClick="runStep5"
+            style="@style/button_normal"/>
 
     </LinearLayout>
 

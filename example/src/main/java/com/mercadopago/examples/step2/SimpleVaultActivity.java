@@ -295,7 +295,7 @@ public class SimpleVaultActivity extends ActionBarActivity {
     protected void getCustomerCardsAsync() {
 
         LayoutUtil.showProgressLayout(mActivity);
-        MerchantServer.getCustomer(mMerchantBaseUrl, mMerchantGetCustomerUri, mMerchantAccessToken, new Callback<Customer>() {
+        MerchantServer.getCustomer(this, mMerchantBaseUrl, mMerchantGetCustomerUri, mMerchantAccessToken, new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
 

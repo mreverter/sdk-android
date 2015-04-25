@@ -163,8 +163,7 @@
                                 android:layout_width="100dp"
                                 android:layout_height="36dp"
                                 android:layout_below="@+id/identificationTypeText"
-                                android:layout_alignBottom="@id/identificationNumber"
-                                style="@style/form_input"/>
+                                android:layout_alignBottom="@id/identificationNumber"/>
 
                         </RelativeLayout>
 
@@ -231,7 +230,8 @@
                 android:layout_height="@dimen/button_height"
                 android:layout_margin="@dimen/margin_std"
                 android:text="@string/continue_label"
-                android:onClick="submitForm"/>
+                android:onClick="submitForm"
+                style="@style/button_normal"/>
 
         </LinearLayout>
 

@@ -20,10 +20,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
         android:text="@string/step4_description"
         android:gravity="center_horizontal"
-        android:layout_marginTop="15dp" />
+        android:layout_marginTop="15dp"
+        style="@style/form_label"/>
 
     <Button
         android:id="@+id/continueButton"
@@ -33,6 +33,7 @@
         android:gravity="center"
         android:text="@string/continue_label"
         android:layout_below="@+id/image"
-        android:onClick="submitForm"/>
+        android:onClick="submitForm"
+        style="@style/button_normal"/>
 
 </LinearLayout>

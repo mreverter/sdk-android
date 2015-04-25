@@ -181,7 +181,8 @@
                 android:text="@string/confirm"
                 android:enabled="false"
                 android:layout_margin="@dimen/margin_std"
-                android:onClick="submitForm"/>
+                android:onClick="submitForm"
+                style="@style/button_normal"/>
 
         </LinearLayout>
 

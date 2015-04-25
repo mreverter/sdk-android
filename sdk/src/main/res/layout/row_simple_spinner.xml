@@ -9,8 +9,8 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:textSize="@dimen/regular_text"
         android:drawablePadding="@dimen/padding_hlf"
-        android:paddingLeft="@dimen/padding_std" />
+        android:paddingLeft="@dimen/padding_std"
+        style="@style/simple_spinner"/>
 
 </RelativeLayout>

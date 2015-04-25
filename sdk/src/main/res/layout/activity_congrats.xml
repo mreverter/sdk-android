@@ -183,12 +183,12 @@
 
             <Button
                 android:id="@+id/button"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
-                style="@style/button_normal"
                 android:text="@string/finish_label"
                 android:onClick="finalize"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                style="@style/button_normal"/>
 
         </LinearLayout>
 

@@ -63,6 +63,8 @@ public class MercadoPago {
         this.mKey = builder.mKey;
         this.mKeyType = builder.mKeyType;
 
+        System.setProperty("http.keepAlive", "false");
+
         mRestAdapterMPApi = new RestAdapter.Builder()
                 .setEndpoint(MP_API_BASE_URL)
                 .setLogLevel(Settings.RETROFIT_LOGGING)

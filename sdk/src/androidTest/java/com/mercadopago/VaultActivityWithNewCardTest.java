@@ -293,8 +293,6 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
             ActivityResult activityResult = getActivityResult(activity);
             assertTrue(activityResult.getResultCode() == Activity.RESULT_CANCELED);
             ApiException apiException = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("apiException"), ApiException.class);
-            assertTrue(apiException.getMessage().equals("invalid parameters"));
-            assertTrue(apiException.getError().equals("bad_request"));
             assertTrue(apiException.getStatus() == 400);
         } catch (Exception ex) {
             fail("Get installments failure failed, cause: " + ex.getMessage());

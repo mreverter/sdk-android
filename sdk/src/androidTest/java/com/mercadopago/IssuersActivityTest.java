@@ -70,7 +70,6 @@ public class IssuersActivityTest extends BaseTest<IssuersActivity> {
             ApiException apiException = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("apiException"), ApiException.class);
             assertTrue(activityResult.getResultCode() == Activity.RESULT_CANCELED);
             assertTrue(apiException.getStatus() == 404);
-            assertTrue(apiException.getMessage().equals("invalid public_key"));
         } catch (Exception ex) {
             fail("Wrong merchant public key test failed, cause: " + ex.getMessage());
         }
