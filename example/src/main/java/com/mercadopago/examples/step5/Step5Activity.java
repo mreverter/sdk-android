@@ -67,14 +67,20 @@ public class Step5Activity extends ExampleActivity {
     public void submitForm(View view) {
 
         // Call final vault activity
+        /*
         new MercadoPago.StartActivityBuilder()
-            .setActivity(this)
-            .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
-            .setMerchantBaseUrl(ExamplesUtils.DUMMY_MERCHANT_BASE_URL)
-            .setMerchantGetCustomerUri(ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI)
-            .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
-            .setAmount(new BigDecimal("20"))
-            .setSupportedPaymentTypes(mSupportedPaymentTypes)
-            .startVaultActivity();
+                .setActivity(this)
+                .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
+                .setMerchantBaseUrl(ExamplesUtils.DUMMY_MERCHANT_BASE_URL)
+                .setMerchantGetCustomerUri(ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI)
+                .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
+                .setAmount(new BigDecimal("20"))
+                .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .startVaultActivity();
+                */
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(this)
+                .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
+                .startBankDealsActivity();
     }
 }

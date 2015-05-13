@@ -50,8 +50,13 @@
     <string name="in_process_title">Estamos procesando el pago</string>
     <string name="rejected_title">¡Ups! Ocurrió un problema</string>
     <string name="format_date"><![CDATA[ %1$s/%2$s/%3$s - %4$s]]></string>
-    <string name="title_activity_frag_vault">FragVaultActivity</string>
     <string name="no_connection_message">Sin conexión</string>
     <string name="refresh_message">Reintentar</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_bank_deals">Promociones</string>
+    <string name="empty_bank_deals">No tienes ninguna promoción disponible</string>
+    <string name="bank">banco</string>
+    <string name="bank_zero_rate"><![CDATA[<strong>%1$s cuotas sin interés</strong>]]></string>
+    <string name="and">y</string>
+
 </resources>

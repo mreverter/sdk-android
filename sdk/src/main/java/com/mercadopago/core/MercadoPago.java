@@ -6,12 +6,14 @@ import android.content.Intent;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mercadopago.BankDealsActivity;
 import com.mercadopago.CongratsActivity;
 import com.mercadopago.CustomerCardsActivity;
 import com.mercadopago.InstallmentsActivity;
 import com.mercadopago.IssuersActivity;
 import com.mercadopago.PaymentMethodsActivity;
 import com.mercadopago.VaultActivity;
+import com.mercadopago.model.BankDeal;
 import com.mercadopago.model.Card;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
@@ -22,6 +24,7 @@ import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.SavedCardToken;
 import com.mercadopago.model.Token;
+import com.mercadopago.services.BankDealService;
 import com.mercadopago.services.GatewayService;
 import com.mercadopago.services.IdentificationService;
 import com.mercadopago.services.PaymentService;
@@ -48,6 +51,7 @@ public class MercadoPago {
     public static final int NEW_CARD_REQUEST_CODE = 4;
     public static final int CONGRATS_REQUEST_CODE = 5;
     public static final int VAULT_REQUEST_CODE = 6;
+    public static final int BANK_DEALS_REQUEST_CODE = 7;
 
     public static final int BIN_LENGTH = 6;
 
@@ -136,7 +140,33 @@ public class MercadoPago {
         }
     }
 
+    public void getBankDeals(final Callback<List<BankDeal>> callback) {
+
+        RestAdapter x = new RestAdapter.Builder()
+                .setEndpoint("https://www.mercadopago.com")
+                .setLogLevel(Settings.RETROFIT_LOGGING)
+                .setConverter(new GsonConverter(JsonUtil.getInstance().getGson()))
+                .setClient(HttpClientUtil.getClient(this.mContext))
+                .build();
+
+        if (this.mKeyType.equals(KEY_TYPE_PUBLIC)) {
+            //BankDealService service = mRestAdapterMPApi.create(BankDealService.class);
+            //service.getBankDeals(this.mKey, callback);
+            BankDealService service = x.create(BankDealService.class);
+            service.getBankDeals(callback);
+        } else {
+            throw new RuntimeException("Unsupported key type for this method");
+        }
+    }
+
     // * Static methods for StartActivityBuilder implementation
+
+    private static void startBankDealsActivity(Activity activity, String merchantPublicKey) {
+
+        Intent bankDealsIntent = new Intent(activity, BankDealsActivity.class);
+        bankDealsIntent.putExtra("merchantPublicKey", merchantPublicKey);
+        activity.startActivityForResult(bankDealsIntent, BANK_DEALS_REQUEST_CODE);
+    }
 
     private static void startCongratsActivity(Activity activity, Payment payment, PaymentMethod paymentMethod) {
 
@@ -374,6 +404,19 @@ public class MercadoPago {
 
             this.mSupportedPaymentTypes = supportedPaymentTypes;
             return this;
+        }
+
+        public void startBankDealsActivity() {
+
+            if (this.mActivity == null) throw new IllegalStateException("activity is null");
+            if (this.mKey == null) throw new IllegalStateException("key is null");
+            if (this.mKeyType == null) throw new IllegalStateException("key type is null");
+
+            if (this.mKeyType.equals(KEY_TYPE_PUBLIC)) {
+                MercadoPago.startBankDealsActivity(this.mActivity, this.mKey);
+            } else {
+                throw new RuntimeException("Unsupported key type for this method");
+            }
         }
 
         public void startCongratsActivity() {
