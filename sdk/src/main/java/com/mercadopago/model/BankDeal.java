@@ -6,31 +6,48 @@ import java.util.List;
 
 public class BankDeal {
 
-    //private Date expirationDate;
+    private Date dateExpired;
+    private Date dateStarted;
     private String id;
+    private List<Integer> installments;
     private CardIssuer issuer;
     private String legals;
-    private String marketplace;
     private int maxInstallments;
     private List<PaymentMethod> paymentMethods;
-    //private Date startDate;
+    private Picture picture;
+    private String recommendedMessage;
     private BigDecimal totalFinancialCost;
 
-    /*
-    public Date getExpirationDate() {
-        return expirationDate;
+    public Date getDateExpired() {
+        return dateExpired;
     }
 
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = expirationDate;
+    public void setDateExpired(Date dateExpired) {
+        this.dateExpired = dateExpired;
     }
-*/
+
+    public Date getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(Date dateStarted) {
+        this.dateStarted = dateStarted;
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<Integer> getInstallments() {
+        return installments;
+    }
+
+    public void setInstallments(List<Integer> installments) {
+        this.installments = installments;
     }
 
     public CardIssuer getIssuer() {
@@ -49,14 +66,6 @@ public class BankDeal {
         this.legals = legals;
     }
 
-    public String getMarketplace() {
-        return marketplace;
-    }
-
-    public void setMarketplace(String marketplace) {
-        this.marketplace = marketplace;
-    }
-
     public int getMaxInstallments() {
         return maxInstallments;
     }
@@ -72,15 +81,23 @@ public class BankDeal {
     public void setPaymentMethods(List<PaymentMethod> paymentMethods) {
         this.paymentMethods = paymentMethods;
     }
-/*
-    public Date getStartDate() {
-        return startDate;
+
+    public Picture getPicture() {
+        return picture;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setPicture(Picture picture) {
+        this.picture = picture;
     }
-*/
+
+    public String getRecommendedMessage() {
+        return recommendedMessage;
+    }
+
+    public void setRecommendedMessage(String recommendedMessage) {
+        this.recommendedMessage = recommendedMessage;
+    }
+
     public BigDecimal getTotalFinancialCost() {
         return totalFinancialCost;
     }

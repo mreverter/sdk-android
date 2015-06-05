@@ -142,18 +142,9 @@ public class MercadoPago {
 
     public void getBankDeals(final Callback<List<BankDeal>> callback) {
 
-        RestAdapter x = new RestAdapter.Builder()
-                .setEndpoint("https://www.mercadopago.com")
-                .setLogLevel(Settings.RETROFIT_LOGGING)
-                .setConverter(new GsonConverter(JsonUtil.getInstance().getGson()))
-                .setClient(HttpClientUtil.getClient(this.mContext))
-                .build();
-
         if (this.mKeyType.equals(KEY_TYPE_PUBLIC)) {
-            //BankDealService service = mRestAdapterMPApi.create(BankDealService.class);
-            //service.getBankDeals(this.mKey, callback);
-            BankDealService service = x.create(BankDealService.class);
-            service.getBankDeals(callback);
+            BankDealService service = mRestAdapterMPApi.create(BankDealService.class);
+            service.getBankDeals(this.mKey, mContext.getResources().getConfiguration().locale.toString(), callback);
         } else {
             throw new RuntimeException("Unsupported key type for this method");
         }

@@ -69,13 +69,12 @@ public class BankDealsAdapter extends  RecyclerView.Adapter<BankDealsAdapter.Vie
         }
 
         // Set bank image
-        String issuerId = String.valueOf(bankDeal.getIssuer() != null ? bankDeal.getIssuer().getId() : 0);
         Picasso.with(mActivity)
-                .load(mActivity.getString(R.string.bank_deals_image_location) + "ico_bank_" + issuerId + ".png")
+                .load(getPicture(bankDeal))
                 .into(holder.mBankImageView);
 
         // Set installments
-        holder.mInstallmentsView.setText(Html.fromHtml(getInstallments(bankDeal)));
+        holder.mInstallmentsView.setText(Html.fromHtml(getRecommendedMessage(bankDeal)));
 
         // Set view tag item
         holder.itemView.setTag(bankDeal);
@@ -89,8 +88,6 @@ public class BankDealsAdapter extends  RecyclerView.Adapter<BankDealsAdapter.Vie
     public BankDeal getItem(int position) {
         return mData.get(position);
     }
-
-    public View.OnClickListener getListener() { return mListener; }
 
     private String getBankDesc(BankDeal bankDeal) {
 
@@ -110,13 +107,13 @@ public class BankDealsAdapter extends  RecyclerView.Adapter<BankDealsAdapter.Vie
         return "";
     }
 
-    private String getInstallments(BankDeal bankDeal) {
+    private String getPicture(BankDeal bankDeal) {
 
-        String result = "";
+        return ((bankDeal != null) && (bankDeal.getPicture() != null)) ? bankDeal.getPicture().getUrl() : null;
+    }
 
-        if (bankDeal != null && bankDeal.getMaxInstallments() >  0) {
-            result = mActivity.getString(R.string.bank_zero_rate, bankDeal.getMaxInstallments());
-        }
-        return result;
+    private String getRecommendedMessage(BankDeal bankDeal) {
+
+        return (bankDeal != null) ? bankDeal.getRecommendedMessage() : null;
     }
 }

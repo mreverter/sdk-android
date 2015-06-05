@@ -58,5 +58,6 @@
     <string name="bank">banco</string>
     <string name="bank_zero_rate"><![CDATA[<strong>%1$s cuotas sin interés</strong>]]></string>
     <string name="and">y</string>
+    <string name="title_activity_terms_and_conditions">Términos y condiciones</string>
 
 </resources>

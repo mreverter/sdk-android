@@ -48,6 +48,10 @@
             android:name=".BankDealsActivity"
             android:label="@string/title_activity_bank_deals" >
         </activity>
+        <activity
+            android:name=".TermsAndConditionsActivity"
+            android:label="@string/title_activity_terms_and_conditions" >
+        </activity>
     </application>
 
 </manifest>

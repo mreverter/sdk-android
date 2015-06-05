@@ -2,6 +2,8 @@ package com.mercadopago.examples.step5;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -64,10 +66,30 @@ public class Step5Activity extends ExampleActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.step5, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_bank_deals:
+                new MercadoPago.StartActivityBuilder()
+                        .setActivity(this)
+                        .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
+                        .startBankDealsActivity();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
     public void submitForm(View view) {
 
         // Call final vault activity
-        /*
         new MercadoPago.StartActivityBuilder()
                 .setActivity(this)
                 .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
@@ -77,10 +99,5 @@ public class Step5Activity extends ExampleActivity {
                 .setAmount(new BigDecimal("20"))
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .startVaultActivity();
-                */
-        new MercadoPago.StartActivityBuilder()
-                .setActivity(this)
-                .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
-                .startBankDealsActivity();
     }
 }

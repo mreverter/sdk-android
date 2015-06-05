@@ -624,7 +624,6 @@ public class VaultActivity extends ActionBarActivity {
             @Override
             public void success(Token o, Response response) {
 
-                LayoutUtil.showRegularLayout(mActivity);
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK, returnIntent);
                 returnIntent.putExtra("token", o.getId());

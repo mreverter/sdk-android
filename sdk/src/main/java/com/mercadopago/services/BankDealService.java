@@ -10,9 +10,6 @@ import retrofit.http.Query;
 
 public interface BankDealService {
 
-    @GET("/v1/bank_deals")
-    void getBankDeals(@Query("public_key") String publicKey, Callback<List<BankDeal>> callback);
-
-    @GET("/mla/credit_card_promos.json")
-    void getBankDeals(Callback<List<BankDeal>> callback);
+    @GET("/beta/payment_methods/deals")
+    void getBankDeals(@Query("public_key") String publicKey, @Query("locale") String locale, Callback<List<BankDeal>> callback);
 }

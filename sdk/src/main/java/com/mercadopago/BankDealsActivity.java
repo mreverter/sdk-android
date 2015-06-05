@@ -1,17 +1,18 @@
 package com.mercadopago;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Toast;
 
 import com.mercadopago.adapters.BankDealsAdapter;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.decorations.DividerItemDecoration;
 import com.mercadopago.model.BankDeal;
+import com.mercadopago.util.ApiUtil;
 import com.mercadopago.util.LayoutUtil;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class BankDealsActivity extends ActionBarActivity {
+public class BankDealsActivity extends AppCompatActivity {
 
     // Activity parameters
     protected String mMerchantPublicKey;
@@ -76,36 +77,24 @@ public class BankDealsActivity extends ActionBarActivity {
             @Override
             public void success(List<BankDeal> bankDeals, Response response) {
 
-                try {
-                    mRecyclerView.setAdapter(new BankDealsAdapter(mActivity, bankDeals, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                mRecyclerView.setAdapter(new BankDealsAdapter(mActivity, bankDeals, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                            BankDeal selectedBankDeal = (BankDeal) view.getTag();
+                        BankDeal selectedBankDeal = (BankDeal) view.getTag();
+                        Intent intent = new Intent(mActivity, TermsAndConditionsActivity.class);
+                        intent.putExtra("termsAndConditions", selectedBankDeal.getLegals());
+                        startActivity(intent);
+                    }
+                }));
 
-                            Toast.makeText(mActivity, selectedBankDeal.getLegals(), Toast.LENGTH_LONG).show();
-                /*
-                Object row = mListView.getItemAtPosition(position);
-                if (row instanceof ArrayList) {
-                    Intent intent = new Intent(parent.getContext(), TermsAndConditionsActivity.class);
-                    intent.putExtra(PROMOS, (ArrayList<Promo>) row);
-                    startActivity(intent);
-                }
-                */
-                        }
-                    }));
-
-                    LayoutUtil.showRegularLayout(mActivity);
-
-                } catch (Exception ex) {
-
-                }
+                LayoutUtil.showRegularLayout(mActivity);
             }
 
             @Override
             public void failure(RetrofitError error) {
 
-                Toast.makeText(mActivity, error.getMessage(), Toast.LENGTH_LONG).show();
+                ApiUtil.finishWithApiException(mActivity, error);
             }
         });
     }
