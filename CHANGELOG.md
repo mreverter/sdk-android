@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+## VERSION 0.9.11
+
+_19-06-2015_
+
+* New: Bank deals widget and components
+* New: API 9 support!
+* Fix: Change to AppCompatActivity
+* Fix: Create token exception not retrieving error cause
+* Fix: Sonatype default credentials
+
 ## VERSION 0.9.10
 
 _25-04-2015_
