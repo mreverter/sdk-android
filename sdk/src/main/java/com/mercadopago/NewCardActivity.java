@@ -114,6 +114,22 @@ public class NewCardActivity extends AppCompatActivity {
             }
         }
 
+        // Set up expiry edit texts
+        mExpiryMonth.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                mExpiryError.setError(null);
+                return false;
+            }
+        });
+        mExpiryYear.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                mExpiryError.setError(null);
+                return false;
+            }
+        });
+
         // Set security code visibility
         setSecurityCodeLayout();
     }
