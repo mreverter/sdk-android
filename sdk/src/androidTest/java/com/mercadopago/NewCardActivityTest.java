@@ -3,6 +3,7 @@ package com.mercadopago;
 import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.CardToken;
@@ -17,7 +18,9 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
     private NewCardActivity mActivity;
     private EditText mCardNumberText;
     private EditText mCardholderNameText;
-    private Button mExpiryDateButton;
+    private EditText mExpiryMonthText;
+    private EditText mExpiryYearText;
+    private TextView mExpiryErrorText;
     private EditText mIdentificationNumberText;
     private EditText mSecurityCodeText;
 
@@ -38,7 +41,10 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
                 EditText fieldText;
                 fieldText = (EditText) mActivity.findViewById(R.id.cardNumber);
                 fieldText.setText(StaticMock.DUMMY_CARD_NUMBER);
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, StaticMock.DUMMY_EXPIRATION_YEAR);
+                fieldText = (EditText) mActivity.findViewById(R.id.expiryMonth);
+                fieldText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                fieldText = (EditText) mActivity.findViewById(R.id.expiryYear);
+                fieldText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_YEAR_SHORT));
                 fieldText = (EditText) mActivity.findViewById(R.id.cardholderName);
                 fieldText.setText(StaticMock.DUMMY_CARDHOLDER_NAME);
                 fieldText = (EditText) mActivity.findViewById(R.id.identificationNumber);
@@ -56,7 +62,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
             assertTrue(cardToken.getCardNumber().equals(StaticMock.DUMMY_CARD_NUMBER));
             assertTrue(cardToken.getExpirationMonth() == StaticMock.DUMMY_EXPIRATION_MONTH);
-            assertTrue(cardToken.getExpirationYear() == StaticMock.DUMMY_EXPIRATION_YEAR);
+            assertTrue(cardToken.getExpirationYear() == StaticMock.DUMMY_EXPIRATION_YEAR_LONG);
             assertTrue(cardToken.getCardholder().getName().equals(StaticMock.DUMMY_CARDHOLDER_NAME));
             assertTrue(cardToken.getCardholder().getIdentification().getType().equals(StaticMock.DUMMI_IDENTIFICATION_TYPE_NAME));
             assertTrue(cardToken.getCardholder().getIdentification().getNumber().equals(StaticMock.DUMMY_IDENTIFICATION_NUMBER));
@@ -77,7 +83,8 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
                 mCardNumberText.setText("");
                 mCardholderNameText.setText(StaticMock.DUMMY_CARDHOLDER_NAME);
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, StaticMock.DUMMY_EXPIRATION_YEAR);
+                mExpiryMonthText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                mExpiryYearText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_YEAR_SHORT));
                 mIdentificationNumberText.setText(StaticMock.DUMMY_IDENTIFICATION_NUMBER);
 
                 mActivity.submitForm(null);
@@ -87,7 +94,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate error message
         assertTrue(mCardNumberText.getError().equals(mActivity.getString(R.string.invalid_empty_card)));
         assertTrue(mCardholderNameText.getError() == null);
-        assertTrue(mExpiryDateButton.getError() == null);
+        assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
     }
 
@@ -103,7 +110,8 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
                 mCardNumberText.setText("5678000123456789");
                 mCardholderNameText.setText(StaticMock.DUMMY_CARDHOLDER_NAME);
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, StaticMock.DUMMY_EXPIRATION_YEAR);
+                mExpiryMonthText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                mExpiryYearText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_YEAR_SHORT));
                 mIdentificationNumberText.setText(StaticMock.DUMMY_IDENTIFICATION_NUMBER);
 
                 mActivity.submitForm(null);
@@ -113,7 +121,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate error message
         assertTrue(mCardNumberText.getError().equals(mActivity.getString(R.string.invalid_card_bin)));
         assertTrue(mCardholderNameText.getError() == null);
-        assertTrue(mExpiryDateButton.getError() == null);
+        assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
     }
 
@@ -129,7 +137,8 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
                 mCardNumberText.setText(StaticMock.DUMMY_CARD_NUMBER);
                 mCardholderNameText.setText(StaticMock.DUMMY_CARDHOLDER_NAME);
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, 2000);
+                mExpiryMonthText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                mExpiryYearText.setText("12");
                 mIdentificationNumberText.setText(StaticMock.DUMMY_IDENTIFICATION_NUMBER);
 
                 mActivity.submitForm(null);
@@ -139,7 +148,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate error message
         assertTrue(mCardNumberText.getError() == null);
         assertTrue(mCardholderNameText.getError() == null);
-        assertTrue(mExpiryDateButton.getError().equals(mActivity.getString(R.string.invalid_field)));
+        assertTrue(mExpiryErrorText.getError().equals(mActivity.getString(R.string.invalid_field)));
         assertTrue(mIdentificationNumberText.getError() == null);
     }
 
@@ -155,7 +164,8 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
                 mCardNumberText.setText(StaticMock.DUMMY_CARD_NUMBER);
                 mCardholderNameText.setText("");
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, StaticMock.DUMMY_EXPIRATION_YEAR);
+                mExpiryMonthText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                mExpiryYearText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_YEAR_SHORT));
                 mIdentificationNumberText.setText(StaticMock.DUMMY_IDENTIFICATION_NUMBER);
 
                 mActivity.submitForm(null);
@@ -165,7 +175,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate error message
         assertTrue(mCardNumberText.getError() == null);
         assertTrue(mCardholderNameText.getError().equals(mActivity.getString(R.string.invalid_field)));
-        assertTrue(mExpiryDateButton.getError() == null);
+        assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
     }
 
@@ -181,7 +191,8 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
                 mCardNumberText.setText(StaticMock.DUMMY_CARD_NUMBER);
                 mCardholderNameText.setText(StaticMock.DUMMY_CARDHOLDER_NAME);
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, StaticMock.DUMMY_EXPIRATION_YEAR);
+                mExpiryMonthText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                mExpiryYearText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_YEAR_SHORT));
                 mIdentificationNumberText.setText("");
 
                 mActivity.submitForm(null);
@@ -191,7 +202,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate error message
         assertTrue(mCardNumberText.getError() == null);
         assertTrue(mCardholderNameText.getError() == null);
-        assertTrue(mExpiryDateButton.getError() == null);
+        assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError().equals(mActivity.getString(R.string.invalid_field)));
     }
 
@@ -209,7 +220,10 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
                 EditText fieldText;
                 fieldText = (EditText) mActivity.findViewById(R.id.cardNumber);
                 fieldText.setText(StaticMock.DUMMY_CARD_NUMBER);
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, StaticMock.DUMMY_EXPIRATION_YEAR);
+                fieldText = (EditText) mActivity.findViewById(R.id.expiryMonth);
+                fieldText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                fieldText = (EditText) mActivity.findViewById(R.id.expiryYear);
+                fieldText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_YEAR_SHORT));
                 fieldText = (EditText) mActivity.findViewById(R.id.cardholderName);
                 fieldText.setText(StaticMock.DUMMY_CARDHOLDER_NAME);
                 fieldText = (EditText) mActivity.findViewById(R.id.identificationNumber);
@@ -229,7 +243,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
             assertTrue(cardToken.getCardNumber().equals(StaticMock.DUMMY_CARD_NUMBER));
             assertTrue(cardToken.getExpirationMonth() == StaticMock.DUMMY_EXPIRATION_MONTH);
-            assertTrue(cardToken.getExpirationYear() == StaticMock.DUMMY_EXPIRATION_YEAR);
+            assertTrue(cardToken.getExpirationYear() == StaticMock.DUMMY_EXPIRATION_YEAR_LONG);
             assertTrue(cardToken.getCardholder().getName().equals(StaticMock.DUMMY_CARDHOLDER_NAME));
             assertTrue(cardToken.getCardholder().getIdentification().getType().equals(StaticMock.DUMMI_IDENTIFICATION_TYPE_NAME));
             assertTrue(cardToken.getCardholder().getIdentification().getNumber().equals(StaticMock.DUMMY_IDENTIFICATION_NUMBER));
@@ -252,7 +266,8 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
                 mCardNumberText.setText(StaticMock.DUMMY_CARD_NUMBER);
                 mCardholderNameText.setText(StaticMock.DUMMY_CARDHOLDER_NAME);
-                mActivity.onDateSet(null, StaticMock.DUMMY_EXPIRATION_MONTH, StaticMock.DUMMY_EXPIRATION_YEAR);
+                mExpiryMonthText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_MONTH));
+                mExpiryYearText.setText(Integer.toString(StaticMock.DUMMY_EXPIRATION_YEAR_SHORT));
                 mIdentificationNumberText.setText(StaticMock.DUMMY_IDENTIFICATION_NUMBER);
                 mSecurityCodeText.setText("");
 
@@ -263,7 +278,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate error message
         assertTrue(mCardNumberText.getError() == null);
         assertTrue(mCardholderNameText.getError() == null);
-        assertTrue(mExpiryDateButton.getError() == null);
+        assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
         assertTrue(mSecurityCodeText.getError().equals(mActivity.getString(R.string.invalid_cvv_length, 3)));
     }
@@ -312,7 +327,9 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
         mCardNumberText = (EditText) mActivity.findViewById(R.id.cardNumber);
         mCardholderNameText = (EditText) mActivity.findViewById(R.id.cardholderName);
-        mExpiryDateButton = (Button) mActivity.findViewById(R.id.expiryDateButton);
+        mExpiryMonthText = (EditText) mActivity.findViewById(R.id.expiryMonth);
+        mExpiryYearText = (EditText) mActivity.findViewById(R.id.expiryYear);
+        mExpiryErrorText = (TextView) mActivity.findViewById(R.id.expiryError);
         mIdentificationNumberText = (EditText) mActivity.findViewById(R.id.identificationNumber);
     }
 }

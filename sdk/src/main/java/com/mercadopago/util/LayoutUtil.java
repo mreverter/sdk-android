@@ -1,7 +1,5 @@
 package com.mercadopago.util;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
@@ -42,32 +40,12 @@ public class LayoutUtil {
         final View progress = activity.findViewById(R.id.progressLayout);
         final View refresh = activity.findViewById(R.id.refreshLayout);
 
-        int shortAnimTime = activity.getResources().getInteger(android.R.integer.config_shortAnimTime);
-
         if(progress != null) {
             progress.setVisibility(showRefresh || showLayout ? View.GONE : View.VISIBLE);
-            progress.animate()
-                    .setDuration(shortAnimTime)
-                    .alpha(showProgress ? 1 : 0)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            progress.setVisibility(!showRefresh && showProgress ? View.VISIBLE : View.GONE);
-                        }
-                    });
         }
 
         if(form != null) {
             form.setVisibility(showRefresh || showProgress ? View.GONE : View.VISIBLE);
-            form.animate()
-                    .setDuration(shortAnimTime)
-                    .alpha(showLayout ? 1 : 0)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            form.setVisibility(!showRefresh && showLayout ? View.VISIBLE : View.GONE);
-                        }
-                    });
         }
 
         if (refresh != null) {

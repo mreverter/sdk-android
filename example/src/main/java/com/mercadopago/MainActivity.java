@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.mercadopago.examples.R;
@@ -13,7 +14,7 @@ import com.mercadopago.examples.step3.Step3Activity;
 import com.mercadopago.examples.step4.Step4Activity;
 import com.mercadopago.examples.step5.Step5Activity;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

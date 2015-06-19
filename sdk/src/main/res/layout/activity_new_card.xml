@@ -77,24 +77,52 @@
                             android:layout_height="wrap_content"
                             android:text="@string/card_expire_date_label"
                             style="@style/form_label"
-                            android:layout_margin="10dp"/>
+                            android:layout_marginTop="@dimen/margin_std"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"/>
 
                         <LinearLayout
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                            <Button
-                                android:id="@+id/expiryDateButton"
-                                style="@style/spinner_button"
-                                android:layout_width="match_parent"
-                                android:layout_height="36dp"
-                                android:gravity="left|bottom"
-                                android:hint="@string/card_expiry_date_hint"
+                            <EditText
+                                android:id="@+id/expiryMonth"
+                                android:layout_width="30dp"
+                                android:layout_height="wrap_content"
+                                android:maxLength="2"
+                                android:inputType="number"
+                                android:singleLine="true"
+                                style="@style/form_input"
+                                android:layout_marginTop="@dimen/margin_std"
                                 android:layout_marginLeft="10dp"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginBottom="10dp"
-                                android:onClick="popExpiryDate"/>
+                                android:layout_marginRight="10dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="/"
+                                style="@style/form_input"
+                                android:layout_marginBottom="5dp"
+                                android:layout_gravity="bottom" />
+
+                            <EditText
+                                android:id="@+id/expiryYear"
+                                android:layout_width="30dp"
+                                android:layout_height="wrap_content"
+                                android:maxLength="2"
+                                android:inputType="number"
+                                android:singleLine="true"
+                                style="@style/form_input"
+                                android:layout_marginTop="@dimen/margin_std"
+                                android:layout_marginLeft="10dp"/>
+
+                            <TextView
+                                android:id="@+id/expiryError"
+                                android:layout_width="30dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_std"
+                                android:visibility="gone"/>
 
                         </LinearLayout>
 

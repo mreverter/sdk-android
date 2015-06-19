@@ -49,4 +49,12 @@
     <string name="pending_title">Processamos o seu pagamento</string>
     <string name="in_process_title">Estamos processando o pagamento</string>
     <string name="rejected_title">Ops!, algo deu errado</string>
+    <string name="no_connection_message">Sem conexão</string>
+    <string name="refresh_message">Tentar novamente</string>
+    <string name="title_activity_bank_deals">Promoções</string>
+    <string name="empty_bank_deals">Você não tem nenhuma promoção disponível</string>
+    <string name="bank">banco</string>
+    <string name="bank_zero_rate"><![CDATA[<strong>%1$s parcelas sem juros</strong>]]></string>
+    <string name="and">e</string>
+    <string name="title_activity_terms_and_conditions">Termos e condições</string>
 </resources>

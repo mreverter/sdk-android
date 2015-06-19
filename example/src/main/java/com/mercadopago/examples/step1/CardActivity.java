@@ -1,25 +1,24 @@
 package com.mercadopago.examples.step1;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.mercadopago.adapters.IdentificationTypesAdapter;
 import com.mercadopago.core.MercadoPago;
-import com.mercadopago.dialogs.CustomDatePickerDialog;
 import com.mercadopago.examples.R;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
@@ -30,32 +29,30 @@ import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
-import java.util.Calendar;
 import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class CardActivity extends ActionBarActivity implements CustomDatePickerDialog.DatePickerDialogListener {
+public class CardActivity extends AppCompatActivity {
 
     // Activity parameters
     private PaymentMethod mPaymentMethod;
 
     // Input controls
-    private EditText mCardNumber;
-    private EditText mSecurityCode;
-    private Button mExpiryDate;
     private EditText mCardHolderName;
+    private EditText mCardNumber;
+    private TextView mExpiryError;
+    private EditText mExpiryMonth;
+    private EditText mExpiryYear;
+    private RelativeLayout mIdentificationLayout;
     private EditText mIdentificationNumber;
     private Spinner mIdentificationType;
-    private RelativeLayout mIdentificationLayout;
+    private EditText mSecurityCode;
 
     // Current values
     private CardToken mCardToken;
-    private int mExpiryMonth;
-    private int mExpiryYear;
-    private Calendar mSelectedExpiryDate;
 
     // Local vars
     private Activity mActivity;
@@ -81,7 +78,9 @@ public class CardActivity extends ActionBarActivity implements CustomDatePickerD
         mIdentificationNumber = (EditText) findViewById(R.id.identificationNumber);
         mIdentificationType = (Spinner) findViewById(R.id.identificationType);
         mIdentificationLayout = (RelativeLayout) findViewById(R.id.identificationLayout);
-        mExpiryDate = (Button) findViewById(R.id.expiryDateButton);
+        mExpiryError = (TextView) findViewById(R.id.expiryError);
+        mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
+        mExpiryYear = (EditText) findViewById(R.id.expiryYear);
 
         // Init MercadoPago object with public key
         mMercadoPago = new MercadoPago.Builder()
@@ -122,38 +121,6 @@ public class CardActivity extends ActionBarActivity implements CustomDatePickerD
         } else if (mExceptionOnMethod.equals("createTokenAsync")) {
             createTokenAsync();
         }
-    }
-
-    @Override
-    public void onDateSet(DialogFragment dialog, int month, int year) {
-
-        // Set local attributes
-        mExpiryMonth = month;
-        mExpiryYear = year;
-        mSelectedExpiryDate = Calendar.getInstance();
-        mSelectedExpiryDate.set(year, month - 1, Calendar.DAY_OF_WEEK);
-
-        // Set expiry date label
-        String monthString = month < 10 ? "0" + month : Integer.toString(month);
-        String yearString = Integer.toString(year).substring(2);
-        mExpiryDate.setText(new StringBuilder()
-                .append(monthString).append(" / ").append(yearString));
-
-        // Validate new value
-        if (CardToken.validateExpiryDate(mExpiryMonth, mExpiryYear)) {
-            mExpiryDate.setError(null);
-        } else {
-            mExpiryDate.setError(getString(com.mercadopago.R.string.invalid_field));
-        }
-    }
-
-    public void popExpiryDate(View view) {
-
-        DialogFragment newFragment = new CustomDatePickerDialog();
-        Bundle args = new Bundle();
-        args.putSerializable(CustomDatePickerDialog.CALENDAR, mSelectedExpiryDate);
-        newFragment.setArguments(args);
-        newFragment.show(getFragmentManager(), "");
     }
 
     public void submitForm(View view) {
@@ -200,12 +167,18 @@ public class CardActivity extends ActionBarActivity implements CustomDatePickerD
             result = false;
         }
 
-        // Validate expiry date
+        // Validate expiry month and year
         if (!cardToken.validateExpiryDate()) {
-            mExpiryDate.setError(getString(com.mercadopago.R.string.invalid_field));
+            mExpiryError.setVisibility(View.VISIBLE);
+            mExpiryError.setError(getString(com.mercadopago.R.string.invalid_field));
+            if (!focusSet) {
+                mExpiryMonth.requestFocus();
+                focusSet = true;
+            }
             result = false;
         } else {
-            mExpiryDate.setError(null);
+            mExpiryError.setError(null);
+            mExpiryError.setVisibility(View.GONE);
         }
 
         // Validate card holder name
@@ -377,12 +350,24 @@ public class CardActivity extends ActionBarActivity implements CustomDatePickerD
 
     private Integer getMonth() {
 
-        return mExpiryMonth;
+        Integer result;
+        try {
+            result = Integer.parseInt(this.mExpiryMonth.getText().toString());
+        } catch (Exception ex) {
+            result = null;
+        }
+        return result;
     }
 
     private Integer getYear() {
 
-        return mExpiryYear;
+        Integer result;
+        try {
+            result = Integer.parseInt(this.mExpiryYear.getText().toString());
+        } catch (Exception ex) {
+            result = null;
+        }
+        return result;
     }
 
     private String getCardHolderName() {

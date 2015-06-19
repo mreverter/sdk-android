@@ -1,11 +1,11 @@
 package com.mercadopago;
 
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.mercadopago.examples.R;
 
-public class ExampleActivity extends ActionBarActivity {
+public class ExampleActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {

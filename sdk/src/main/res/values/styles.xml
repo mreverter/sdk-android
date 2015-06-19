@@ -42,7 +42,7 @@
         <item name="android:textColor">@color/base_text</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
-    <style name="spinner_button" parent="@android:style/Widget.Holo.Light.Spinner">
+    <style name="spinner_button">
         <item name="android:textSize">@dimen/regular_text</item>
         <item name="android:textColor">@color/base_text</item>
         <item name="android:fontFamily">sans-serif</item>

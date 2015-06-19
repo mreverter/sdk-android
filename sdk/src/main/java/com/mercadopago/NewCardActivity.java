@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -36,7 +37,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class NewCardActivity extends ActionBarActivity implements CustomDatePickerDialog.DatePickerDialogListener {
+public class NewCardActivity extends AppCompatActivity {
 
     // Activity parameters
     protected String mKey;
@@ -49,17 +50,14 @@ public class NewCardActivity extends ActionBarActivity implements CustomDatePick
     protected EditText mCardNumber;
     protected TextView mCVVDescriptor;
     protected ImageView mCVVImage;
-    protected Button mExpiryDate;
+    protected TextView mExpiryError;
+    protected EditText mExpiryMonth;
+    protected EditText mExpiryYear;
     protected EditText mIdentificationNumber;
     protected RelativeLayout mIdentificationLayout;
     protected Spinner mIdentificationType;
     protected RelativeLayout mSecurityCodeLayout;
     protected EditText mSecurityCode;
-
-    // Current values
-    protected int mExpiryMonth;
-    protected int mExpiryYear;
-    protected Calendar mSelectedExpiryDate;
 
     // Local vars
     protected Activity mActivity;
@@ -91,11 +89,13 @@ public class NewCardActivity extends ActionBarActivity implements CustomDatePick
         mIdentificationNumber = (EditText) findViewById(R.id.identificationNumber);
         mIdentificationType = (Spinner) findViewById(R.id.identificationType);
         mIdentificationLayout = (RelativeLayout) findViewById(R.id.identificationLayout);
-        mExpiryDate = (Button) findViewById(R.id.expiryDateButton);
         mSecurityCodeLayout = (RelativeLayout) findViewById(R.id.securityCodeLayout);
         mCVVImage = (ImageView) findViewById(R.id.cVVImage);
         mCVVDescriptor = (TextView) findViewById(R.id.cVVDescriptor);
         mSecurityCode = (EditText) findViewById(R.id.securityCode);
+        mExpiryError = (TextView) findViewById(R.id.expiryError);
+        mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
+        mExpiryYear = (EditText) findViewById(R.id.expiryYear);
 
         // Set identification type listener to control identification number keyboard
         setIdentificationNumberKeyboardBehavior();
@@ -135,38 +135,6 @@ public class NewCardActivity extends ActionBarActivity implements CustomDatePick
     public void refreshLayout(View view) {
 
         getIdentificationTypesAsync();
-    }
-
-    @Override
-    public void onDateSet(DialogFragment dialog, int month, int year) {
-
-        // Set local attributes
-        mExpiryMonth = month;
-        mExpiryYear = year;
-        mSelectedExpiryDate = Calendar.getInstance();
-        mSelectedExpiryDate.set(year, month - 1, Calendar.DAY_OF_WEEK);
-
-        // Set expiry date label
-        String monthString = month < 10 ? "0" + month : Integer.toString(month);
-        String yearString = Integer.toString(year).substring(2);
-        mExpiryDate.setText(new StringBuilder()
-                .append(monthString).append(" / ").append(yearString));
-
-        // Validate new value
-        if (CardToken.validateExpiryDate(mExpiryMonth, mExpiryYear)) {
-            mExpiryDate.setError(null);
-        } else {
-            mExpiryDate.setError(getString(R.string.invalid_field));
-        }
-    }
-
-    public void popExpiryDate(View view) {
-
-        DialogFragment newFragment = new CustomDatePickerDialog();
-        Bundle args = new Bundle();
-        args.putSerializable(CustomDatePickerDialog.CALENDAR, mSelectedExpiryDate);
-        newFragment.setArguments(args);
-        newFragment.show(getFragmentManager(), "");
     }
 
     public void submitForm(View view) {
@@ -218,12 +186,18 @@ public class NewCardActivity extends ActionBarActivity implements CustomDatePick
             }
         }
 
-        // Validate expiry date
+        // Validate expiry month and year
         if (!cardToken.validateExpiryDate()) {
-            mExpiryDate.setError(getString(R.string.invalid_field));
+            mExpiryError.setVisibility(View.VISIBLE);
+            mExpiryError.setError(getString(com.mercadopago.R.string.invalid_field));
+            if (!focusSet) {
+                mExpiryMonth.requestFocus();
+                focusSet = true;
+            }
             result = false;
         } else {
-            mExpiryDate.setError(null);
+            mExpiryError.setError(null);
+            mExpiryError.setVisibility(View.GONE);
         }
 
         // Validate card holder name
@@ -400,14 +374,26 @@ public class NewCardActivity extends ActionBarActivity implements CustomDatePick
         return this.mSecurityCode.getText().toString();
     }
 
-    protected Integer getMonth() {
+    private Integer getMonth() {
 
-        return mExpiryMonth;
+        Integer result;
+        try {
+            result = Integer.parseInt(this.mExpiryMonth.getText().toString());
+        } catch (Exception ex) {
+            result = null;
+        }
+        return result;
     }
 
-    protected Integer getYear() {
+    private Integer getYear() {
 
-        return mExpiryYear;
+        Integer result;
+        try {
+            result = Integer.parseInt(this.mExpiryYear.getText().toString());
+        } catch (Exception ex) {
+            result = null;
+        }
+        return result;
     }
 
     protected String getCardHolderName() {

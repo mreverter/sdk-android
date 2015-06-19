@@ -3,6 +3,7 @@ package com.mercadopago;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -17,7 +18,7 @@ import com.mercadopago.util.JsonUtil;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class InstallmentsActivity extends ActionBarActivity {
+public class InstallmentsActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
 

@@ -443,7 +443,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
             ActivityResult activityResult = getActivityResult(activity);
             assertTrue(activityResult.getResultCode() == Activity.RESULT_CANCELED);
             ApiException apiException = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("apiException"), ApiException.class);
-            assertTrue(apiException.getMessage().equals("400 Bad Request"));
+            assertTrue(apiException.getMessage().equals("Invalid Value for Field: cardNumber"));
         } catch (Exception ex) {
             fail("Create token failure test failed, cause: " + ex.getMessage());
         }

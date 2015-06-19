@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -37,7 +38,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class SimpleVaultActivity extends ActionBarActivity {
+public class SimpleVaultActivity extends AppCompatActivity {
 
     // Activity parameters
     protected String mMerchantAccessToken;

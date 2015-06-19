@@ -46,7 +46,8 @@ public class StaticMock {
     public final static String DUMMY_CARD_NUMBER = "4444444444440008";
     public final static String DUMMY_CARDHOLDER_NAME = "john";
     public final static int DUMMY_EXPIRATION_MONTH = 11;
-    public final static int DUMMY_EXPIRATION_YEAR = 2018;
+    public final static int DUMMY_EXPIRATION_YEAR_SHORT = 18;
+    public final static int DUMMY_EXPIRATION_YEAR_LONG = 2018;
     public final static String DUMMY_IDENTIFICATION_NUMBER = "12345678";
     public final static String DUMMY_IDENTIFICATION_TYPE = "DNI";
     public final static String DUMMY_SECURITY_CODE = "123";
@@ -64,7 +65,7 @@ public class StaticMock {
     public static CardToken getCardToken() {
 
         return new CardToken(DUMMY_CARD_NUMBER, DUMMY_EXPIRATION_MONTH,
-                DUMMY_EXPIRATION_YEAR, DUMMY_SECURITY_CODE, DUMMY_CARDHOLDER_NAME,
+                DUMMY_EXPIRATION_YEAR_SHORT, DUMMY_SECURITY_CODE, DUMMY_CARDHOLDER_NAME,
                 DUMMY_IDENTIFICATION_TYPE, DUMMY_IDENTIFICATION_NUMBER);
     }
 

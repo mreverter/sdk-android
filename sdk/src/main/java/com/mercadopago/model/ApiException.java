@@ -1,8 +1,10 @@
 package com.mercadopago.model;
 
+import java.util.List;
+
 public class ApiException {
 
-    private Cause cause;
+    private List<Cause> cause;
     private String error;
     private String message;
     private Integer status;
@@ -10,7 +12,7 @@ public class ApiException {
     public ApiException() {
     }
 
-    public ApiException(String message, Integer status, String error, Cause cause) {
+    public ApiException(String message, Integer status, String error, List<Cause> cause) {
 
         this.message = message;
         this.status = status;
@@ -18,11 +20,11 @@ public class ApiException {
         this.cause = cause;
     }
 
-    public Cause getCause() {
+    public List<Cause> getCause() {
         return cause;
     }
 
-    public void setCause(Cause cause) {
+    public void setCause(List<Cause> cause) {
         this.cause = cause;
     }
 
