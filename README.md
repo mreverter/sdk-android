@@ -37,13 +37,13 @@ This project includes five examples you can follow to understand how MercadoPago
 
 ## Documentation
 
-+ [Read more about this 5 steps integration.](http://labs.mercadopago.com.ar/developers/es/solutions/payments/custom-checkout/charge-with-creditcard/android/)
-+ [Check out MercadoPago Developers Site!](http://labs.mercadopago.com.ar/developers)
++ [Read more about this 5 steps integration.](http://www.mercadopago.com.ar/developers/en/solutions/payments/custom-checkout/charge-with-creditcard/android/)
++ [Check out MercadoPago Developers Site!](http://www.mercadopago.com.ar/developers)
 
 ## Feedback
 
 You can join the MercadoPago Developers Community on MercadoPago Developers Site:
 
-+ [English](http://developers.mercadopago.com/developers-forum?lang=en_US)
-+ [Español](http://developers.mercadopago.com/foro-de-desarrolladores?lang=es_AR)
-+ [Português](http://developers.mercadopago.com/foro-de-desenvolvedores?lang=pt_BR)
++ [English](https://www.mercadopago.com.ar/developers/en/community/forum/)
++ [Español](https://www.mercadopago.com.ar/developers/es/community/forum/)
++ [Português](https://www.mercadopago.com.br/developers/pt/community/forum/)
