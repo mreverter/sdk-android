@@ -3,10 +3,11 @@ package com.mercadopago;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ public class PaymentMethodsActivity extends AppCompatActivity {
     private Activity mActivity;
     private String mMerchantPublicKey;
     private RecyclerView mRecyclerView;
+    protected boolean mShowBankDeals;
     private List<String> mSupportedPaymentTypes;
 
     @Override
@@ -55,6 +57,7 @@ public class PaymentMethodsActivity extends AppCompatActivity {
             Type listType = new TypeToken<List<String>>(){}.getType();
             mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
         }
+        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
 
         // Set recycler view
         mRecyclerView = (RecyclerView) findViewById(R.id.payment_methods_list);
@@ -71,6 +74,27 @@ public class PaymentMethodsActivity extends AppCompatActivity {
     protected void setContentView() {
 
         setContentView(R.layout.activity_payment_methods);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mShowBankDeals) {
+            getMenuInflater().inflate(R.menu.payment_methods, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_bank_deals) {
+            new MercadoPago.StartActivityBuilder()
+                    .setActivity(this)
+                    .setPublicKey(mMerchantPublicKey)
+                    .startBankDealsActivity();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override

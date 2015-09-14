@@ -37,7 +37,7 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
 
     public CustomerCardsAdapter(Activity activity, List<Card> data, View.OnClickListener listener) {
 
-        mData = getRows(data, activity);
+        mData = getRows(activity, data);
         mListener = listener;
     }
 
@@ -72,20 +72,26 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
         return mData.size();
     }
 
-    private List<PaymentMethodRow> getRows(List<Card> data, Context context) {
+    private List<PaymentMethodRow> getRows(Context context, List<Card> data) {
 
         List<PaymentMethodRow> rows = new ArrayList<>();
 
         // Add cards
         for (int i = 0; i < data.size(); i++) {
             int icon = MercadoPagoUtil.getPaymentMethodIcon(context, data.get(i).getPaymentMethod().getId());
-            rows.add(new PaymentMethodRow(data.get(i), getPaymentMethodLabel(context, data.get(i).getPaymentMethod().getName(), data.get(i).getLastFourDigits()), icon));
+            rows.add(getPaymentMethodRow(context, data.get(i)));
         }
 
         // Add other payment method row
         rows.add(new PaymentMethodRow(null, context.getString(R.string.other_pm_label), 0));
 
         return rows;
+    }
+
+    public static PaymentMethodRow getPaymentMethodRow(Context context, Card card) {
+
+        int icon = MercadoPagoUtil.getPaymentMethodIcon(context, card.getPaymentMethod().getId());
+        return new PaymentMethodRow(card, getPaymentMethodLabel(context, card.getPaymentMethod().getName(), card.getLastFourDigits()), icon);
     }
 
     public static String getPaymentMethodLabel(Context context, String name, String lastFourDigits) {

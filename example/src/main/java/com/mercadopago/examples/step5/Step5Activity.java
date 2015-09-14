@@ -66,27 +66,6 @@ public class Step5Activity extends ExampleActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.step5, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_bank_deals:
-                new MercadoPago.StartActivityBuilder()
-                        .setActivity(this)
-                        .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
-                        .startBankDealsActivity();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
     public void submitForm(View view) {
 
         // Call final vault activity
@@ -98,6 +77,7 @@ public class Step5Activity extends ExampleActivity {
                 .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
                 .setAmount(new BigDecimal("20"))
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setShowBankDeals(true)
                 .startVaultActivity();
     }
 }
