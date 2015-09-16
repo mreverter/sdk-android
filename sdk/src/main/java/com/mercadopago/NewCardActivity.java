@@ -164,8 +164,8 @@ public class NewCardActivity extends AppCompatActivity {
         if (validateForm(cardToken)) {
             // Return to parent
             Intent returnIntent = new Intent();
-            setResult(RESULT_OK, returnIntent);
             returnIntent.putExtra("cardToken", JsonUtil.getInstance().toJson(cardToken));
+            setResult(RESULT_OK, returnIntent);
             finish();
         }
     }

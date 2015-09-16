@@ -58,9 +58,9 @@ public class InstallmentsActivity extends AppCompatActivity {
 
                 // Return to parent
                 Intent returnIntent = new Intent();
-                setResult(RESULT_OK, returnIntent);
                 PayerCost selectedPayerCost = (PayerCost) view.getTag();
                 returnIntent.putExtra("payerCost", JsonUtil.getInstance().toJson(selectedPayerCost));
+                setResult(RESULT_OK, returnIntent);
                 finish();
             }
         }));

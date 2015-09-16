@@ -32,8 +32,11 @@ public class VaultActivityWithCustomerCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Mock up an ActivityResult:
         Intent returnIntent = new Intent();

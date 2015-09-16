@@ -75,6 +75,7 @@ public class VaultActivity extends AppCompatActivity {
     protected PaymentMethod mSelectedPaymentMethod;
     protected Issuer mSelectedIssuer;
     protected List<String> mSupportedPaymentTypes;
+    protected Issuer mTempIssuer;
     protected PaymentMethod mTempPaymentMethod;
 
     // Local vars
@@ -146,8 +147,8 @@ public class VaultActivity extends AppCompatActivity {
         }
         else {
             Intent returnIntent = new Intent();
-            setResult(RESULT_CANCELED, returnIntent);
             returnIntent.putExtra("message", "Invalid parameters");
+            setResult(RESULT_CANCELED, returnIntent);
             finish();
         }
     }
@@ -239,7 +240,7 @@ public class VaultActivity extends AppCompatActivity {
                 mSelectedPaymentMethodRow = selectedPaymentMethodRow;
                 mSelectedPayerCost = null;
                 mSelectedPaymentMethod = null;
-                mSelectedIssuer = null;
+                mSelectedIssuer = selectedPaymentMethodRow.getCard().getIssuer();
                 mTempPaymentMethod = null;
 
                 // Set customer method selection
@@ -261,6 +262,8 @@ public class VaultActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
 
+            // Set selection status
+            mTempIssuer = null;
             mTempPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
 
             if (MercadoPagoUtil.isCardPaymentType(mTempPaymentMethod.getPaymentTypeId())) {  // Card-like methods
@@ -332,7 +335,7 @@ public class VaultActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
 
             // Set selection status
-            mSelectedIssuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+            mTempIssuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
 
             // Call new card activity
             startNewCardActivity();
@@ -362,7 +365,7 @@ public class VaultActivity extends AppCompatActivity {
             mSelectedPaymentMethodRow = null;
             mSelectedPayerCost = null;
             mSelectedPaymentMethod = mTempPaymentMethod;
-            mSelectedIssuer = null;
+            mSelectedIssuer = mTempIssuer;
 
             // Set customer method selection
             mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
@@ -592,8 +595,8 @@ public class VaultActivity extends AppCompatActivity {
             // Return payment method id
             LayoutUtil.showRegularLayout(mActivity);
             Intent returnIntent = new Intent();
-            setResult(RESULT_OK, returnIntent);
             returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+            setResult(RESULT_OK, returnIntent);
             finish();
         }
     }
@@ -644,13 +647,13 @@ public class VaultActivity extends AppCompatActivity {
             public void success(Token o, Response response) {
 
                 Intent returnIntent = new Intent();
-                setResult(RESULT_OK, returnIntent);
                 returnIntent.putExtra("token", o.getId());
                 if (mSelectedIssuer != null) {
                     returnIntent.putExtra("issuerId", Long.toString(mSelectedIssuer.getId()));
                 }
                 returnIntent.putExtra("installments", Integer.toString(mSelectedPayerCost.getInstallments()));
                 returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+                setResult(RESULT_OK, returnIntent);
                 finish();
             }
 

@@ -39,11 +39,15 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Mock up an ActivityResult with select other payment method
         Intent returnIntent = new Intent();
+
         PaymentMethodRow paymentMethodRow = new PaymentMethodRow(null, "label", 0);
         returnIntent.putExtra("paymentMethodRow", JsonUtil.getInstance().toJson(paymentMethodRow));
         Instrumentation.ActivityResult customerCardsMockedResult = new Instrumentation.ActivityResult(Activity.RESULT_OK, returnIntent);
@@ -73,7 +77,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
         // Simulate customer card selection
         getInstrumentation().runOnMainSync(new Runnable() {
             public void run() {
-            activity.onCustomerMethodsClick(null);
+                activity.onCustomerMethodsClick(null);
             }
         });
 
@@ -131,8 +135,11 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 "", new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Validate activity result
         try {
@@ -151,8 +158,11 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Mock up an ActivityResult with select other payment method
         Intent returnIntent = new Intent();
@@ -195,8 +205,11 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Mock up an ActivityResult with select other payment method
         Intent returnIntent = new Intent();
@@ -245,12 +258,15 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Mock up an ActivityResult with select other payment method
-        Intent returnIntent = new Intent();
         PaymentMethodRow paymentMethodRow = new PaymentMethodRow(null, "label", 0);
+        Intent returnIntent = new Intent();
         returnIntent.putExtra("paymentMethodRow", JsonUtil.getInstance().toJson(paymentMethodRow));
         Instrumentation.ActivityResult customerCardsMockedResult = new Instrumentation.ActivityResult(Activity.RESULT_OK, returnIntent);
 
@@ -276,7 +292,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
         // Simulate customer card selection
         getInstrumentation().runOnMainSync(new Runnable() {
             public void run() {
-            activity.onCustomerMethodsClick(null);
+                activity.onCustomerMethodsClick(null);
             }
         });
 
@@ -305,8 +321,11 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Mock up an ActivityResult with select other payment method
         Intent returnIntent = new Intent();
@@ -361,8 +380,11 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
 
-        // Wait for get customer cards api call
-        sleepThread();
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
 
         // Mock up an ActivityResult with select other payment method
         Intent returnIntent = new Intent();

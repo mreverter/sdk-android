@@ -282,9 +282,9 @@ public class CardActivity extends AppCompatActivity {
             public void success(Token token, Response response) {
 
                 Intent returnIntent = new Intent();
-                setResult(RESULT_OK, returnIntent);
                 returnIntent.putExtra("token", token.getId());
                 returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mPaymentMethod));
+                setResult(RESULT_OK, returnIntent);
                 finish();
             }
 

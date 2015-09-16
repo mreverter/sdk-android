@@ -130,9 +130,9 @@ public class PaymentMethodsActivity extends AppCompatActivity {
 
                         // Return to parent
                         Intent returnIntent = new Intent();
-                        setResult(RESULT_OK, returnIntent);
                         PaymentMethod selectedPaymentMethod = (PaymentMethod) view.getTag();
                         returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(selectedPaymentMethod));
+                        setResult(RESULT_OK, returnIntent);
                         finish();
                     }
                 }));

@@ -60,9 +60,9 @@ public class CustomerCardsActivity extends AppCompatActivity {
 
                 // Return to parent
                 Intent returnIntent = new Intent();
-                setResult(RESULT_OK, returnIntent);
                 PaymentMethodRow selectedRow = (PaymentMethodRow) view.getTag();
                 returnIntent.putExtra("paymentMethodRow", JsonUtil.getInstance().toJson(selectedRow));
+                setResult(RESULT_OK, returnIntent);
                 finish();
             }
         }));

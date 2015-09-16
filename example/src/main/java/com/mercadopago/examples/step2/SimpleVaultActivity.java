@@ -60,6 +60,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
     protected CardToken mCardToken;
     protected PaymentMethodRow mSelectedPaymentMethodRow;
     protected PaymentMethod mSelectedPaymentMethod;
+    protected PaymentMethod mTempPaymentMethod;
 
     // Local vars
     protected Activity mActivity;
@@ -195,33 +196,22 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
 
-            // Set selection status
-            mCardToken = null;
-            mSelectedPaymentMethodRow = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethodRow"), PaymentMethodRow.class);
-            mSelectedPaymentMethod = null;
+            PaymentMethodRow selectedPaymentMethodRow = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethodRow"), PaymentMethodRow.class);
 
-            if (mSelectedPaymentMethodRow.getCard() != null) {
+            if (selectedPaymentMethodRow.getCard() != null) {
+
+                // Set selection status
+                mCardToken = null;
+                mSelectedPaymentMethodRow = selectedPaymentMethodRow;
+                mSelectedPaymentMethod = null;
+                mTempPaymentMethod = null;
 
                 // Set customer method selection
-                mCustomerMethodsText.setText(mSelectedPaymentMethodRow.getLabel());
-                mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(mSelectedPaymentMethodRow.getIcon(), 0, 0, 0);
-
-                // Set security card visibility
-                showSecurityCodeCard(mSelectedPaymentMethodRow.getCard().getPaymentMethod());
-
-                // Set payment method
-                mSelectedPaymentMethod = mSelectedPaymentMethodRow.getCard().getPaymentMethod();
-
-                // Set button visibility
-                mSubmitButton.setEnabled(true);
+                setCustomerMethodSelection();
 
             } else {
 
-                new MercadoPago.StartActivityBuilder()
-                        .setActivity(mActivity)
-                        .setPublicKey(mMerchantPublicKey)
-                        .setSupportedPaymentTypes(mSupportedPaymentTypes)
-                        .startPaymentMethodsActivity();
+                startPaymentMethodsActivity();
             }
         } else {
 
@@ -235,23 +225,18 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
 
-            // Set selection status
-            mCardToken = null;
-            mSelectedPaymentMethodRow = null;
-            mSelectedPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+            mTempPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
 
             // Call new card activity
-            new MercadoPago.StartActivityBuilder()
-                    .setActivity(mActivity)
-                    .setPublicKey(mMerchantPublicKey)
-                    .setPaymentMethod(mSelectedPaymentMethod)
-                    .setRequireSecurityCode(false)
-                    .startNewCardActivity();
+            startNewCardActivity();
 
         } else {
 
             if ((data != null) && (data.getStringExtra("apiException") != null)) {
                 finishWithApiException(data);
+            } else if ((mSelectedPaymentMethodRow == null) && (mCardToken == null)) {
+                // if nothing is selected
+                finish();
             }
         }
     }
@@ -262,6 +247,8 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
             // Set selection status
             mCardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
+            mSelectedPaymentMethodRow = null;
+            mSelectedPaymentMethod = mTempPaymentMethod;
 
             // Set customer method selection
             mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
@@ -283,11 +270,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
                 } else if (data.getBooleanExtra("backButtonPressed", false)) {
 
-                    new MercadoPago.StartActivityBuilder()
-                            .setActivity(mActivity)
-                            .setPublicKey(mMerchantPublicKey)
-                            .setSupportedPaymentTypes(mSupportedPaymentTypes)
-                            .startPaymentMethodsActivity();
+                    startPaymentMethodsActivity();
                 }
             }
         }
@@ -372,6 +355,22 @@ public class SimpleVaultActivity extends AppCompatActivity {
         });
     }
 
+    protected void setCustomerMethodSelection() {
+
+        // Set payment method
+        mSelectedPaymentMethod = mSelectedPaymentMethodRow.getCard().getPaymentMethod();
+
+        // Set customer method selection
+        mCustomerMethodsText.setText(mSelectedPaymentMethodRow.getLabel());
+        mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(mSelectedPaymentMethodRow.getIcon(), 0, 0, 0);
+
+        // Set security card visibility
+        showSecurityCodeCard(mSelectedPaymentMethodRow.getCard().getPaymentMethod());
+
+        // Set button visibility
+        mSubmitButton.setEnabled(true);
+    }
+
     public void submitForm(View view) {
 
         LayoutUtil.hideKeyboard(mActivity);
@@ -430,12 +429,12 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
         return new Callback<Token>() {
             @Override
-            public void success(Token o, Response response) {
+            public void success(Token token, Response response) {
 
                 Intent returnIntent = new Intent();
-                setResult(RESULT_OK, returnIntent);
-                returnIntent.putExtra("token", o.getId());
+                returnIntent.putExtra("token", token.getId());
                 returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+                setResult(RESULT_OK, returnIntent);
                 finish();
             }
 
@@ -452,5 +451,24 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
         setResult(RESULT_CANCELED, data);
         finish();
+    }
+
+    protected void startNewCardActivity() {
+
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(mActivity)
+                .setPublicKey(mMerchantPublicKey)
+                .setPaymentMethod(mTempPaymentMethod)
+                .setRequireSecurityCode(false)
+                .startNewCardActivity();
+    }
+
+    protected void startPaymentMethodsActivity() {
+
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(mActivity)
+                .setPublicKey(mMerchantPublicKey)
+                .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .startPaymentMethodsActivity();
     }
 }

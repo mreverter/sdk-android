@@ -40,35 +40,30 @@ public class FinalVaultActivity extends AdvancedVaultActivity {
         if (resultCode == RESULT_OK) {
 
             // Set selection status
-            mPayerCosts = null;
-            mCardToken = null;
-            mSelectedPaymentMethodRow = null;
-            mSelectedPayerCost = null;
-            mSelectedPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
-            mSelectedIssuer = null;
+            mTempIssuer = null;
+            mTempPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
 
-            if (MercadoPagoUtil.isCardPaymentType(mSelectedPaymentMethod.getPaymentTypeId())) {  // Card-like methods
+            if (MercadoPagoUtil.isCardPaymentType(mTempPaymentMethod.getPaymentTypeId())) {  // Card-like methods
 
-                if (mSelectedPaymentMethod.isIssuerRequired()) {
+                if (mTempPaymentMethod.isIssuerRequired()) {
 
                     // Call issuer activity
-                    new MercadoPago.StartActivityBuilder()
-                            .setActivity(mActivity)
-                            .setPublicKey(mMerchantPublicKey)
-                            .setPaymentMethod(mSelectedPaymentMethod)
-                            .startIssuersActivity();
+                    startIssuersActivity();
 
                 } else {
 
                     // Call new card activity
-                    new MercadoPago.StartActivityBuilder()
-                            .setActivity(mActivity)
-                            .setPublicKey(mMerchantPublicKey)
-                            .setPaymentMethod(mSelectedPaymentMethod)
-                            .setRequireSecurityCode(false)
-                            .startNewCardActivity();
+                    startNewCardActivity();
                 }
             } else {  // Off-line methods
+
+                // Set selection status
+                mPayerCosts = null;
+                mCardToken = null;
+                mSelectedPaymentMethodRow = null;
+                mSelectedPayerCost = null;
+                mSelectedPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+                mSelectedIssuer = null;
 
                 // Set customer method selection
                 mCustomerMethodsText.setText(mSelectedPaymentMethod.getName());
@@ -87,6 +82,9 @@ public class FinalVaultActivity extends AdvancedVaultActivity {
 
             if ((data != null) && (data.getStringExtra("apiException") != null)) {
                 finishWithApiException(data);
+            } else if ((mSelectedPaymentMethodRow == null) && (mCardToken == null)) {
+                // if nothing is selected
+                finish();
             }
         }
     }
@@ -115,8 +113,8 @@ public class FinalVaultActivity extends AdvancedVaultActivity {
             // Return payment method id
             LayoutUtil.showRegularLayout(mActivity);
             Intent returnIntent = new Intent();
-            setResult(RESULT_OK, returnIntent);
             returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+            setResult(RESULT_OK, returnIntent);
             finish();
         }
     }

@@ -100,9 +100,9 @@ public class IssuersActivity extends AppCompatActivity {
 
                         // Return to parent
                         Intent returnIntent = new Intent();
-                        setResult(RESULT_OK, returnIntent);
                         Issuer selectedIssuer = (Issuer) view.getTag();
                         returnIntent.putExtra("issuer", JsonUtil.getInstance().toJson(selectedIssuer));
+                        setResult(RESULT_OK, returnIntent);
                         finish();
                     }
                 }));
