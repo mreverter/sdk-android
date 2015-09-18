@@ -1,7 +1,10 @@
 package com.mercadopago.examples.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -23,6 +26,7 @@ import com.mercadopago.util.LayoutUtil;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;

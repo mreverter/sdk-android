@@ -239,8 +239,6 @@ public class VaultActivity extends AppCompatActivity {
                 mCardToken = null;
                 mSelectedPaymentMethodRow = selectedPaymentMethodRow;
                 mSelectedPayerCost = null;
-                mSelectedPaymentMethod = null;
-                mSelectedIssuer = selectedPaymentMethodRow.getCard().getIssuer();
                 mTempPaymentMethod = null;
 
                 // Set customer method selection
@@ -558,8 +556,9 @@ public class VaultActivity extends AppCompatActivity {
 
     protected void setCustomerMethodSelection() {
 
-        // Set payment method
+        // Set payment method and issuer
         mSelectedPaymentMethod = mSelectedPaymentMethodRow.getCard().getPaymentMethod();
+        mSelectedIssuer = mSelectedPaymentMethodRow.getCard().getIssuer();
 
         // Set customer method selection
         mCustomerMethodsText.setText(mSelectedPaymentMethodRow.getLabel());

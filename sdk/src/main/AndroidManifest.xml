@@ -12,8 +12,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
-        android:theme="@style/Theme.MercadoPagoTheme">
+        android:label="@string/app_name">
         <activity
             android:name=".VaultActivity"
             android:label="@string/app_name"

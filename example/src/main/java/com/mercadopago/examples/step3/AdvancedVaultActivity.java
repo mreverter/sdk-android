@@ -136,8 +136,6 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
                 mCardToken = null;
                 mSelectedPaymentMethodRow = selectedPaymentMethodRow;
                 mSelectedPayerCost = null;
-                mSelectedPaymentMethod = null;
-                mSelectedIssuer = null;
                 mTempPaymentMethod = null;
 
                 // Set customer method selection
@@ -334,8 +332,9 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
 
     protected void setCustomerMethodSelection() {
 
-        // Set payment method
+        // Set payment method and issuer
         mSelectedPaymentMethod = mSelectedPaymentMethodRow.getCard().getPaymentMethod();
+        mSelectedIssuer = mSelectedPaymentMethodRow.getCard().getIssuer();
 
         // Set customer method selection
         mCustomerMethodsText.setText(mSelectedPaymentMethodRow.getLabel());
