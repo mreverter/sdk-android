@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+## VERSION 0.9.12
+
+_18-09-2015_
+
+* New: Bank deals menu button available via .setShowBankDeals(true) for VaultActivity
+* New: VaultActivity now pre-selects last used credit card
+* Fix: VaultActivity, issuer not set in getInstallments method for saved credit cards
+* Fix: VaultActivity, flow problems pressing back key after PaymentMethodsActivity navigation
+* Fix: GPS feature use set as optional
+* Fix: Some minor visual changes
+
 ## VERSION 0.9.11
 
 _19-06-2015_
