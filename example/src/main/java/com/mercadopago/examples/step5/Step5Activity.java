@@ -73,7 +73,7 @@ public class Step5Activity extends ExampleActivity {
                 .setMerchantBaseUrl(ExamplesUtils.DUMMY_MERCHANT_BASE_URL)
                 .setMerchantGetCustomerUri(ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI)
                 .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
-                .setAmount(new BigDecimal("20"))
+                .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .setShowBankDeals(true)
                 .startVaultActivity();

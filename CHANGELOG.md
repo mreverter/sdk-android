@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## VERSION 0.9.13
+
+_22-09-2015_
+
+* New: English language support
+
 ## VERSION 0.9.12
 
 _18-09-2015_
