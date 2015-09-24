@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+## VERSION 0.9.14
+
+_24-09-2015_
+
+* Fix: Application label removed from sdk module
+* Fix: All value vars prefixed with mpsdk_ to avoid name conflicts
+* Fix: BankDealsAdapter supports null recommended message
+
 ## VERSION 0.9.13
 
 _22-09-2015_

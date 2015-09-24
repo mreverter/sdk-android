@@ -94,13 +94,13 @@ public class CustomDatePickerDialog extends DialogFragment {
         }
 
         builder.setView(view)
-            .setTitle(R.string.card_expire_date_label)
-            .setPositiveButton(R.string.accept_label, new DialogInterface.OnClickListener() {
+            .setTitle(R.string.mpsdk_card_expire_date_label)
+            .setPositiveButton(R.string.mpsdk_accept_label, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     mListener.onDateSet(CustomDatePickerDialog.this, mMonth.getValue(), mYear.getValue());
                 }
             })
-            .setNegativeButton(R.string.cancel_label, new DialogInterface.OnClickListener() {
+            .setNegativeButton(R.string.mpsdk_cancel_label, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 
                 }
@@ -137,7 +137,7 @@ public class CustomDatePickerDialog extends DialogFragment {
         int[] attrs = {android.R.attr.textColor};
 
         // Parse MyCustomStyle, using Context.obtainStyledAttributes()
-        TypedArray ta = context.getTheme().obtainStyledAttributes(R.style.date_picker, attrs);
+        TypedArray ta = context.getTheme().obtainStyledAttributes(R.style.mpsdk_date_picker, attrs);
 
         // Fetching the text color
         int textColor = ta.getColor(0, Color.BLACK);

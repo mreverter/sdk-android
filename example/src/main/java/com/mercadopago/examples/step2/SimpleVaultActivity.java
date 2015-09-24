@@ -2,7 +2,6 @@ package com.mercadopago.examples.step2;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -89,7 +88,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
             // Set activity
             mActivity = this;
-            mActivity.setTitle(getString(R.string.title_activity_vault));
+            mActivity.setTitle(getString(R.string.mpsdk_title_activity_vault));
 
             // Set layout controls
             mSecurityCodeCard = findViewById(R.id.securityCodeCard);
@@ -110,7 +109,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
                     .build();
 
             // Set customer method first value
-            mCustomerMethodsText.setText(getString(com.mercadopago.R.string.select_pm_label));
+            mCustomerMethodsText.setText(getString(com.mercadopago.R.string.mpsdk_select_pm_label));
 
             // Set "Go" button
             setFormGoButton(mSecurityCodeText);
@@ -303,9 +302,9 @@ public class SimpleVaultActivity extends AppCompatActivity {
             if (isSecurityCodeRequired()) {
 
                 if ("amex".equals(paymentMethod.getId())) {
-                    mCVVDescriptor.setText(String.format(getString(com.mercadopago.R.string.cod_seg_desc_amex), 4));
+                    mCVVDescriptor.setText(String.format(getString(com.mercadopago.R.string.mpsdk_cod_seg_desc_amex), 4));
                 } else {
-                    mCVVDescriptor.setText(String.format(getString(com.mercadopago.R.string.cod_seg_desc), 3));
+                    mCVVDescriptor.setText(String.format(getString(com.mercadopago.R.string.mpsdk_cod_seg_desc), 3));
                 }
 
                 int res = MercadoPagoUtil.getPaymentMethodImage(mActivity, paymentMethod.getId());

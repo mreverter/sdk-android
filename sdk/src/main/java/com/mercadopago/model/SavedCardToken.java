@@ -59,7 +59,7 @@ public class SavedCardToken {
         if (securityCode != null) {
             int cvvLength = (card.getSecurityCode() != null) ? card.getSecurityCode().getLength() : 0;
             if ((cvvLength != 0) && (securityCode.length() != cvvLength)) {
-                throw new Exception(context.getString(R.string.invalid_cvv_length, cvvLength));
+                throw new Exception(context.getString(R.string.mpsdk_invalid_cvv_length, cvvLength));
             }
         } else {
             throw new Exception("Security code is null");

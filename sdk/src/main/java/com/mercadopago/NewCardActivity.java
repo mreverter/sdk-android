@@ -1,9 +1,7 @@
 package com.mercadopago;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -12,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,7 +18,6 @@ import android.widget.TextView;
 
 import com.mercadopago.adapters.IdentificationTypesAdapter;
 import com.mercadopago.core.MercadoPago;
-import com.mercadopago.dialogs.CustomDatePickerDialog;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
 import com.mercadopago.model.PaymentMethod;
@@ -30,7 +26,6 @@ import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
-import java.util.Calendar;
 import java.util.List;
 
 import retrofit.Callback;
@@ -205,7 +200,7 @@ public class NewCardActivity extends AppCompatActivity {
         // Validate expiry month and year
         if (!cardToken.validateExpiryDate()) {
             mExpiryError.setVisibility(View.VISIBLE);
-            mExpiryError.setError(getString(com.mercadopago.R.string.invalid_field));
+            mExpiryError.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
             if (!focusSet) {
                 mExpiryMonth.requestFocus();
                 focusSet = true;
@@ -218,7 +213,7 @@ public class NewCardActivity extends AppCompatActivity {
 
         // Validate card holder name
         if (!cardToken.validateCardholderName()) {
-            mCardHolderName.setError(getString(R.string.invalid_field));
+            mCardHolderName.setError(getString(R.string.mpsdk_invalid_field));
             if (!focusSet) {
                 mCardHolderName.requestFocus();
                 focusSet = true;
@@ -231,7 +226,7 @@ public class NewCardActivity extends AppCompatActivity {
         // Validate identification number
         if (getIdentificationType() != null) {
             if (!cardToken.validateIdentificationNumber(getIdentificationType())) {
-                mIdentificationNumber.setError(getString(R.string.invalid_field));
+                mIdentificationNumber.setError(getString(R.string.mpsdk_invalid_field));
                 if (!focusSet) {
                     mIdentificationNumber.requestFocus();
                 }

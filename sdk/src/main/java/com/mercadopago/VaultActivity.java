@@ -2,6 +2,7 @@ package com.mercadopago;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -109,7 +110,7 @@ public class VaultActivity extends AppCompatActivity {
 
             // Set activity
             mActivity = this;
-            mActivity.setTitle(getString(R.string.title_activity_vault));
+            mActivity.setTitle(getString(R.string.mpsdk_title_activity_vault));
 
             // Set layout controls
             mInstallmentsCard = findViewById(R.id.installmentsCard);
@@ -134,7 +135,7 @@ public class VaultActivity extends AppCompatActivity {
             mSecurityCodeCard.setVisibility(View.GONE);
 
             // Set customer method first value
-            mCustomerMethodsText.setText(getString(com.mercadopago.R.string.select_pm_label));
+            mCustomerMethodsText.setText(getString(com.mercadopago.R.string.mpsdk_select_pm_label));
 
             // Set "Go" button
             setFormGoButton(mSecurityCodeText);
@@ -246,6 +247,7 @@ public class VaultActivity extends AppCompatActivity {
             } else {
 
                 startPaymentMethodsActivity();
+
             }
         } else {
 
@@ -468,7 +470,7 @@ public class VaultActivity extends AppCompatActivity {
                         mSubmitButton.setEnabled(true);
 
                     } else {
-                        Toast.makeText(getApplicationContext(), getString(com.mercadopago.R.string.invalid_pm_for_current_amount), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(com.mercadopago.R.string.mpsdk_invalid_pm_for_current_amount), Toast.LENGTH_LONG).show();
                     }
                 }
 

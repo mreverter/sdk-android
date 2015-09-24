@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/action_bank_deals"
-        android:title="@string/bank_deals_action"
+        android:title="@string/mpsdk_bank_deals_action"
         app:showAsAction="always|withText" />
 
 </menu>

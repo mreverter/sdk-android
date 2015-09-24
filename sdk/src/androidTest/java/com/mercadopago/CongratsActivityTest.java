@@ -1,7 +1,6 @@
 package com.mercadopago;
 
 import android.content.Intent;
-import android.view.ContextThemeWrapper;
 
 import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
@@ -23,7 +22,7 @@ public class CongratsActivityTest extends BaseTest<CongratsActivity> {
                 StaticMock.getPaymentMethod(getApplicationContext()));
 
         // Validate view
-        assertTrue(activity.getTitle().equals(activity.getString(R.string.approved_title)));
+        assertTrue(activity.getTitle().equals(activity.getString(R.string.mpsdk_approved_title)));
     }
 
     public void testPendingPaymentCongrats() {
@@ -35,7 +34,7 @@ public class CongratsActivityTest extends BaseTest<CongratsActivity> {
                 StaticMock.getPaymentMethod(getApplicationContext()));
 
         // Validate view
-        assertTrue(activity.getTitle().equals(activity.getString(R.string.pending_title)));
+        assertTrue(activity.getTitle().equals(activity.getString(R.string.mpsdk_pending_title)));
     }
 
     public void testInProcessPaymentCongrats() {
@@ -47,7 +46,7 @@ public class CongratsActivityTest extends BaseTest<CongratsActivity> {
                 StaticMock.getPaymentMethod(getApplicationContext()));
 
         // Validate view
-        assertTrue(activity.getTitle().equals(activity.getString(R.string.in_process_title)));
+        assertTrue(activity.getTitle().equals(activity.getString(R.string.mpsdk_in_process_title)));
     }
 
     public void testRejectedPaymentCongrats() {
@@ -59,7 +58,7 @@ public class CongratsActivityTest extends BaseTest<CongratsActivity> {
                 StaticMock.getPaymentMethod(getApplicationContext()));
 
         // Validate view
-        assertTrue(activity.getTitle().equals(activity.getString(R.string.rejected_title)));
+        assertTrue(activity.getTitle().equals(activity.getString(R.string.mpsdk_rejected_title)));
     }
 
     private CongratsActivity prepareActivity(Payment payment, PaymentMethod paymentMethod) {

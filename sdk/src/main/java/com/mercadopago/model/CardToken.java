@@ -100,7 +100,7 @@ public class CardToken {
 
         // Empty field
         if (TextUtils.isEmpty(cardNumber)) {
-            throw new Exception(context.getString(R.string.invalid_empty_card));
+            throw new Exception(context.getString(R.string.mpsdk_invalid_empty_card));
         }
 
         Setting setting = Setting.getSettingByBin(paymentMethod.getSettings(), (cardNumber.length() >= MercadoPago.BIN_LENGTH ? cardNumber.substring(0, MercadoPago.BIN_LENGTH) : ""));
@@ -108,20 +108,20 @@ public class CardToken {
         if (setting == null) {
 
             // Invalid bin
-            throw new Exception(context.getString(R.string.invalid_card_bin));
+            throw new Exception(context.getString(R.string.mpsdk_invalid_card_bin));
 
         } else {
 
             // Validate card length
             int cardLength = setting.getCardNumber().getLength();
             if (cardNumber.trim().length() != cardLength) {
-                throw new Exception(context.getString(R.string.invalid_card_length, cardLength));
+                throw new Exception(context.getString(R.string.mpsdk_invalid_card_length, cardLength));
             }
 
             // Validate luhn
             String luhnAlgorithm = setting.getCardNumber().getValidation();
             if (("standard".equals(luhnAlgorithm)) && (!checkLuhn(cardNumber))) {
-                throw new Exception(context.getString(R.string.invalid_card_luhn));
+                throw new Exception(context.getString(R.string.mpsdk_invalid_card_luhn));
             }
         }
     }
@@ -150,10 +150,10 @@ public class CardToken {
             if (setting != null) {
                 int cvvLength = setting.getSecurityCode().getLength();
                 if ((cvvLength != 0) && (securityCode.trim().length() != cvvLength)) {
-                    throw new Exception(context.getString(R.string.invalid_cvv_length, cvvLength));
+                    throw new Exception(context.getString(R.string.mpsdk_invalid_cvv_length, cvvLength));
                 }
             } else {
-                throw new Exception(context.getString(R.string.invalid_field));
+                throw new Exception(context.getString(R.string.mpsdk_invalid_field));
             }
         }
     }

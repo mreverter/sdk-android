@@ -2,7 +2,6 @@ package com.mercadopago.examples.step1;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -186,7 +185,7 @@ public class CardActivity extends AppCompatActivity {
         // Validate expiry month and year
         if (!cardToken.validateExpiryDate()) {
             mExpiryError.setVisibility(View.VISIBLE);
-            mExpiryError.setError(getString(com.mercadopago.R.string.invalid_field));
+            mExpiryError.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
             if (!focusSet) {
                 mExpiryMonth.requestFocus();
                 focusSet = true;
@@ -199,7 +198,7 @@ public class CardActivity extends AppCompatActivity {
 
         // Validate card holder name
         if (!cardToken.validateCardholderName()) {
-            mCardHolderName.setError(getString(com.mercadopago.R.string.invalid_field));
+            mCardHolderName.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
             if (!focusSet) {
                 mCardHolderName.requestFocus();
                 focusSet = true;
@@ -212,7 +211,7 @@ public class CardActivity extends AppCompatActivity {
         // Validate identification number
         if (getIdentificationType() != null) {
             if (!cardToken.validateIdentificationNumber()) {
-                mIdentificationNumber.setError(getString(com.mercadopago.R.string.invalid_field));
+                mIdentificationNumber.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
                 if (!focusSet) {
                     mIdentificationNumber.requestFocus();
                 }

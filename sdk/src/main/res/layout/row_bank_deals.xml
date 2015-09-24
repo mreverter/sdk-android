@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_margin="20dp"
     android:gravity="center_vertical"
-    android:background="@color/white"
+    android:background="@color/mpsdk_white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -12,7 +12,7 @@
         android:id="@+id/bank_img"
         android:layout_height="40dp"
         android:layout_width="120dp"
-        android:contentDescription="@string/bank"
+        android:contentDescription="@string/mpsdk_bank"
         android:layout_gravity="center"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"/>
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         tools:text="6 cuotas sin interes"
         android:layout_gravity="center"
-        style="@style/form_input"/>
+        style="@style/mpsdk_form_input"/>
 
     <TextView
         android:id="@+id/bank_desc"
@@ -33,6 +33,6 @@
         tools:text="Mastercard, American Express y Visa"
         android:layout_gravity="center"
         android:visibility="visible"
-        style="@style/list_label"/>
+        style="@style/mpsdk_list_label"/>
 
 </LinearLayout>

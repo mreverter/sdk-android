@@ -33,48 +33,48 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/mpsdk_button_height"
             android:layout_marginTop="25dp"
             android:gravity="center"
             android:text="@string/title_activity_step1"
             android:onClick="runStep1"
-            style="@style/button_normal"/>
+            style="@style/mpsdk_button_normal"/>
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/mpsdk_button_height"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step2"
             android:onClick="runStep2"
-            style="@style/button_normal"/>
+            style="@style/mpsdk_button_normal"/>
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/mpsdk_button_height"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step3"
             android:onClick="runStep3"
-            style="@style/button_normal"/>
+            style="@style/mpsdk_button_normal"/>
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/mpsdk_button_height"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step4"
             android:onClick="runStep4"
-            style="@style/button_normal"/>
+            style="@style/mpsdk_button_normal"/>
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
+            android:layout_height="@dimen/mpsdk_button_height"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/title_activity_step5"
             android:onClick="runStep5"
-            style="@style/button_normal"/>
+            style="@style/mpsdk_button_normal"/>
 
     </LinearLayout>
 

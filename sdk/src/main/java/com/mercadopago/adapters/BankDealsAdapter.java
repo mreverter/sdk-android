@@ -97,9 +97,9 @@ public class BankDealsAdapter extends  RecyclerView.Adapter<BankDealsAdapter.Vie
                 desc += bankDeal.getPaymentMethods().get(i).getName();
                 desc +=" ";
                 if (bankDeal.getPaymentMethods().size() > i + 2) {
-                    desc += mActivity.getString(R.string.comma_separator) + " ";
+                    desc += mActivity.getString(R.string.mpsdk_comma_separator) + " ";
                 } else if (bankDeal.getPaymentMethods().size() > i + 1) {
-                    desc += mActivity.getString(R.string.and) + " ";
+                    desc += mActivity.getString(R.string.mpsdk_and) + " ";
                 }
             }
             return desc;
@@ -114,6 +114,6 @@ public class BankDealsAdapter extends  RecyclerView.Adapter<BankDealsAdapter.Vie
 
     private String getRecommendedMessage(BankDeal bankDeal) {
 
-        return (bankDeal != null) ? bankDeal.getRecommendedMessage() : null;
+        return (bankDeal != null) ? (bankDeal.getRecommendedMessage() != null) ? bankDeal.getRecommendedMessage() : "" : "";
     }
 }

@@ -1,7 +1,6 @@
 package com.mercadopago;
 
 import android.content.Intent;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -92,7 +91,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         });
 
         // Validate error message
-        assertTrue(mCardNumberText.getError().equals(mActivity.getString(R.string.invalid_empty_card)));
+        assertTrue(mCardNumberText.getError().equals(mActivity.getString(R.string.mpsdk_invalid_empty_card)));
         assertTrue(mCardholderNameText.getError() == null);
         assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
@@ -119,7 +118,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         });
 
         // Validate error message
-        assertTrue(mCardNumberText.getError().equals(mActivity.getString(R.string.invalid_card_bin)));
+        assertTrue(mCardNumberText.getError().equals(mActivity.getString(R.string.mpsdk_invalid_card_bin)));
         assertTrue(mCardholderNameText.getError() == null);
         assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
@@ -148,7 +147,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate error message
         assertTrue(mCardNumberText.getError() == null);
         assertTrue(mCardholderNameText.getError() == null);
-        assertTrue(mExpiryErrorText.getError().equals(mActivity.getString(R.string.invalid_field)));
+        assertTrue(mExpiryErrorText.getError().equals(mActivity.getString(R.string.mpsdk_invalid_field)));
         assertTrue(mIdentificationNumberText.getError() == null);
     }
 
@@ -174,7 +173,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
         // Validate error message
         assertTrue(mCardNumberText.getError() == null);
-        assertTrue(mCardholderNameText.getError().equals(mActivity.getString(R.string.invalid_field)));
+        assertTrue(mCardholderNameText.getError().equals(mActivity.getString(R.string.mpsdk_invalid_field)));
         assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
     }
@@ -203,7 +202,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         assertTrue(mCardNumberText.getError() == null);
         assertTrue(mCardholderNameText.getError() == null);
         assertTrue(mExpiryErrorText.getError() == null);
-        assertTrue(mIdentificationNumberText.getError().equals(mActivity.getString(R.string.invalid_field)));
+        assertTrue(mIdentificationNumberText.getError().equals(mActivity.getString(R.string.mpsdk_invalid_field)));
     }
 
     public void testGetCardTokenWithSecurityCode() {
@@ -280,7 +279,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         assertTrue(mCardholderNameText.getError() == null);
         assertTrue(mExpiryErrorText.getError() == null);
         assertTrue(mIdentificationNumberText.getError() == null);
-        assertTrue(mSecurityCodeText.getError().equals(mActivity.getString(R.string.invalid_cvv_length, 3)));
+        assertTrue(mSecurityCodeText.getError().equals(mActivity.getString(R.string.mpsdk_invalid_cvv_length, 3)));
     }
 
     private NewCardActivity prepareActivity(PaymentMethod paymentMethod, String keyType,

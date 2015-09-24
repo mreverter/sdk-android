@@ -21,8 +21,8 @@
                 xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/card_margin"
-                card_view:cardCornerRadius="@dimen/card_corner_radius">
+                android:layout_margin="@dimen/mpsdk_card_margin"
+                card_view:cardCornerRadius="@dimen/mpsdk_card_corner_radius">
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         tools:text="APROBADO"
-                        style="@style/big_text_light"/>
+                        style="@style/mpsdk_big_text_light"/>
 
                 </LinearLayout>
 
@@ -55,9 +55,9 @@
                 xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white_background"
-                android:layout_margin="@dimen/card_margin"
-                card_view:cardCornerRadius="@dimen/card_corner_radius">
+                android:background="@color/mpsdk_white_background"
+                android:layout_margin="@dimen/mpsdk_card_margin"
+                card_view:cardCornerRadius="@dimen/mpsdk_card_corner_radius">
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -77,16 +77,16 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/total_amount"
+                            android:text="@string/mpsdk_total_amount"
                             android:paddingBottom="5dp"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                         <TextView
                             android:id="@+id/amount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             tools:text="$ 100,50"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                     </LinearLayout>
 
@@ -104,9 +104,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/payment_method_detail"
+                            android:text="@string/mpsdk_payment_method_detail"
                             android:paddingBottom="5dp"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                         <TextView
                             android:id="@+id/paymentMethod"
@@ -117,7 +117,7 @@
                             tools:text="terminada en 0000"
                             tools:drawableLeft="@drawable/ico_tc_visa"
                             android:drawablePadding="10dp"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                     </LinearLayout>
 
@@ -136,16 +136,16 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/operation"
+                            android:text="@string/mpsdk_operation"
                             android:paddingBottom="5dp"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                         <TextView
                             android:id="@+id/paymentId"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             tools:text="123123"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                     </LinearLayout>
 
@@ -164,16 +164,16 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/date_created"
+                            android:text="@string/mpsdk_date_created"
                             android:paddingBottom="5dp"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                         <TextView
                             android:id="@+id/dateCreated"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             tools:text="12/10"
-                            style="@style/form_label"/>
+                            style="@style/mpsdk_form_label"/>
 
                     </LinearLayout>
 
@@ -184,11 +184,11 @@
             <Button
                 android:id="@+id/button"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/button_height"
-                android:text="@string/finish_label"
+                android:layout_height="@dimen/mpsdk_button_height"
+                android:text="@string/mpsdk_finish_label"
                 android:onClick="finalize"
                 android:layout_margin="10dp"
-                style="@style/button_normal"/>
+                style="@style/mpsdk_button_normal"/>
 
         </LinearLayout>
 

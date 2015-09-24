@@ -44,7 +44,7 @@ public class ApiUtil {
 
             // Show refresh layout
             LayoutUtil.showRefreshLayout(activity);
-            Toast.makeText(activity, activity.getString(R.string.no_connection_message), Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, activity.getString(R.string.mpsdk_no_connection_message), Toast.LENGTH_LONG).show();
 
         } else {
 
