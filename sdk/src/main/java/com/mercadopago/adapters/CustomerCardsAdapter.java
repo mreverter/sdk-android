@@ -76,9 +76,6 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
 
         List<PaymentMethodRow> rows = new ArrayList<>();
 
-        // TODO: remove
-        rows.add(new PaymentMethodRow(null, "MercadoPago", 0));
-
         // Add cards
         for (int i = 0; i < data.size(); i++) {
             rows.add(getPaymentMethodRow(context, data.get(i)));

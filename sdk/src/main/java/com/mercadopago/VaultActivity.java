@@ -246,15 +246,8 @@ public class VaultActivity extends AppCompatActivity {
 
             } else {
 
-                if (selectedPaymentMethodRow.getLabel().equals("MercadoPago")) {
+                startPaymentMethodsActivity();
 
-                    // TODO: como creo la pref?
-                    Intent intent = new Intent (Intent.ACTION_VIEW);
-                    intent.setData (Uri.parse("mercadopago://checkout/pay?pref_id=137787120-50566bea-4087-4f8d-88b3-4c1c922165ef"));
-                    startActivity(intent);
-                } else {
-                    startPaymentMethodsActivity();
-                }
             }
         } else {
 
