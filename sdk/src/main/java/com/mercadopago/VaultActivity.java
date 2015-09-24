@@ -143,6 +143,8 @@ public class VaultActivity extends AppCompatActivity {
             // Hide main layout and go for customer's cards
             if ((mMerchantBaseUrl != null) && (!mMerchantBaseUrl.equals("") && (mMerchantGetCustomerUri != null) && (!mMerchantGetCustomerUri.equals("")))) {
                 getCustomerCardsAsync();
+            } else {
+                startPaymentMethodsActivity();
             }
         }
         else {
