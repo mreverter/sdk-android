@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MercadoPago Android SDK</string>
+    <string name="app_name">MP Android SDK Samples</string>
     <string name="hello_world">Hello world!</string>
     <string-array name="examples">
         <item>@string/title_activity_step1</item>

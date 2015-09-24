@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="installments">Mensualidades</string>
-    <string name="title_activity_installments">Elige las mensualidades</string>
-    <string name="doc_number_label">Cédula de ciudadanía</string>
+    <string name="mpsdk_installments">Mensualidades</string>
+    <string name="mpsdk_title_activity_installments">Elige las mensualidades</string>
+    <string name="mpsdk_doc_number_label">Cédula de ciudadanía</string>
 </resources>

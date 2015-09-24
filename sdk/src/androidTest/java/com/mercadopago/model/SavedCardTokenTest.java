@@ -95,7 +95,7 @@ public class SavedCardTokenTest extends BaseTest<VaultActivity> {
             savedCardToken.validateSecurityCode(getApplicationContext(), card);
             fail("Should have failed on security code length zero test");
         } catch (Exception ex) {
-            assertTrue(ex.getMessage().equals(getActivity().getString(R.string.invalid_cvv_length, 3)));
+            assertTrue(ex.getMessage().equals(getActivity().getString(R.string.mpsdk_invalid_cvv_length, 3)));
         }
 
         // Simulate a card with security code not required

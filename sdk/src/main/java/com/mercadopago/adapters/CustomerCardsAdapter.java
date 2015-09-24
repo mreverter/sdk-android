@@ -76,14 +76,16 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
 
         List<PaymentMethodRow> rows = new ArrayList<>();
 
+        // TODO: remove
+        rows.add(new PaymentMethodRow(null, "MercadoPago", 0));
+
         // Add cards
         for (int i = 0; i < data.size(); i++) {
-            int icon = MercadoPagoUtil.getPaymentMethodIcon(context, data.get(i).getPaymentMethod().getId());
             rows.add(getPaymentMethodRow(context, data.get(i)));
         }
 
         // Add other payment method row
-        rows.add(new PaymentMethodRow(null, context.getString(R.string.other_pm_label), 0));
+        rows.add(new PaymentMethodRow(null, context.getString(R.string.mpsdk_other_pm_label), 0));
 
         return rows;
     }
@@ -102,9 +104,9 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
     public static String getPaymentMethodLabel(Context context, String name, String lastFourDigits, boolean noName) {
 
         if (noName) {
-            return context.getString(R.string.last_digits_label) + " " + lastFourDigits;
+            return context.getString(R.string.mpsdk_last_digits_label) + " " + lastFourDigits;
         } else {
-            return name + " " + context.getString(R.string.last_digits_label) + " " + lastFourDigits;
+            return name + " " + context.getString(R.string.mpsdk_last_digits_label) + " " + lastFourDigits;
         }
     }
 

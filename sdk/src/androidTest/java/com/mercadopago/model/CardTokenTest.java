@@ -91,7 +91,7 @@ public class CardTokenTest extends BaseTest<VaultActivity> {
             cardToken.validateCardNumber(getApplicationContext(), paymentMethod);
             fail("Should have failed on empty card number");
         } catch (Exception ex) {
-            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.invalid_empty_card)));
+            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.mpsdk_invalid_empty_card)));
         }
     }
 
@@ -105,7 +105,7 @@ public class CardTokenTest extends BaseTest<VaultActivity> {
             cardToken.validateCardNumber(getApplicationContext(), paymentMethod);
             fail("Should have failed on invalid bin");
         } catch (Exception ex) {
-            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.invalid_card_bin)));
+            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.mpsdk_invalid_card_bin)));
         }
     }
 
@@ -119,7 +119,7 @@ public class CardTokenTest extends BaseTest<VaultActivity> {
             cardToken.validateCardNumber(getApplicationContext(), paymentMethod);
             fail("Should have failed on invalid card length");
         } catch (Exception ex) {
-            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.invalid_card_length, 16)));
+            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.mpsdk_invalid_card_length, 16)));
         }
     }
 
@@ -133,7 +133,7 @@ public class CardTokenTest extends BaseTest<VaultActivity> {
             cardToken.validateCardNumber(getApplicationContext(), paymentMethod);
             fail("Should have failed on invalid luhn");
         } catch (Exception ex) {
-            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.invalid_card_luhn)));
+            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.mpsdk_invalid_card_luhn)));
         }
     }
 
@@ -191,7 +191,7 @@ public class CardTokenTest extends BaseTest<VaultActivity> {
             cardToken.validateSecurityCode(getApplicationContext(), paymentMethod);
             fail("Should have failed on invalid bin");
         } catch (Exception ex) {
-            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.invalid_field)));
+            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.mpsdk_invalid_field)));
         }
     }
 
@@ -205,7 +205,7 @@ public class CardTokenTest extends BaseTest<VaultActivity> {
             cardToken.validateSecurityCode(getApplicationContext(), paymentMethod);
             fail("Should have failed on invalid security code length");
         } catch (Exception ex) {
-            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.invalid_cvv_length, 3)));
+            assertTrue(ex.getMessage().equals(getApplicationContext().getString(R.string.mpsdk_invalid_cvv_length, 3)));
         }
     }
 

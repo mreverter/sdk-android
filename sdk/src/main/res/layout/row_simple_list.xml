@@ -4,7 +4,7 @@
     android:orientation="horizontal"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:background="@color/white"
+    android:background="@color/mpsdk_white"
     android:minHeight="45dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
@@ -18,7 +18,7 @@
             tools:text="Visa"
             tools:drawableLeft="@drawable/ico_tc_visa"
             android:drawablePadding="10dp"
-            style="@style/list_label"/>
+            style="@style/mpsdk_list_label"/>
 
 </FrameLayout>
 

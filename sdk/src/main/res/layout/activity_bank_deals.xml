@@ -20,14 +20,14 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:gravity="center"
-            android:text="@string/empty_bank_deals"
-            style="@style/big_text_light"
+            android:text="@string/mpsdk_empty_bank_deals"
+            style="@style/mpsdk_big_text_light"
             android:visibility="gone"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bank_deals_list"
             android:scrollbars="vertical"
-            android:background="@color/white"
+            android:background="@color/mpsdk_white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

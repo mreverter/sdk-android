@@ -26,9 +26,9 @@
             android:gravity="bottom|center"
             android:textAlignment="gravity"
             android:layout_height="wrap_content"
-            android:text="@string/refresh_message"
+            android:text="@string/mpsdk_refresh_message"
             android:layout_gravity="center_horizontal|top"
-            style="@style/big_text_light"/>
+            style="@style/mpsdk_big_text_light"/>
 
     </LinearLayout>
 

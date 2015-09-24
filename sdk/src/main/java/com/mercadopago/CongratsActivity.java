@@ -2,7 +2,6 @@ package com.mercadopago;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -102,13 +101,13 @@ public class CongratsActivity extends AppCompatActivity {
 
         if (payment != null) {
             if (payment.getStatus().equals("approved")) {
-                setTitle(getString(R.string.approved_title));
+                setTitle(getString(R.string.mpsdk_approved_title));
             } else if (payment.getStatus().equals("pending")) {
-                setTitle(getString(R.string.pending_title));
+                setTitle(getString(R.string.mpsdk_pending_title));
             } else if (payment.getStatus().equals("in_process")) {
-                setTitle(getString(R.string.in_process_title));
+                setTitle(getString(R.string.mpsdk_in_process_title));
             } else if (payment.getStatus().equals("rejected")) {
-                setTitle(getString(R.string.rejected_title));
+                setTitle(getString(R.string.mpsdk_rejected_title));
             }
         }
     }
@@ -134,13 +133,13 @@ public class CongratsActivity extends AppCompatActivity {
         if (payment != null) {
             TextView descriptionText = (TextView) findViewById(R.id.description);
             if (payment.getStatus().equals("approved")) {
-                descriptionText.setText(getString(R.string.approved_message));
+                descriptionText.setText(getString(R.string.mpsdk_approved_message));
             } else if (payment.getStatus().equals("pending")) {
-                descriptionText.setText(getString(R.string.pending_ticket_message));
+                descriptionText.setText(getString(R.string.mpsdk_pending_ticket_message));
             } else if (payment.getStatus().equals("in_process")) {
-                descriptionText.setText(getString(R.string.in_process_message));
+                descriptionText.setText(getString(R.string.mpsdk_in_process_message));
             } else if (payment.getStatus().equals("rejected")) {
-                descriptionText.setText(getString(R.string.rejected_message));
+                descriptionText.setText(getString(R.string.mpsdk_rejected_message));
             }
         }
     }
@@ -195,10 +194,10 @@ public class CongratsActivity extends AppCompatActivity {
         if (payment != null) {
             Button button = (Button) findViewById(R.id.button);
             if (payment.getStatus().equals("pending")) {
-                button.setText(R.string.print_ticket_label);
+                button.setText(R.string.mpsdk_print_ticket_label);
                 mCouponUrl = payment.getTransactionDetails().getExternalResourceUrl();
             } else {
-                button.setText(R.string.finish_label);
+                button.setText(R.string.mpsdk_finish_label);
                 mCouponUrl = null;
             }
         }

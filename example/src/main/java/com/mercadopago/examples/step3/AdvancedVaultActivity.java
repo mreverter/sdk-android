@@ -308,7 +308,7 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
                         mSubmitButton.setEnabled(true);
 
                     } else {
-                        Toast.makeText(getApplicationContext(), getString(com.mercadopago.R.string.invalid_pm_for_current_amount), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(com.mercadopago.R.string.mpsdk_invalid_pm_for_current_amount), Toast.LENGTH_LONG).show();
                     }
                 }
 

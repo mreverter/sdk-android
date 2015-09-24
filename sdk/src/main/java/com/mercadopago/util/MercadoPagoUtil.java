@@ -41,9 +41,9 @@ public class MercadoPagoUtil {
     public static String getCVVDescriptor(Context context, PaymentMethod paymentMethod) {
 
         if ("amex".equals(paymentMethod.getId())) {
-            return String.format(context.getString(com.mercadopago.R.string.cod_seg_desc_amex), 4);
+            return String.format(context.getString(com.mercadopago.R.string.mpsdk_cod_seg_desc_amex), 4);
         } else {
-            return String.format(context.getString(com.mercadopago.R.string.cod_seg_desc), 3);
+            return String.format(context.getString(com.mercadopago.R.string.mpsdk_cod_seg_desc), 3);
         }
     }
 
@@ -58,7 +58,7 @@ public class MercadoPagoUtil {
         try {
             result = new SimpleDateFormat("dd MM yyyy HH:mm").format(date);
             String[] splitString = result.split(" ");
-            result = context.getString(R.string.format_date, splitString[0], splitString[1], splitString[2], splitString[3]);
+            result = context.getString(R.string.mpsdk_format_date, splitString[0], splitString[1], splitString[2], splitString[3]);
         }
         catch (Exception ex) {
             // do nothing
