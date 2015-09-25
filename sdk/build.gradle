@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "0.9.14"
+version = "0.9.15"
 group = "com.mercadopago"
 archivesBaseName = "android-sdk"
 
