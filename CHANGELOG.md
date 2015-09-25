@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## VERSION 0.9.15
+
+_25-09-2015_
+
+* Fix: Navigates PaymentMethodsActivity if no params are set to retrieve saved cards
+
 ## VERSION 0.9.14
 
 _24-09-2015_
