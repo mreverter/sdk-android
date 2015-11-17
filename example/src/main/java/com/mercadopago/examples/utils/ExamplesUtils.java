@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.core.MerchantServer;
+import com.mercadopago.examples.step1.GuessingCardActivity;
 import com.mercadopago.examples.step2.SimpleVaultActivity;
 import com.mercadopago.examples.step3.AdvancedVaultActivity;
 import com.mercadopago.examples.step1.CardActivity;
@@ -38,6 +39,7 @@ public class ExamplesUtils {
     public static final int ADVANCED_VAULT_REQUEST_CODE = 11;
     public static final int FINAL_VAULT_REQUEST_CODE = 12;
     public static final int CARD_REQUEST_CODE = 13;
+    public static final int GUESSING_CARD_REQUEST_CODE = 14;
 
     // * Merchant public key
     public static final String DUMMY_MERCHANT_PUBLIC_KEY = "444a9ef5-8a6b-429f-abdf-587639155d88";
@@ -73,6 +75,13 @@ public class ExamplesUtils {
         cardIntent.putExtra("merchantPublicKey", merchantPublicKey);
         cardIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
         activity.startActivityForResult(cardIntent, CARD_REQUEST_CODE);
+    }
+
+
+    public static void startGuessingCardActivity(Activity activity, String merchantPublicKey) {
+        Intent guessingCardIntent = new Intent(activity, GuessingCardActivity.class);
+        guessingCardIntent.putExtra("merchantPublicKey", merchantPublicKey);
+        activity.startActivityForResult(guessingCardIntent, GUESSING_CARD_REQUEST_CODE);
     }
 
     public static void startSimpleVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, List<String> supportedPaymentTypes) {
@@ -163,4 +172,5 @@ public class ExamplesUtils {
             intent.putExtra(listName, gson.toJson(list, listType));
         }
     }
+
 }

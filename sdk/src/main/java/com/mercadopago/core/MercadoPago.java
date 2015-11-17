@@ -23,6 +23,7 @@ import com.mercadopago.model.PayerCost;
 import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.SavedCardToken;
+import com.mercadopago.model.Setting;
 import com.mercadopago.model.Token;
 import com.mercadopago.services.BankDealService;
 import com.mercadopago.services.GatewayService;
@@ -33,6 +34,7 @@ import com.mercadopago.util.JsonUtil;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -109,6 +111,16 @@ public class MercadoPago {
         }
     }
 
+    public List<PaymentMethod> getPaymentMethodsForBin(String bin, List<PaymentMethod> paymentMethods, List<String> supportedPaymentTypes){
+
+        List<PaymentMethod> validPaymentMethods = new ArrayList<>();
+        for(PaymentMethod pm : paymentMethods){
+            if(this.isValidPaymentMethodForBin(bin, pm, supportedPaymentTypes))
+                validPaymentMethods.add(pm);
+        }
+        return validPaymentMethods;
+    }
+
     public void getIdentificationTypes(Callback<List<IdentificationType>> callback) {
 
         IdentificationService service = mRestAdapterMPApi.create(IdentificationService.class);
@@ -117,6 +129,12 @@ public class MercadoPago {
         } else {
             service.getIdentificationTypes(null, this.mKey, callback);
         }
+    }
+
+    private boolean isValidPaymentMethodForBin(String bin, PaymentMethod paymentMethod, List<String> supportedPaymentTypes) {
+
+        return (Setting.getSettingByBin(paymentMethod.getSettings(), bin) != null
+                && supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId()));
     }
 
     public void getInstallments(String bin, BigDecimal amount, Long issuerId, String paymentTypeId, Callback<List<Installment>> callback) {
