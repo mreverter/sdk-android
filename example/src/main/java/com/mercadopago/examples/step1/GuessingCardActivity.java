@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,8 +23,8 @@ import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
+import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PaymentMethod;
-import com.mercadopago.model.Setting;
 import com.mercadopago.model.Token;
 import com.mercadopago.util.ApiUtil;
 import com.mercadopago.util.JsonUtil;
@@ -40,6 +42,7 @@ public class GuessingCardActivity extends AppCompatActivity {
 
     // Activity parameters
     private PaymentMethod mPaymentMethod;
+    private Issuer mIssuer;
 
     // Input controls
     private EditText mCardHolderName;
@@ -51,27 +54,34 @@ public class GuessingCardActivity extends AppCompatActivity {
     private EditText mIdentificationNumber;
     private Spinner mIdentificationType;
     private EditText mSecurityCode;
+
     private ImageView mImagePaymentMethod;
+    private Spinner mSpinnerIssuers;
 
     // Current values
     private CardToken mCardToken;
+    private TextView mIssuerLabel;
 
     // Local vars
     private Activity mActivity;
     private String mExceptionOnMethod;
     private MercadoPago mMercadoPago;
     private String mMerchantPublicKey;
+
+
     private String mSavedBin;
+    private boolean mCardNumberBlocked;
     private List<String> mSupportedTypes = new ArrayList<String>(){{
         add("credit_card");
         add("debit_card");
     }};
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_guessing_card);
+        setContentView(R.layout.activity_simple_guessing_card);
 
         initialize();
         getIdentificationTypesAsync();
@@ -81,6 +91,7 @@ public class GuessingCardActivity extends AppCompatActivity {
 
         mActivity = this;
         mSavedBin = "";
+        mCardNumberBlocked = false;
         // Get activity parameters
         mMerchantPublicKey = this.getIntent().getStringExtra("merchantPublicKey");
 
@@ -95,6 +106,12 @@ public class GuessingCardActivity extends AppCompatActivity {
         mExpiryError = (TextView) findViewById(R.id.expiryError);
         mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
         mExpiryYear = (EditText) findViewById(R.id.expiryYear);
+
+        mIssuerLabel = (TextView) findViewById(R.id.lblIssuer);
+        mIssuerLabel.setVisibility(View.GONE);
+
+        mSpinnerIssuers = (Spinner) findViewById(R.id.spinnerIssuer);
+        mSpinnerIssuers.setVisibility(View.GONE);
 
         // Init MercadoPago object with public key
         mMercadoPago = new MercadoPago.Builder()
@@ -126,18 +143,31 @@ public class GuessingCardActivity extends AppCompatActivity {
 
         mCardNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable cardNumber) {
+                if (cardNumber.length() < 6 && mCardNumberBlocked)
+                    unBlockCardNumbersInput(mCardNumber);
                 guessData(cardNumber);
+            }
+        });
+        mCardNumber.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(mCardNumberBlocked)
+                    setInvalidCardNumberError();
+                return false;
             }
         });
 
     }
+
 
     private void guessData(Editable cardNumber) {
         if(cardNumber.length() >= MercadoPago.BIN_LENGTH) {
@@ -153,7 +183,10 @@ public class GuessingCardActivity extends AppCompatActivity {
     }
 
     private void clearGuessing() {
+        mSavedBin = "";
         mImagePaymentMethod.setImageResource(android.R.color.transparent);
+        mSpinnerIssuers.setVisibility(View.GONE);
+        mIssuerLabel.setVisibility(View.GONE);
     }
 
     private void getPaymentMethodsAsync() {
@@ -173,16 +206,84 @@ public class GuessingCardActivity extends AppCompatActivity {
     }
 
     private void showPaymentMethod(List<PaymentMethod> paymentMethods) {
-        if(paymentMethods.isEmpty())
-            mCardNumber.setError(getString(com.mercadopago.R.string.mpsdk_invalid_card_luhn));
-
+        if(paymentMethods.isEmpty()) {
+            blockCardNumbersInput(mCardNumber);
+            this.setInvalidCardNumberError();
+        }
         else if(paymentMethods.size() == 1){
             mPaymentMethod = paymentMethods.get(0);
             mImagePaymentMethod.setImageResource(MercadoPagoUtil.getPaymentMethodIcon(this, mPaymentMethod.getId()));
+            if(mPaymentMethod.isIssuerRequired())
+            {
+                getIssuersAsync();
+            }
         }
         else{
             //TODO: Define what to do.
         }
+    }
+
+    private void blockCardNumbersInput(EditText text) {
+        int maxLength = MercadoPago.BIN_LENGTH;
+        setInputMaxLenght(text, maxLength);
+        mCardNumberBlocked = true;
+    }
+
+    private void unBlockCardNumbersInput(EditText text){
+
+        int maxLength = 16;
+        setInputMaxLenght(text, maxLength);
+        mCardNumberBlocked = false;
+    }
+
+    private void setInputMaxLenght(EditText text, int maxLength) {
+        InputFilter[] fArray = new InputFilter[1];
+        fArray[0] = new InputFilter.LengthFilter(maxLength);
+        text.setFilters(fArray);
+    }
+
+    private void getIssuersAsync() {
+        if(mPaymentMethod != null)
+        {
+            mMercadoPago.getIssuers(mPaymentMethod.getId(), new Callback<List<Issuer>>() {
+                @Override
+                public void success(List<Issuer> issuers, Response response) {
+                    populateIssuersSpinner(issuers);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                }
+            });
+        }
+    }
+
+    private void populateIssuersSpinner(final List<Issuer> issuers) {
+
+        mIssuerLabel.setVisibility(View.VISIBLE);
+        mSpinnerIssuers.setVisibility(View.VISIBLE);
+        mSpinnerIssuers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                mIssuer = issuers.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                mIssuer = null;
+            }
+        });
+
+
+        List<String> issuerNames = new ArrayList<>();
+        issuerNames.add(0, getString(R.string.spinner_default_value));
+        for(Issuer issuer : issuers)
+            issuerNames.add(issuer.getName());
+        issuers.add(0, null);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.layout_spinner_item, issuerNames);
+        mSpinnerIssuers.setAdapter(adapter);
+
     }
 
     @Override
@@ -285,6 +386,16 @@ public class GuessingCardActivity extends AppCompatActivity {
             }
         }
 
+        if(mPaymentMethod != null) {
+            if (mPaymentMethod.isIssuerRequired()) {
+                if (mIssuer == null) {
+                    TextView errorText = (TextView)mSpinnerIssuers.getSelectedView();
+                    errorText.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
+                    errorText.setText("my actual error text");
+                    result = false;
+                }
+            }
+        }
         return result;
     }
 
@@ -296,6 +407,10 @@ public class GuessingCardActivity extends AppCompatActivity {
     protected void validateSecurityCode(CardToken cardToken) throws Exception {
 
         cardToken.validateSecurityCode(this, mPaymentMethod);
+    }
+
+    private void setInvalidCardNumberError() {
+        mCardNumber.setError(getString(com.mercadopago.R.string.mpsdk_invalid_card_luhn));
     }
 
     private void getIdentificationTypesAsync() {

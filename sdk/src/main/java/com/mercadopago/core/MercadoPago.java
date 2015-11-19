@@ -54,6 +54,7 @@ public class MercadoPago {
     public static final int CONGRATS_REQUEST_CODE = 5;
     public static final int VAULT_REQUEST_CODE = 6;
     public static final int BANK_DEALS_REQUEST_CODE = 7;
+    public static final int GUESSING_CARD_REQUEST_CODE = 8;
 
     public static final int BIN_LENGTH = 6;
 
@@ -112,13 +113,16 @@ public class MercadoPago {
     }
 
     public List<PaymentMethod> getPaymentMethodsForBin(String bin, List<PaymentMethod> paymentMethods, List<String> supportedPaymentTypes){
-
-        List<PaymentMethod> validPaymentMethods = new ArrayList<>();
-        for(PaymentMethod pm : paymentMethods){
-            if(this.isValidPaymentMethodForBin(bin, pm, supportedPaymentTypes))
-                validPaymentMethods.add(pm);
+        if(bin.length() == BIN_LENGTH) {
+            List<PaymentMethod> validPaymentMethods = new ArrayList<>();
+            for (PaymentMethod pm : paymentMethods) {
+                if (this.isValidPaymentMethodForBin(bin, pm, supportedPaymentTypes))
+                    validPaymentMethods.add(pm);
+            }
+            return validPaymentMethods;
         }
-        return validPaymentMethods;
+        else
+            throw new RuntimeException("Invalid bin: " + BIN_LENGTH + " digits needed, " + bin.length() + " found");
     }
 
     public void getIdentificationTypes(Callback<List<IdentificationType>> callback) {
@@ -133,7 +137,7 @@ public class MercadoPago {
 
     private boolean isValidPaymentMethodForBin(String bin, PaymentMethod paymentMethod, List<String> supportedPaymentTypes) {
 
-        return (Setting.getSettingByBin(paymentMethod.getSettings(), bin) != null
+            return (Setting.getSettingByBin(paymentMethod.getSettings(), bin) != null
                 && supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId()));
     }
 
@@ -222,6 +226,20 @@ public class MercadoPago {
             newCardIntent.putExtra("requireSecurityCode", requireSecurityCode);
         }
         activity.startActivityForResult(newCardIntent, NEW_CARD_REQUEST_CODE);
+    }
+
+    private static void startGuessingCardActivity(Activity activity, String keyType, String key, Boolean requireSecurityCode, Boolean requireIssuer) {
+
+        Intent guessingCardIntent = new Intent(activity, com.mercadopago.GuessingCardActivity.class);
+        guessingCardIntent.putExtra("keyType", keyType);
+        guessingCardIntent.putExtra("key", key);
+        if (requireSecurityCode != null) {
+            guessingCardIntent.putExtra("requireSecurityCode", requireSecurityCode);
+        }
+        if (requireIssuer != null) {
+            guessingCardIntent.putExtra("requireIssuer", requireIssuer);
+        }
+        activity.startActivityForResult(guessingCardIntent, GUESSING_CARD_REQUEST_CODE);
     }
 
     private static void startPaymentMethodsActivity(Activity activity, String merchantPublicKey, List<String> supportedPaymentTypes, Boolean showBankDeals) {
@@ -320,6 +338,7 @@ public class MercadoPago {
         private Payment mPayment;
         private PaymentMethod mPaymentMethod;
         private Boolean mRequireSecurityCode;
+        private Boolean mRequireIssuer;
         private Boolean mShowBankDeals;
         private List<String> mSupportedPaymentTypes;
 
@@ -412,6 +431,12 @@ public class MercadoPago {
             return this;
         }
 
+        public StartActivityBuilder setRequireIssuer(Boolean requireIssuer) {
+
+            this.mRequireIssuer = requireIssuer;
+            return this;
+        }
+
         public StartActivityBuilder setShowBankDeals(boolean showBankDeals) {
 
             this.mShowBankDeals = showBankDeals;
@@ -487,6 +512,16 @@ public class MercadoPago {
             MercadoPago.startNewCardActivity(this.mActivity, this.mKeyType, this.mKey,
                     this.mPaymentMethod, this.mRequireSecurityCode);
         }
+
+        public void startGuessingCardActivity() {
+
+            if (this.mActivity == null) throw new IllegalStateException("activity is null");
+            if (this.mKey == null) throw new IllegalStateException("key is null");
+            if (this.mKeyType == null) throw new IllegalStateException("key type is null");
+
+            MercadoPago.startGuessingCardActivity(this.mActivity, this.mKeyType, this.mKey, this.mRequireSecurityCode, this.mRequireIssuer);
+        }
+
 
         public void startPaymentMethodsActivity() {
 

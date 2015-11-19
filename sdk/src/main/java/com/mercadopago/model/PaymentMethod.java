@@ -50,6 +50,10 @@ public class PaymentMethod {
         this.settings = settings;
     }
 
+    public int getCardNumberLenght(String bin){
+        return Setting.getSettingByBin(this.getSettings(), bin).getCardNumber().getLength();
+    }
+
     @Override
     public String toString() {
         return name;

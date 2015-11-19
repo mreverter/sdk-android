@@ -10,8 +10,7 @@
         android:name="android.hardware.location.gps"
         android:required="false" />
 
-    <application
-        android:allowBackup="true">
+    <application android:allowBackup="true" >
         <activity
             android:name=".VaultActivity"
             android:label="@string/mpsdk_app_name"
@@ -54,6 +53,8 @@
         <activity
             android:name=".TermsAndConditionsActivity"
             android:label="@string/mpsdk_title_activity_terms_and_conditions" >
+        </activity>
+        <activity android:name=".GuessingCardActivity" >
         </activity>
     </application>
 

@@ -37,41 +37,7 @@ android:layout_height="match_parent">
                     android:orientation="vertical"
                     android:layout_marginBottom="10dp">
 
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/mpsdk_card_number_label"
-                            style="@style/mpsdk_form_label"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginTop="10dp"/>
-
-                        <ImageView
-                            android:id="@+id/pmImage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:layout_gravity="left"
-                            tools:src="@drawable/ico_tc_visa"
-                            android:layout_marginLeft="5dp"
-                            android:paddingTop="10dp"
-                            android:layout_marginBottom="10dp"/>
-
-                    </LinearLayout>
-
-                    <EditText
-                        android:id="@+id/cardNumber"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:maxLength="16"
-                        style="@style/mpsdk_form_input"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"/>
+                    <include layout="@layout/layout_guessing_card_example" />
 
                     <TextView
                         android:id="@+id/text_cod_seg"

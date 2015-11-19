@@ -2,9 +2,10 @@
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
     <string name="mpsdk_app_name">MercadoPago Android SDK</string>
     <string name="mpsdk_continue_label">Continue</string>
-    <string name="mpsdk_select_pm_label">Choose a payment method ...</string>
+    <string name="mpsdk_select_pm_label">Choose a payment method…</string>
+    <string name="mpsdk_select_issuer_label">Select your bank…</string>
     <string name="mpsdk_last_digits_label">ending in</string>
-    <string name="mpsdk_other_pm_label">Other payment method ...</string>
+    <string name="mpsdk_other_pm_label">Other payment method…</string>
     <string name="mpsdk_invalid_pm_for_current_amount">The selected payment method can\'t be used to pay this amount. Please select another method</string>
     <string name="mpsdk_transition_view_name">transitionView</string>
     <string name="mpsdk_title_activity_customer_pms">Payment methods</string>
@@ -58,4 +59,5 @@
     <string name="mpsdk_and">and</string>
     <string name="mpsdk_title_activity_terms_and_conditions">Terms and conditions</string>
     <string name="mpsdk_bank_deals_action">Promotions</string>
+
 </resources>

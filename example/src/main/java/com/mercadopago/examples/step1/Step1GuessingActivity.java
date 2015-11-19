@@ -2,10 +2,6 @@ package com.mercadopago.examples.step1;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
@@ -13,9 +9,10 @@ import com.mercadopago.ExampleActivity;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.examples.utils.ExamplesUtils;
+import com.mercadopago.model.CardToken;
+import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.util.JsonUtil;
-import com.mercadopago.util.LayoutUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +34,19 @@ public class Step1GuessingActivity extends ExampleActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == ExamplesUtils.GUESSING_CARD_REQUEST_CODE) {
+        if (requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
 
+                CardToken cardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
+                PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+                Issuer issuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+
+                StringBuilder message = new StringBuilder();
+                message.append(paymentMethod.getName());
+                if(issuer!=null)
+                    message.append(" con ").append(issuer.getName());
+
+                Toast.makeText(this, message.toString(), Toast.LENGTH_LONG).show();
 
             } else {
 

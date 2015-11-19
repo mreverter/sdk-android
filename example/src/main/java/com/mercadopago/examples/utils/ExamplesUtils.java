@@ -1,10 +1,7 @@
 package com.mercadopago.examples.utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -27,7 +24,6 @@ import com.mercadopago.util.LayoutUtil;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -42,7 +38,7 @@ public class ExamplesUtils {
     public static final int GUESSING_CARD_REQUEST_CODE = 14;
 
     // * Merchant public key
-    public static final String DUMMY_MERCHANT_PUBLIC_KEY = "444a9ef5-8a6b-429f-abdf-587639155d88";
+    public static final String DUMMY_MERCHANT_PUBLIC_KEY = "6c0d81bc-99c1-4de8-9976-c8d1d62cd4f2";
     // DUMMY_MERCHANT_PUBLIC_KEY_AR = "444a9ef5-8a6b-429f-abdf-587639155d88";
     // DUMMY_MERCHANT_PUBLIC_KEY_BR = "APP_USR-f163b2d7-7462-4e7b-9bd5-9eae4a7f99c3";
     // DUMMY_MERCHANT_PUBLIC_KEY_MX = "6c0d81bc-99c1-4de8-9976-c8d1d62cd4f2";
@@ -79,9 +75,13 @@ public class ExamplesUtils {
 
 
     public static void startGuessingCardActivity(Activity activity, String merchantPublicKey) {
-        Intent guessingCardIntent = new Intent(activity, GuessingCardActivity.class);
-        guessingCardIntent.putExtra("merchantPublicKey", merchantPublicKey);
-        activity.startActivityForResult(guessingCardIntent, GUESSING_CARD_REQUEST_CODE);
+
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(activity)
+                .setPublicKey(merchantPublicKey)
+                .setRequireSecurityCode(true)
+                .setRequireIssuer(true)
+                .startGuessingCardActivity();
     }
 
     public static void startSimpleVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, List<String> supportedPaymentTypes) {
