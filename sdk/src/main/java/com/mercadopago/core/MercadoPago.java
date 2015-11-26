@@ -228,7 +228,7 @@ public class MercadoPago {
         activity.startActivityForResult(newCardIntent, NEW_CARD_REQUEST_CODE);
     }
 
-    private static void startGuessingCardActivity(Activity activity, String keyType, String key, Boolean requireSecurityCode, Boolean requireIssuer) {
+    private static void startGuessingCardActivity(Activity activity, String keyType, String key, Boolean requireSecurityCode, Boolean requireIssuer, Boolean showBankDeals) {
 
         Intent guessingCardIntent = new Intent(activity, com.mercadopago.GuessingCardActivity.class);
         guessingCardIntent.putExtra("keyType", keyType);
@@ -238,6 +238,9 @@ public class MercadoPago {
         }
         if (requireIssuer != null) {
             guessingCardIntent.putExtra("requireIssuer", requireIssuer);
+        }
+        if(showBankDeals != null){
+            guessingCardIntent.putExtra("showBankDeals", showBankDeals);
         }
         activity.startActivityForResult(guessingCardIntent, GUESSING_CARD_REQUEST_CODE);
     }
@@ -251,7 +254,7 @@ public class MercadoPago {
         activity.startActivityForResult(paymentMethodsIntent, PAYMENT_METHODS_REQUEST_CODE);
     }
 
-    private static void startVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, BigDecimal amount, List<String> supportedPaymentTypes, Boolean showBankDeals) {
+    private static void startVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, BigDecimal amount, List<String> supportedPaymentTypes, Boolean showBankDeals, Boolean cardGuessingEnabled) {
 
         Intent vaultIntent = new Intent(activity, VaultActivity.class);
         vaultIntent.putExtra("merchantPublicKey", merchantPublicKey);
@@ -261,6 +264,7 @@ public class MercadoPago {
         vaultIntent.putExtra("amount", amount.toString());
         putListExtra(vaultIntent, "supportedPaymentTypes", supportedPaymentTypes);
         vaultIntent.putExtra("showBankDeals", showBankDeals);
+        vaultIntent.putExtra("cardGuessingEnabled", cardGuessingEnabled);
         activity.startActivityForResult(vaultIntent, VAULT_REQUEST_CODE);
     }
 
@@ -341,6 +345,7 @@ public class MercadoPago {
         private Boolean mRequireIssuer;
         private Boolean mShowBankDeals;
         private List<String> mSupportedPaymentTypes;
+        private Boolean mCardGuessingEnabled;
 
         public StartActivityBuilder() {
 
@@ -449,6 +454,12 @@ public class MercadoPago {
             return this;
         }
 
+        public StartActivityBuilder setCardGuessingEnabled(boolean cardGuessingEnabled)
+        {
+            this.mCardGuessingEnabled = cardGuessingEnabled;
+            return this;
+        }
+
         public void startBankDealsActivity() {
 
             if (this.mActivity == null) throw new IllegalStateException("activity is null");
@@ -519,7 +530,7 @@ public class MercadoPago {
             if (this.mKey == null) throw new IllegalStateException("key is null");
             if (this.mKeyType == null) throw new IllegalStateException("key type is null");
 
-            MercadoPago.startGuessingCardActivity(this.mActivity, this.mKeyType, this.mKey, this.mRequireSecurityCode, this.mRequireIssuer);
+            MercadoPago.startGuessingCardActivity(this.mActivity, this.mKeyType, this.mKey, this.mRequireSecurityCode, this.mRequireIssuer, this.mShowBankDeals);
         }
 
 
@@ -547,7 +558,7 @@ public class MercadoPago {
             if (this.mKeyType.equals(KEY_TYPE_PUBLIC)) {
                 MercadoPago.startVaultActivity(this.mActivity, this.mKey, this.mMerchantBaseUrl,
                         this.mMerchantGetCustomerUri, this.mMerchantAccessToken,
-                        this.mAmount, this.mSupportedPaymentTypes, this.mShowBankDeals);
+                        this.mAmount, this.mSupportedPaymentTypes, this.mShowBankDeals, this.mCardGuessingEnabled);
             } else {
                 throw new RuntimeException("Unsupported key type for this method");
             }

@@ -9,9 +9,10 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,7 +21,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mercadopago.adapters.IdentificationTypesAdapter;
-import com.mercadopago.controlers.GuessingCardNumberControler;
+import com.mercadopago.adapters.IssuersSpinnerAdapter;
+import com.mercadopago.controllers.GuessingCardNumberController;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
@@ -44,6 +46,7 @@ public class GuessingCardActivity extends AppCompatActivity {
     protected String mKeyType;
     protected Boolean mRequireSecurityCode;
     protected Boolean mRequireIssuer;
+    private Boolean mShowBankDeals;
 
     // Input controls
     protected EditText mCardHolderName;
@@ -60,7 +63,7 @@ public class GuessingCardActivity extends AppCompatActivity {
     protected LinearLayout mIssuerLayout;
     protected EditText mSecurityCode;
 
-    protected GuessingCardNumberControler mGuessingCardNumberControler;
+    protected GuessingCardNumberController mGuessingCardNumberControler;
 
     // Local vars
     protected Activity mActivity;
@@ -81,6 +84,7 @@ public class GuessingCardActivity extends AppCompatActivity {
         mActivity = this;
 
         // Get activity parameters
+        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", false);
         mKeyType = this.getIntent().getStringExtra("keyType");
         mKey = this.getIntent().getStringExtra("key");
         mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
@@ -114,8 +118,9 @@ public class GuessingCardActivity extends AppCompatActivity {
         mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
         mExpiryYear = (EditText) findViewById(R.id.expiryYear);
         mSpinnerIssuers = (Spinner) findViewById(R.id.spinnerIssuer);
-        mGuessingCardNumberControler = new GuessingCardNumberControler(this, mMercadoPago, mSupportedTypes,
-                new GuessingCardNumberControler.PaymentMethodCallback(){
+
+        mGuessingCardNumberControler = new GuessingCardNumberController(this, mMercadoPago, mSupportedTypes,
+                new GuessingCardNumberController.PaymentMethodSelectionCallback(){
                     @Override
                     public void onPaymentMethodSet(PaymentMethod paymentMethod) {
                         mPaymentMethod = paymentMethod;
@@ -157,6 +162,27 @@ public class GuessingCardActivity extends AppCompatActivity {
         });
 
         getIdentificationTypesAsync();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mShowBankDeals) {
+            getMenuInflater().inflate(R.menu.payment_methods, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_bank_deals) {
+            new MercadoPago.StartActivityBuilder()
+                    .setActivity(this)
+                    .setPublicKey(mKey)
+                    .startBankDealsActivity();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     protected void setContentView() {
@@ -206,7 +232,20 @@ public class GuessingCardActivity extends AppCompatActivity {
         // Validate card number
         try {
             validateCardNumber(cardToken);
-            mGuessingCardNumberControler.setCardNumberError(null);
+            if(mPaymentMethod == null){
+                mGuessingCardNumberControler.setCardNumberError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
+                mGuessingCardNumberControler.requestFocusForCardNumber();
+                result = false;
+            }
+            else if(mRequireIssuer){
+                if(mPaymentMethod.isIssuerRequired() && mIssuer == null){
+                    TextView errorText = (TextView)mSpinnerIssuers.getSelectedView();
+                    errorText.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
+                    result = false;
+                }
+            }
+            else
+                mGuessingCardNumberControler.setCardNumberError(null);
         }
         catch (Exception ex) {
             mGuessingCardNumberControler.setCardNumberError(ex.getMessage());
@@ -270,20 +309,7 @@ public class GuessingCardActivity extends AppCompatActivity {
             }
         }
 
-        if(mPaymentMethod == null){
-            mGuessingCardNumberControler.setCardNumberError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
-            if(!focusSet) {
-                mGuessingCardNumberControler.requestFocusForCardNumber();
-            }
-            result = false;
-        }
-        else if(mRequireIssuer){
-            if(mPaymentMethod.isIssuerRequired() && mIssuer == null){
-                TextView errorText = (TextView)mSpinnerIssuers.getSelectedView();
-                errorText.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
-                result = false;
-            }
-        }
+
 
         return result;
     }
@@ -439,11 +465,10 @@ public class GuessingCardActivity extends AppCompatActivity {
 
     private void populateIssuerSpinner(final List<Issuer> issuers) {
 
-        //TODO: Adapater
         mSpinnerIssuers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                mIssuer = issuers.get(position);
+                mIssuer = (Issuer) mSpinnerIssuers.getSelectedItem();
             }
 
             @Override
@@ -453,15 +478,7 @@ public class GuessingCardActivity extends AppCompatActivity {
         });
 
 
-        List<String> issuerNames = new ArrayList<>();
-        issuerNames.add(0, getString(R.string.mpsdk_select_issuer_label));
-        for(Issuer issuer : issuers)
-            issuerNames.add(issuer.getName());
-
-        //Add null issuer to match spinner positions
-        issuers.add(0, null);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.layout_spinner_item, issuerNames);
-        mSpinnerIssuers.setAdapter(adapter);
+        mSpinnerIssuers.setAdapter(new IssuersSpinnerAdapter(mActivity, issuers));
     }
 
     private void setSecurityCodeHelpForPaymentMethod(PaymentMethod paymentMethod) {

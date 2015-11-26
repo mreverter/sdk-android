@@ -60,5 +60,8 @@
     <string name="mpsdk_and">y</string>
     <string name="mpsdk_title_activity_terms_and_conditions">Términos y condiciones</string>
     <string name="mpsdk_bank_deals_action">Promociones</string>
+    <string name="mpsdk_title_activity_guessing_card">Ingresa los datos de tu tarjeta</string>
+
+
 
 </resources>

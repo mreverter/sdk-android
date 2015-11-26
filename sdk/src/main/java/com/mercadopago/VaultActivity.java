@@ -2,9 +2,9 @@ package com.mercadopago;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputFilter;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +53,8 @@ public class VaultActivity extends AppCompatActivity {
     protected String mMerchantGetCustomerUri;
     protected String mMerchantPublicKey;
     protected boolean mShowBankDeals;
+    protected boolean mCardGuessingEnabled;
+
 
     // Input controls
     protected View mInstallmentsCard;
@@ -105,6 +107,7 @@ public class VaultActivity extends AppCompatActivity {
             mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
         }
         mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
+        mCardGuessingEnabled = this.getIntent().getBooleanExtra("cardGuessingEnabled", false);
 
         if ((mMerchantPublicKey != null) && (mAmount != null)) {
 
@@ -143,7 +146,10 @@ public class VaultActivity extends AppCompatActivity {
             // Hide main layout and go for customer's cards
             if ((mMerchantBaseUrl != null) && (!mMerchantBaseUrl.equals("") && (mMerchantGetCustomerUri != null) && (!mMerchantGetCustomerUri.equals("")))) {
                 getCustomerCardsAsync();
-            } else {
+            } else if(mCardGuessingEnabled) {
+                startGuessingCardActivity();
+            }
+            else{
                 startPaymentMethodsActivity();
             }
         }
@@ -225,7 +231,13 @@ public class VaultActivity extends AppCompatActivity {
         } else if (requestCode == MercadoPago.NEW_CARD_REQUEST_CODE) {
 
             resolveNewCardRequest(resultCode, data);
+
+        } else if (requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
+
+            resolveGuessingCardRequest(resultCode, data);
+
         }
+
     }
 
     protected void resolveCustomerCardsRequest(int resultCode, Intent data) {
@@ -248,7 +260,10 @@ public class VaultActivity extends AppCompatActivity {
 
             } else {
 
-                startPaymentMethodsActivity();
+                if(mCardGuessingEnabled)
+                    startGuessingCardActivity();
+                else
+                    startPaymentMethodsActivity();
 
             }
         } else {
@@ -368,16 +383,7 @@ public class VaultActivity extends AppCompatActivity {
             mSelectedPaymentMethod = mTempPaymentMethod;
             mSelectedIssuer = mTempIssuer;
 
-            // Set customer method selection
-            mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
-                    mCardToken.getCardNumber().substring(mCardToken.getCardNumber().length() - 4, mCardToken.getCardNumber().length())));
-            mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(MercadoPagoUtil.getPaymentMethodIcon(mActivity, mSelectedPaymentMethod.getId()), 0, 0, 0);
-
-            // Set security card visibility
-            showSecurityCodeCard(mSelectedPaymentMethod);
-
-            // Get installments
-            getInstallmentsAsync();
+            this.refreshCardData();
 
         } else {
 
@@ -399,6 +405,40 @@ public class VaultActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    protected void resolveGuessingCardRequest(int resultCode, Intent data) {
+        if(resultCode == RESULT_OK)
+        {
+            mSelectedPaymentMethodRow = null;
+            mSelectedPayerCost = null;
+
+            mTempPaymentMethod = null;
+            mTempIssuer =  null;
+
+            mSelectedPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+            mCardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
+            mSelectedIssuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+
+            this.refreshCardData();
+
+        }
+        else if ((data != null) && (data.getStringExtra("apiException") != null)) {
+            finishWithApiException(data);
+        }
+    }
+
+    protected void refreshCardData() {
+        // Set customer method selection
+        mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
+                mCardToken.getCardNumber().substring(mCardToken.getCardNumber().length() - 4, mCardToken.getCardNumber().length())));
+        mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(MercadoPagoUtil.getPaymentMethodIcon(mActivity, mSelectedPaymentMethod.getId()), 0, 0, 0);
+
+        // Set security card visibility
+        showSecurityCodeCard(mSelectedPaymentMethod);
+
+        // Get installments
+        getInstallmentsAsync();
     }
 
     protected void getCustomerCardsAsync() {
@@ -494,7 +534,10 @@ public class VaultActivity extends AppCompatActivity {
 
         } else {  // payment method activity
 
-            startPaymentMethodsActivity();
+            if(mCardGuessingEnabled)
+                startGuessingCardActivity();
+            else
+                startPaymentMethodsActivity();
         }
     }
 
@@ -685,6 +728,7 @@ public class VaultActivity extends AppCompatActivity {
     protected void startCustomerCardsActivity() {
 
         new MercadoPago.StartActivityBuilder()
+                .setCardGuessingEnabled(mCardGuessingEnabled)
                 .setActivity(mActivity)
                 .setCards(mCards)
                 .startCustomerCardsActivity();
@@ -715,6 +759,16 @@ public class VaultActivity extends AppCompatActivity {
                 .setPaymentMethod(mTempPaymentMethod)
                 .setRequireSecurityCode(false)
                 .startNewCardActivity();
+    }
+
+    protected void startGuessingCardActivity(){
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(mActivity)
+                .setPublicKey(mMerchantPublicKey)
+                .setRequireSecurityCode(false)
+                .setRequireIssuer(true)
+                .setShowBankDeals(mShowBankDeals)
+                .startGuessingCardActivity();
     }
 
     protected void startPaymentMethodsActivity() {

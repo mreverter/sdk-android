@@ -60,6 +60,7 @@ public class PaymentMethodsActivity extends AppCompatActivity {
         mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
 
         // Set recycler view
+        // Set recycler view
         mRecyclerView = (RecyclerView) findViewById(R.id.payment_methods_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
