@@ -30,14 +30,15 @@ public class GuessingCardNumberController {
 
     private ImageView mImagePaymentMethod;
     private EditText mCardNumber;
-
+    private LinearLayout mPaymentMethodLayout;
+    private Spinner mSpinnerPaymentMethods;
 
     private String mSavedBin;
+    private String mSavedPaymentMethodId;
     private boolean mCardNumberBlocked;
     private List<String> mSupportedTypes;
     private MercadoPago mMercadoPago;
 
-    private PaymentMethodsHelper mPaymentMethodHelper;
     private PaymentMethodSelectionCallback mPaymentMethodSelectionCallback;
 
     public GuessingCardNumberController(Activity activity, String key, List<String> supportedTypes, PaymentMethodSelectionCallback paymentMethodSelectionCallback){
@@ -77,9 +78,13 @@ public class GuessingCardNumberController {
 
             @Override
             public void afterTextChanged(Editable cardNumber) {
-                if (cardNumber.length() < 6 && mCardNumberBlocked)
-                    unBlockCardNumbersInput(mCardNumber);
-                guessData(cardNumber);
+                if (cardNumber.length() < MercadoPago.BIN_LENGTH) {
+                    if(mCardNumberBlocked)
+                        unBlockCardNumbersInput(mCardNumber);
+                    clearGuessing();
+                }
+                else
+                    getDataForBin(cardNumber.subSequence(0, MercadoPago.BIN_LENGTH).toString());
             }
         });
         mCardNumber.setOnKeyListener(new View.OnKeyListener() {
@@ -91,28 +96,24 @@ public class GuessingCardNumberController {
             }
         });
 
-        mPaymentMethodHelper = new PaymentMethodsHelper(mPaymentMethodSelectionCallback);
-        mPaymentMethodHelper.intializeComponents();
-        mPaymentMethodHelper.hidePaymentMethodSelector();
+        mSavedPaymentMethodId = "";
+        mSpinnerPaymentMethods = (Spinner) mActivity.findViewById(R.id.spinnerPaymentMethod);
+        mPaymentMethodLayout = (LinearLayout) mActivity.findViewById(R.id.layoutPaymentMethods);
+
+        hidePaymentMethodSelector();
 
     }
 
-    private void guessData(Editable cardNumber) {
-        if(cardNumber.length() >= MercadoPago.BIN_LENGTH) {
-            String actualBin = cardNumber.subSequence(0, MercadoPago.BIN_LENGTH).toString();
-            if(!actualBin.equals(mSavedBin)) {
-                mSavedBin = actualBin;
-                getPaymentMethodsAsync();
-            }
-        }
-        else {
-            clearGuessing();
+    private void getDataForBin(String bin) {
+        if(!bin.equals(mSavedBin)) {
+            mSavedBin = bin;
+            getPaymentMethodsAsync();
         }
     }
 
     private void clearGuessing() {
         mSavedBin = "";
-        mPaymentMethodHelper.refreshPaymentMethodLayout();
+        refreshPaymentMethodLayout();
     }
 
     private void getPaymentMethodsAsync() {
@@ -133,19 +134,21 @@ public class GuessingCardNumberController {
 
     private void processPaymentMethods(List<PaymentMethod> paymentMethods) {
 
-        mPaymentMethodHelper.refreshPaymentMethodLayout();
+        refreshPaymentMethodLayout();
 
         if(paymentMethods.isEmpty()) {
+
             blockCardNumbersInput(mCardNumber);
             this.setInvalidCardNumberError();
         }
         else if(paymentMethods.size() == 1){
-
-            mPaymentMethodHelper.showPaymentMethod(paymentMethods.get(0));
+            showPaymentMethodImage(paymentMethods.get(0));
+            mPaymentMethodSelectionCallback.onPaymentMethodSet(paymentMethods.get(0));
         }
         else{
-            mPaymentMethodHelper.showPaymentMethodsSelector();
-            mPaymentMethodHelper.populatePaymentMethodSpinner(paymentMethods);
+
+            showPaymentMethodsSelector();
+            populatePaymentMethodSpinner(paymentMethods);
         }
     }
 
@@ -184,75 +187,59 @@ public class GuessingCardNumberController {
         return mCardNumber.getText().toString();
     }
 
+    public void hidePaymentMethodSelector() {
+        mPaymentMethodLayout.setVisibility(View.GONE);
+        mImagePaymentMethod.setImageResource(android.R.color.transparent);
+        mPaymentMethodSelectionCallback.onPaymentMethodCleared();
+    }
+
+    public void showPaymentMethodsSelector() {
+        mPaymentMethodLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void populatePaymentMethodSpinner(final List<PaymentMethod> paymentMethods) {
+
+        mSpinnerPaymentMethods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                PaymentMethod paymentMethod = (PaymentMethod) mSpinnerPaymentMethods.getSelectedItem();
+                if (paymentMethod != null) {
+                    if (!mSavedPaymentMethodId.equals(paymentMethod.getId())) {
+
+                        mSavedPaymentMethodId = paymentMethod.getId();
+                        mPaymentMethodSelectionCallback.onPaymentMethodSet(paymentMethod);
+                        showPaymentMethodImage(paymentMethod);
+
+                    }
+                } else if (!mSavedPaymentMethodId.equals("")) {
+                    mSavedPaymentMethodId = "";
+                    mPaymentMethodSelectionCallback.onPaymentMethodCleared();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        mSpinnerPaymentMethods.setAdapter(new PaymentMethodsSpinnerAdapter(mActivity, paymentMethods));
+    }
+
+    public void showPaymentMethodImage(PaymentMethod paymentMethod) {
+        mImagePaymentMethod.setImageResource(MercadoPagoUtil.getPaymentMethodIcon(mActivity, paymentMethod.getId()));
+    }
+
+    public void refreshPaymentMethodLayout() {
+        mImagePaymentMethod.setImageResource(android.R.color.transparent);
+        hidePaymentMethodSelector();
+    }
+
     public static abstract class PaymentMethodSelectionCallback {
 
         public abstract void onPaymentMethodSet(PaymentMethod paymentMethod);
-        public abstract void onPaymentMethodClearedOrChanged();
+        public abstract void onPaymentMethodCleared();
     }
 
-    private class PaymentMethodsHelper {
-
-        private LinearLayout mPaymentMethodLayout;
-        private Spinner mSpinnerPaymentMethods;
-        private PaymentMethodSelectionCallback mPaymentMethodSelectionCallback;
-        private String mSavedPaymentMethodId;
-
-        public PaymentMethodsHelper(PaymentMethodSelectionCallback paymentMethodSelectionCallback) {
-            this.mPaymentMethodSelectionCallback = paymentMethodSelectionCallback;
-        }
-
-        public void intializeComponents(){
-            mSavedPaymentMethodId = "";
-            mSpinnerPaymentMethods = (Spinner) mActivity.findViewById(R.id.spinnerPaymentMethod);
-            mPaymentMethodLayout = (LinearLayout) mActivity.findViewById(R.id.layoutPaymentMethods);
-        }
-
-        public void hidePaymentMethodSelector() {
-            mPaymentMethodLayout.setVisibility(View.GONE);
-            mImagePaymentMethod.setImageResource(android.R.color.transparent);
-            mPaymentMethodSelectionCallback.onPaymentMethodClearedOrChanged();
-        }
-
-        public void showPaymentMethodsSelector() {
-            mPaymentMethodLayout.setVisibility(View.VISIBLE);
-        }
-
-        public void populatePaymentMethodSpinner(final List<PaymentMethod> paymentMethods) {
-
-            mSpinnerPaymentMethods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                    PaymentMethod paymentMethod = (PaymentMethod) mSpinnerPaymentMethods.getSelectedItem();
-                    if (paymentMethod != null) {
-                        if (!mSavedPaymentMethodId.equals(paymentMethod.getId())) {
-                            mSavedPaymentMethodId = paymentMethod.getId();
-                            mPaymentMethodSelectionCallback.onPaymentMethodClearedOrChanged();
-                            showPaymentMethod(paymentMethod);
-                        }
-                    } else if (!mSavedPaymentMethodId.equals("")) {
-                        mSavedPaymentMethodId = "";
-                        mPaymentMethodSelectionCallback.onPaymentMethodClearedOrChanged();
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                }
-            });
-
-            mSpinnerPaymentMethods.setAdapter(new PaymentMethodsSpinnerAdapter(mActivity, paymentMethods));
-        }
-
-        public void showPaymentMethod(PaymentMethod paymentMethod) {
-            mImagePaymentMethod.setImageResource(MercadoPagoUtil.getPaymentMethodIcon(mActivity, paymentMethod.getId()));
-            mPaymentMethodSelectionCallback.onPaymentMethodSet(paymentMethod);
-        }
-
-        public void refreshPaymentMethodLayout() {
-            mImagePaymentMethod.setImageResource(android.R.color.transparent);
-            hidePaymentMethodSelector();
-        }
-    }
 }
 
 

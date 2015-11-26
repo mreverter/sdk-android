@@ -124,22 +124,17 @@ public class GuessingCardActivity extends AppCompatActivity {
                     @Override
                     public void onPaymentMethodSet(PaymentMethod paymentMethod) {
                         mPaymentMethod = paymentMethod;
-                        setSecurityCodeLayout();
-                        setIssuerLayout();
+                        setLayouts();
                     }
 
                     @Override
-                    public void onPaymentMethodClearedOrChanged() {
+                    public void onPaymentMethodCleared() {
                         mPaymentMethod = null;
-                        if(mRequireSecurityCode)
-                            setSecurityCodeHelpForPaymentMethod(null);
-                        if(mRequireIssuer)
-                            setIssuerLayout();
+                        setLayouts();
                     }
                 });
 
-        setSecurityCodeLayout();
-        setIssuerLayout();
+
         // Set identification type listener to control identification number keyboard
         setIdentificationNumberKeyboardBehavior();
         // Error text cleaning hack
@@ -421,6 +416,11 @@ public class GuessingCardActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    protected void setLayouts() {
+        setSecurityCodeLayout();
+        setIssuerLayout();
     }
 
     protected void setSecurityCodeLayout() {
