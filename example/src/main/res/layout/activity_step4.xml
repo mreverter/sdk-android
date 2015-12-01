@@ -25,6 +25,14 @@
         android:layout_marginTop="15dp"
         style="@style/mpsdk_form_label"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/step4_choice_description"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        style="@style/mpsdk_form_label"/>
+
     <Button
         android:id="@+id/continueButton"
         android:layout_width="match_parent"

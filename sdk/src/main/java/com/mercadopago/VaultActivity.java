@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputFilter;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +37,7 @@ import com.mercadopago.model.PayerCost;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -448,7 +448,9 @@ public class VaultActivity extends AppCompatActivity {
             @Override
             public void success(Customer customer, Response response) {
 
-                mCards = customer.getCards();
+                List<Card> customerCards = customer.getCards();
+                if(customerCards != null)
+                    mCards = getSupportedCustomerCards(customerCards);
 
                 // If the customer has saved cards show the first one, else show the payment methods step
                 if ((mCards != null) && (mCards.size() > 0)) {
@@ -462,7 +464,10 @@ public class VaultActivity extends AppCompatActivity {
                 } else {
 
                     // Show payment methods step
-                    startPaymentMethodsActivity();
+                    if (mCardGuessingEnabled)
+                        startGuessingCardActivity();
+                    else
+                        startPaymentMethodsActivity();
 
                     LayoutUtil.showRegularLayout(mActivity);
                 }
@@ -475,6 +480,16 @@ public class VaultActivity extends AppCompatActivity {
                 ApiUtil.finishWithApiException(mActivity, error);
             }
         });
+    }
+
+    private List<Card> getSupportedCustomerCards(List<Card> cards) {
+        List<Card> supportedCards = new ArrayList<Card>();
+        for(Card card : cards)
+        {
+            if(mSupportedPaymentTypes.contains(card.getPaymentMethod().getPaymentTypeId()))
+                supportedCards.add(card);
+        }
+        return supportedCards;
     }
 
     protected void getInstallmentsAsync() {
@@ -728,7 +743,7 @@ public class VaultActivity extends AppCompatActivity {
     protected void startCustomerCardsActivity() {
 
         new MercadoPago.StartActivityBuilder()
-                .setCardGuessingEnabled(mCardGuessingEnabled)
+                .setGuessingCardFormEnabled(mCardGuessingEnabled)
                 .setActivity(mActivity)
                 .setCards(mCards)
                 .startCustomerCardsActivity();
@@ -768,6 +783,7 @@ public class VaultActivity extends AppCompatActivity {
                 .setRequireSecurityCode(false)
                 .setRequireIssuer(true)
                 .setShowBankDeals(mShowBankDeals)
+                .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .startGuessingCardActivity();
     }
 

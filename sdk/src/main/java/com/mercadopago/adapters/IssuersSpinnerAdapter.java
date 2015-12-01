@@ -22,9 +22,11 @@ public class IssuersSpinnerAdapter extends BaseAdapter {
 
     private List<Issuer> mData;
     private static LayoutInflater mInflater = null;
+    private String mError;
 
     public IssuersSpinnerAdapter(Activity activity, List<Issuer> data) {
         mData = data;
+        mError = "";
         Issuer selectionIssuer = new Issuer();
         selectionIssuer.setName(activity.getString(R.string.mpsdk_select_issuer_label));
         data.add(0, selectionIssuer);
@@ -51,6 +53,7 @@ public class IssuersSpinnerAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
+        mError = "";
         return position;
     }
 
@@ -67,6 +70,16 @@ public class IssuersSpinnerAdapter extends BaseAdapter {
         label.setText(issuer.getName());
 
         return row;
+    }
+
+    public void setError(View v, String error) {
+        TextView name = (TextView) v.findViewById(R.id.label);
+        name.setError(error);
+        mError = error;
+    }
+
+    public String getError(){
+        return mError;
     }
 
 }

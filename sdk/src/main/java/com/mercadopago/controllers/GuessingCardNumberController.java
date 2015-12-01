@@ -149,6 +149,7 @@ public class GuessingCardNumberController {
 
             showPaymentMethodsSelector();
             populatePaymentMethodSpinner(paymentMethods);
+
         }
     }
 
@@ -189,7 +190,7 @@ public class GuessingCardNumberController {
 
     public void hidePaymentMethodSelector() {
         mPaymentMethodLayout.setVisibility(View.GONE);
-        mImagePaymentMethod.setImageResource(android.R.color.transparent);
+        mImagePaymentMethod.setImageDrawable(null);
         mPaymentMethodSelectionCallback.onPaymentMethodCleared();
     }
 
@@ -230,8 +231,18 @@ public class GuessingCardNumberController {
     }
 
     public void refreshPaymentMethodLayout() {
-        mImagePaymentMethod.setImageResource(android.R.color.transparent);
+        mImagePaymentMethod.setImageDrawable(null);
         hidePaymentMethodSelector();
+    }
+
+    public void setPaymentMethodError(String error) {
+        if(mPaymentMethodLayout.getVisibility() == View.VISIBLE) {
+            PaymentMethodsSpinnerAdapter adapter = (PaymentMethodsSpinnerAdapter) mSpinnerPaymentMethods.getAdapter();
+            View view = mSpinnerPaymentMethods.getSelectedView();
+            adapter.setError(view, error);
+        }
+        else
+            setCardNumberError(error);
     }
 
     public static abstract class PaymentMethodSelectionCallback {

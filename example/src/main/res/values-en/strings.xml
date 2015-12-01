@@ -10,7 +10,7 @@
     </string-array>
     <string name="welcome_title">Check these integration options. From simple to full payment flows.</string>
     <string name="title_activity_step1">Simple card form</string>
-    <string name="title_activity_step1_guessing">Card form with payment method guessing</string>
+    <string name="title_activity_step1_guessing">Simple form with guessing</string>
     <string name="title_activity_step2">Saved cards</string>
     <string name="title_activity_step3">Pay with installments</string>
     <string name="title_activity_step4">Off-line payment methods</string>
@@ -26,4 +26,13 @@
     <string name="step5_description">Default payment flow. Includes every payment module.</string>
      <string name="spinner_default_value">Select your bank…</string>
     <string name="mpsdk_issuer_label">Bank</string>
+
+    <string name="step1_choice_description">You can collect data through a few screens or use an unique form that will automatically fill the most it can.</string>
+    <string name="step3_choice_description">A bank selection screen can be added to the simple flow, or use the guessing form.</string>
+    <string name="step4_choice_description">Tip: if you need to accept off-line payment methods, do not enable the guessing form, since it discards them.</string>
+    <string name="step5_choice_description">If only cards are accepted and a new one is needed, you can collect data through a few screens or use an unique form that will automatically fill the most it can.</string>
+
+    <string name="simple_card_flow_label">Different screens</string>
+    <string name="guessing_card_flow_label">Guessing form</string>
+
 </resources>

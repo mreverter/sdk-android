@@ -60,16 +60,6 @@
             android:name=".step5.Step5Activity"
             android:label="@string/title_activity_step5" >
         </activity>
-        <activity
-            android:name=".step1.GuessingCardActivity"
-            android:label="@string/title_activity_guessing_card"
-            android:theme="@style/Theme.AppTheme.NoActionBar" >
-        </activity>
-        <activity
-            android:name=".step1.Step1GuessingActivity"
-            android:label="@string/title_activity_step1_guessing"
-            android:theme="@style/Theme.AppTheme.NoActionBar" >
-        </activity>
     </application>
 
 </manifest>

@@ -20,8 +20,11 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mercadopago.adapters.IdentificationTypesAdapter;
 import com.mercadopago.adapters.IssuersSpinnerAdapter;
+import com.mercadopago.adapters.PaymentMethodsSpinnerAdapter;
 import com.mercadopago.controllers.GuessingCardNumberController;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.CardToken;
@@ -33,6 +36,7 @@ import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,17 +67,14 @@ public class GuessingCardActivity extends AppCompatActivity {
     protected LinearLayout mIssuerLayout;
     protected EditText mSecurityCode;
 
-    protected GuessingCardNumberController mGuessingCardNumberControler;
+    protected GuessingCardNumberController mGuessingCardNumberController;
 
     // Local vars
     protected Activity mActivity;
-    private List<String> mSupportedTypes = new ArrayList<String>(){{
-        add("credit_card");
-        add("debit_card");
-    }};
     private PaymentMethod mPaymentMethod;
     private Issuer mIssuer;
     private MercadoPago mMercadoPago;
+    private List<String> mSupportedPaymentTypes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,12 @@ public class GuessingCardActivity extends AppCompatActivity {
         mKey = this.getIntent().getStringExtra("key");
         mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
         mRequireIssuer = this.getIntent().getBooleanExtra("requireIssuer", true);
+
+        if (this.getIntent().getStringExtra("supportedPaymentTypes") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
+        }
 
         if ((mKeyType == null) || (mKey == null)) {
             Intent returnIntent = new Intent();
@@ -119,7 +126,7 @@ public class GuessingCardActivity extends AppCompatActivity {
         mExpiryYear = (EditText) findViewById(R.id.expiryYear);
         mSpinnerIssuers = (Spinner) findViewById(R.id.spinnerIssuer);
 
-        mGuessingCardNumberControler = new GuessingCardNumberController(this, mMercadoPago, mSupportedTypes,
+        mGuessingCardNumberController = new GuessingCardNumberController(this, mMercadoPago, mSupportedPaymentTypes,
                 new GuessingCardNumberController.PaymentMethodSelectionCallback(){
                     @Override
                     public void onPaymentMethodSet(PaymentMethod paymentMethod) {
@@ -221,34 +228,45 @@ public class GuessingCardActivity extends AppCompatActivity {
 
     protected boolean validateForm(CardToken cardToken) {
 
-        boolean result = true;
+        boolean valid = true;
         boolean focusSet = false;
 
-        // Validate card number
-        try {
-            validateCardNumber(cardToken);
-            if(mPaymentMethod == null){
-                mGuessingCardNumberControler.setCardNumberError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
-                mGuessingCardNumberControler.requestFocusForCardNumber();
-                result = false;
-            }
-            else if(mRequireIssuer){
-                if(mPaymentMethod.isIssuerRequired() && mIssuer == null){
-                    TextView errorText = (TextView)mSpinnerIssuers.getSelectedView();
-                    errorText.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
-                    result = false;
-                }
-            }
-            else
-                mGuessingCardNumberControler.setCardNumberError(null);
-        }
-        catch (Exception ex) {
-            mGuessingCardNumberControler.setCardNumberError(ex.getMessage());
-            mGuessingCardNumberControler.requestFocusForCardNumber();
-            result = false;
+        if(mGuessingCardNumberController.getCardNumberText().equals(""))
+        {
+            mGuessingCardNumberController.requestFocusForCardNumber();
+            mGuessingCardNumberController.setCardNumberError(getString(R.string.mpsdk_invalid_empty_card));
+            valid = false;
             focusSet = true;
         }
+        else if(mPaymentMethod == null)
+        {
+            mGuessingCardNumberController.setPaymentMethodError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
+            focusSet = true;
+            valid = false;
 
+        }
+        else{
+            if(mRequireIssuer) {
+                if (mIssuer == null) {
+                    IssuersSpinnerAdapter adapter = (IssuersSpinnerAdapter) mSpinnerIssuers.getAdapter();
+                    View view = mSpinnerIssuers.getSelectedView();
+                    adapter.setError(view, getString(com.mercadopago.R.string.mpsdk_invalid_field));
+                    mSpinnerIssuers.requestFocus();
+                    focusSet = true;
+                    valid = false;
+                }
+            }
+            // Validate card number
+            try {
+                validateCardNumber(cardToken);
+
+            } catch (Exception ex) {
+                mGuessingCardNumberController.setCardNumberError(ex.getMessage());
+                mGuessingCardNumberController.requestFocusForCardNumber();
+                focusSet = true;
+                valid = false;
+            }
+        }
         // Validate security code
         if (mRequireSecurityCode) {
             try {
@@ -260,7 +278,7 @@ public class GuessingCardActivity extends AppCompatActivity {
                     mSecurityCode.requestFocus();
                     focusSet = true;
                 }
-                result = false;
+                valid = false;
             }
         }
 
@@ -272,7 +290,7 @@ public class GuessingCardActivity extends AppCompatActivity {
                 mExpiryMonth.requestFocus();
                 focusSet = true;
             }
-            result = false;
+            valid = false;
         } else {
             mExpiryError.setError(null);
             mExpiryError.setVisibility(View.GONE);
@@ -285,7 +303,7 @@ public class GuessingCardActivity extends AppCompatActivity {
                 mCardHolderName.requestFocus();
                 focusSet = true;
             }
-            result = false;
+            valid = false;
         } else {
             mCardHolderName.setError(null);
         }
@@ -296,17 +314,14 @@ public class GuessingCardActivity extends AppCompatActivity {
                 mIdentificationNumber.setError(getString(R.string.mpsdk_invalid_field));
                 if (!focusSet) {
                     mIdentificationNumber.requestFocus();
-                    focusSet = true;
                 }
-                result = false;
+                valid = false;
             } else {
                 mIdentificationNumber.setError(null);
             }
         }
 
-
-
-        return result;
+        return valid;
     }
 
     protected void validateCardNumber(CardToken cardToken) throws Exception {
@@ -477,7 +492,6 @@ public class GuessingCardActivity extends AppCompatActivity {
             }
         });
 
-
         mSpinnerIssuers.setAdapter(new IssuersSpinnerAdapter(mActivity, issuers));
     }
 
@@ -494,7 +508,7 @@ public class GuessingCardActivity extends AppCompatActivity {
 
     protected String getCardNumber() {
 
-        return mGuessingCardNumberControler.getCardNumberText();
+        return mGuessingCardNumberController.getCardNumberText();
     }
 
     protected String getSecurityCode() {

@@ -23,7 +23,17 @@
     <string name="step4_description">Flujo de pagos que incluye los medios off-line como medios de pago disponibles.</string>
     <string name="step5_description">Flujo de pagos por defecto. Incluye todos los módulos de pago.</string>
     <string name="title_activity_guessing_card">Fomulario de tarjeta con guessing de medio de pago</string>
-    <string name="title_activity_step1_guessing">Formulario de tarjeta con guessing de método de pago.</string>
+
+    <string name="title_activity_step1_guessing">Formulario simple con guessing</string>
     <string name="spinner_default_value">Seleccione su banco…</string>
     <string name="mp_issuer_not_selected_error">Seleccione su banco</string>
+
+    <string name="step1_choice_description">Puede recolectar datos de tarjeta a través de distintas pantallas, o utilizar un formulario único que completa automáticamente la mayor información posible.</string>
+    <string name="step3_choice_description">Puede agregar una pantalla de selección de bancos al flujo simple, o utilizar el formulario con guessing.</string>
+    <string name="step4_choice_description">Tip: si necesita aceptar medios de pago off-line, no active el formulario con guessing ya que los descarta. </string>
+    <string name="step5_choice_description">Si sólo acepta tarjetas, puede decidir si se agregan nuevas recolectando sus datos a través de distintas pantallas, o utilizar un formulario único que completa automáticamente la mayor información posible.</string>
+
+    <string name="simple_card_flow_label">Distintas pantallas</string>
+    <string name="guessing_card_flow_label">Formulario con guessing</string>
+
 </resources>

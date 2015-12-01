@@ -138,7 +138,7 @@ public class MercadoPago {
     private boolean isValidPaymentMethodForBin(String bin, PaymentMethod paymentMethod, List<String> supportedPaymentTypes) {
 
             return (Setting.getSettingByBin(paymentMethod.getSettings(), bin) != null
-                && supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId()));
+                && (supportedPaymentTypes == null || supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId())));
     }
 
     public void getInstallments(String bin, BigDecimal amount, Long issuerId, String paymentTypeId, Callback<List<Installment>> callback) {
@@ -228,11 +228,13 @@ public class MercadoPago {
         activity.startActivityForResult(newCardIntent, NEW_CARD_REQUEST_CODE);
     }
 
-    private static void startGuessingCardActivity(Activity activity, String keyType, String key, Boolean requireSecurityCode, Boolean requireIssuer, Boolean showBankDeals) {
+    private static void startGuessingCardActivity(Activity activity, String keyType, String key, List<String> supportedPaymentTypes, Boolean requireSecurityCode, Boolean requireIssuer, Boolean showBankDeals) {
 
         Intent guessingCardIntent = new Intent(activity, com.mercadopago.GuessingCardActivity.class);
         guessingCardIntent.putExtra("keyType", keyType);
         guessingCardIntent.putExtra("key", key);
+        putListExtra(guessingCardIntent, "supportedPaymentTypes", supportedPaymentTypes);
+
         if (requireSecurityCode != null) {
             guessingCardIntent.putExtra("requireSecurityCode", requireSecurityCode);
         }
@@ -454,7 +456,7 @@ public class MercadoPago {
             return this;
         }
 
-        public StartActivityBuilder setCardGuessingEnabled(boolean cardGuessingEnabled)
+        public StartActivityBuilder setGuessingCardFormEnabled(boolean cardGuessingEnabled)
         {
             this.mCardGuessingEnabled = cardGuessingEnabled;
             return this;
@@ -529,10 +531,8 @@ public class MercadoPago {
             if (this.mActivity == null) throw new IllegalStateException("activity is null");
             if (this.mKey == null) throw new IllegalStateException("key is null");
             if (this.mKeyType == null) throw new IllegalStateException("key type is null");
-
-            MercadoPago.startGuessingCardActivity(this.mActivity, this.mKeyType, this.mKey, this.mRequireSecurityCode, this.mRequireIssuer, this.mShowBankDeals);
+            MercadoPago.startGuessingCardActivity(this.mActivity, this.mKeyType, this.mKey, this.mSupportedPaymentTypes, this.mRequireSecurityCode, this.mRequireIssuer, this.mShowBankDeals);
         }
-
 
         public void startPaymentMethodsActivity() {
 

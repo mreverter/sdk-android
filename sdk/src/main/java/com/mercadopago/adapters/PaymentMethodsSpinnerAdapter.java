@@ -20,8 +20,10 @@ import java.util.List;
 public class PaymentMethodsSpinnerAdapter extends BaseAdapter {
     private List<PaymentMethod> mData;
     private static LayoutInflater mInflater = null;
+    private String mError;
 
     public PaymentMethodsSpinnerAdapter(Activity activity, List<PaymentMethod> data) {
+        mError = "";
         mData = data;
         PaymentMethod selectionIssuer = new PaymentMethod();
         selectionIssuer.setName(activity.getString(R.string.mpsdk_select_pm_label));
@@ -49,6 +51,7 @@ public class PaymentMethodsSpinnerAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
+        mError = "";
         return position;
     }
 
@@ -65,5 +68,15 @@ public class PaymentMethodsSpinnerAdapter extends BaseAdapter {
         label.setText(pm.getName());
 
         return row;
+    }
+
+    public void setError(View v, String error) {
+        TextView label = (TextView) v.findViewById(R.id.label);
+        label.setError(error);
+        mError = error;
+    }
+
+    public String getError(){
+        return mError;
     }
 }

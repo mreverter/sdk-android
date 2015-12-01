@@ -97,7 +97,6 @@ public class CardToken {
     }
 
     public void validateCardNumber(Context context, PaymentMethod paymentMethod) throws Exception {
-
         // Empty field
         if (TextUtils.isEmpty(cardNumber)) {
             throw new Exception(context.getString(R.string.mpsdk_invalid_empty_card));

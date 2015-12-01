@@ -13,7 +13,6 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +22,8 @@ public class Step5Activity extends ExampleActivity {
         add("credit_card");
         add("debit_card");
         add("prepaid_card");
-        add("ticket");
         add("atm");
+        add("ticket");
     }};
 
     @Override
@@ -64,8 +63,7 @@ public class Step5Activity extends ExampleActivity {
         }
     }
 
-    public void submitForm(View view) {
-
+    public void submitSimpleForm(View view) {
         // Call final vault activity
         new MercadoPago.StartActivityBuilder()
                 .setActivity(this)
@@ -76,6 +74,21 @@ public class Step5Activity extends ExampleActivity {
                 .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .setShowBankDeals(true)
+                .startVaultActivity();
+    }
+
+    public void submitGuessingForm(View view){
+        // Call final vault activity
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(this)
+                .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
+                .setMerchantBaseUrl(ExamplesUtils.DUMMY_MERCHANT_BASE_URL)
+                .setMerchantGetCustomerUri(ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI)
+                .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
+                .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
+                .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setShowBankDeals(false)
+                .setGuessingCardFormEnabled(true)
                 .startVaultActivity();
     }
 }
