@@ -14,6 +14,7 @@ import android.widget.Spinner;
 
 import com.mercadopago.R;
 import com.mercadopago.adapters.PaymentMethodsSpinnerAdapter;
+import com.mercadopago.callbacks.PaymentMethodSelectionCallback;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.util.MercadoPagoUtil;
@@ -243,12 +244,6 @@ public class GuessingCardNumberController {
         }
         else
             setCardNumberError(error);
-    }
-
-    public static abstract class PaymentMethodSelectionCallback {
-
-        public abstract void onPaymentMethodSet(PaymentMethod paymentMethod);
-        public abstract void onPaymentMethodCleared();
     }
 
 }

@@ -25,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mercadopago.adapters.IdentificationTypesAdapter;
 import com.mercadopago.adapters.IssuersSpinnerAdapter;
 import com.mercadopago.adapters.PaymentMethodsSpinnerAdapter;
+import com.mercadopago.callbacks.PaymentMethodSelectionCallback;
 import com.mercadopago.controllers.GuessingCardNumberController;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.CardToken;
@@ -127,7 +128,7 @@ public class GuessingCardActivity extends AppCompatActivity {
         mSpinnerIssuers = (Spinner) findViewById(R.id.spinnerIssuer);
 
         mGuessingCardNumberController = new GuessingCardNumberController(this, mMercadoPago, mSupportedPaymentTypes,
-                new GuessingCardNumberController.PaymentMethodSelectionCallback(){
+                new PaymentMethodSelectionCallback(){
                     @Override
                     public void onPaymentMethodSet(PaymentMethod paymentMethod) {
                         mPaymentMethod = paymentMethod;
