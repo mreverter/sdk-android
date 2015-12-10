@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+  <title>Built-in UI</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>MercadoPago</h1>
+        <h2>Client SDK for Android</h2>
+        <a href="https://github.com/mreverter/sdk-android" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+            <h1>Built-in UI</h1>
+            <p>We offer you the following UI solutions:</p>
+
+
+            <table>
+              <tr>
+                <td><a href="#payment_methods_ui">Payment methods selection UI</a><br>
+                  <a href="#issuers_ui">Issuers selection UI</a><br>
+                  <a href="#new_card_ui">New card input UI</a></td>
+                <td><img class="bracket" src="images/bracket.png" alt="bracket"></td>
+                <td>Guessing card input UI</td>
+              </tr>
+              <td>
+                <br>
+                  Installments selection UI<br>
+                  Customer cards UI<br>
+                  Bank deals UI<br>
+                  Terms and conditions UI<br>
+                  Congrats UI
+              </td>
+              </table>
+
+          <br>
+          <h2><a name="payment_methods_ui"></a>Payment methods selection UI</h2>
+
+          <p>Add this code to launch the solution:</p>
+          <pre class="prettyprint">
+          // Call payment methods activity
+          new MercadoPago.StartActivityBuilder()
+               .setActivity(activity)
+               .setPublicKey(yourPublicKey)
+               .setSupportedPaymentTypes(supportedPaymentTypes)
+               .startPaymentMethodsActivity();
+          </pre>
+          <p><b>Tip:</b>  to filter payment methods by their type, the <i>setSupportedPaymentTypes</i> method receives a list of strings that let you filter by:<br>
+          <i>Credit card: “credit_card”<br>
+          Debit card: “debit_card”<br>
+          Pre paid card: “prepaid_card”<br>
+          Atm: “atm”<br>
+          Tickets: “ticket”<br></i>
+          <br>
+          <b>Example:</b>
+          <pre class="prettyprint">
+          protected List<String> supportedPaymentTypes = new ArrayList<String>(){{
+             add("credit_card");
+             add("debit_card");
+             add("prepaid_card");
+             add("ticket");
+             add("atm");
+          }};
+          </pre>
+          <p>And in your launcher activity, get the selected payment method like this:
+          </p>
+          <pre class="prettyprint">
+          protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+               if (requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) {
+                   if (resultCode == RESULT_OK) {
+                       // Set payment method
+                       PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+                  // Error handling
+                   } else {
+                       if ((data != null) && (data.getStringExtra("apiException") != null)) {
+                           Toast.makeText(getApplicationContext(), data.getStringExtra("apiException"), Toast.LENGTH_LONG).show();
+                       }
+                   }
+               }
+            }
+            </pre>
+
+          <br>
+          <h2><a name="issuers_ui"></a>Issuers selection UI</h2>
+
+          <p>If your app should support payments in installments, depending on the payment method you may need to add an issuer's selection screen.</p>
+
+          <p>Once your user has selected a payment method, to acknowledge whether issuer selection is needed or not, this will do the trick:</p>
+
+          <pre class="prettyprint">
+          selectedPaymentMethod.isIssuerRequired()
+          </pre>
+
+          <p>if it’s required, start our issuer selection UI like this:</p>
+          
+          <pre class="prettyprint">
+          new MercadoPago.StartActivityBuilder()
+               .setActivity(activity)
+               .setPublicKey(yourPublicKey)
+               .setPaymentMethod(mTempPaymentMethod)
+               .startIssuersActivity();
+          </pre>
+
+          <p>And retrieve the selected one in your launcher activity:</p>
+          <pre class="prettyprint">
+          @Override
+          protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+            if (requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
+                 if (resultCode == RESULT_OK) {
+                  // Set issuer selection
+                    issuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+                  // Error handling
+                  } else {
+                     if (data != null) {
+                         if (data.getStringExtra("apiException") != null) {
+                             finishWithApiException(data);
+                         } else if (data.getBooleanExtra("backButtonPressed", false)) {
+                             startPaymentMethodsActivity();
+                         }
+                     }
+                  }
+               }
+            }
+          </pre>
+          <br>
+          <h2><a name="new_card_ui"></a>New card input UI</h2>
+          <p>Once your user has selected a payment method, your app can start a card input UI. </p>
+          <pre class="prettyprint">
+          new MercadoPago.StartActivityBuilder()
+                 .setActivity(activity)
+                 .setPublicKey(yourPublicKey)
+                 .setPaymentMethod(paymentMethod)
+                 .startNewCardActivity();
+          </pre>
+          <p><b>Tip:</b> to avoid asking for the security code more than once, if your app does it later in the flow you can hide it from the card input form:</p>
+          <pre class="prettyprint">
+          new MercadoPago.StartActivityBuilder()
+             .setActivity(activity)
+             .setPublicKey(yourPublicKey)
+             .setPaymentMethod(paymentMethod)
+             .setRequireSecurityCode(false)
+             .startNewCardActivity();
+          </pre>
+
+          <p>This activity’s result, if succeeded, is a <b><i>CardToken</i></b> object. This object is used to create a <b><i>Token</i></b> object, which is used to create a payment. 
+          The <b><i>cardToken</i></b> must validate the security code according to the payment method. If the security code was hid, you’ll have to do it yourself. The following line of code validates it and throws an error if needed:
+          </p>
+          <pre class="prettyprint">
+          cardToken.validateSecurityCode(this, paymentMethod);
+          </pre>
+
+          <p>Get the <b><i>cardToken</i></b> in your launcher activity:</p>
+          <pre class="prettyprint">
+          protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == MercadoPago.NEW_CARD_REQUEST_CODE) {
+               if (resultCode == RESULT_OK) {
+               // Set selection status
+                 mCardToken = JsonUtil.getInstance().fromJson(data.getStringExtra(  "cardToken"), CardToken.class);
+
+                } else {
+                   if (data != null) {
+                       if (data.getStringExtra("apiException") != null) {
+                           finishWithApiException(data);
+                       } 
+                   }
+                }
+            } 
+          }
+
+          </pre>
+
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/mreverter/sdk-android/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/mreverter/sdk-android/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/mreverter/sdk-android"></a> is maintained by <a href="https://github.com/mreverter">mreverter</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

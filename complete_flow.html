@@ -14,7 +14,7 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-  <title>Sdk-android by mreverter</title>
+  <title>Complete payment flow tool</title>
   </head>
 
   <body>
@@ -29,7 +29,7 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <a name="flavor3"><h1>Complete payment flow tool</h1></a>
+          <h1>Complete payment flow tool</h1>
           <p>Just place this code in your project <b>replacing with your data</b> to launch a full payment flow:</p>
           <pre class="prettyprint">
           new MercadoPago.StartActivityBuilder()
@@ -89,12 +89,12 @@
           To enable our guessing card form, you only have to add a single line:
           </p>
           <pre class="prettyprint">
-            new MercadoPago.StartActivityBuilder()
-           .setActivity(this)
-           .setPublicKey("444a9ef5-8a6b-429f-abdf-587639155d88")
-           .setAmount("100")
-           .setGuessingCardFormEnabled(true) //add this
-           .startVaultActivity();
+          new MercadoPago.StartActivityBuilder()
+             .setActivity(this)
+             .setPublicKey("444a9ef5-8a6b-429f-abdf-587639155d88")
+             .setAmount("100")
+             .setGuessingCardFormEnabled(true) //add this
+             .startVaultActivity();
           </pre>
           <br>
           <p><b>Let's see!</b></p>
@@ -202,7 +202,7 @@
           }
           </pre>  
 
-          <p>To create a payment, have a look at: <a href="#payment">Make a payment</a></p>
+          <p>To create a payment, have a look at: <a href="make_payment.html">Make a payment</a></p>
 
         </section>
 
