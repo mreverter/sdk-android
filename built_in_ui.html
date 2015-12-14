@@ -42,7 +42,7 @@
               <td>
                 <br>
                   <a href="#installments">Installments selection UI</a><br>
-                  Customer cards UI<br>
+                  <a href="#customer_cards">Customer cards UI</a><br>
                   Bank deals UI<br>
                   Terms and conditions UI<br>
                   Congrats UI
@@ -353,6 +353,77 @@
                 }
               } 
             }
+        </pre>
+
+
+
+        <br>
+        <a name="customer_cards"><h2>Customer cards UI</h2></a>
+        <br>
+        <p>With MercadoPago SDK, you can manage your customer's information easily. By giving to each customer an id and syncing it with MercadoPago, we can handle your users information (preferred cards, address, name, email, etc.). In order to do this, you’ll have to set up your server with <a href="https://www.mercadopago.com.ar/developers/es/tools/">MercadoPago Server SDK</a>, and then add your base URL, getCustomer URI and user access token to get a Customer object. A customer has a list of cards, which is needed to launch our Customer cards UI.
+        <br>
+        First, get your Customer:
+        </p>
+
+
+        <pre class="prettyprint">
+           MerchantServer.getCustomer(this, mMerchantBaseUrl, mMerchantGetCustomerUri, mMerchantAccessToken, new Callback<Customer>() {
+                 @Override
+                 public void success(Customer customer, Response response) {
+                     cards = customer.getCards();
+                 }
+
+                 @Override
+                 public void failure(RetrofitError error) {
+                     mExceptionOnMethod = "getCustomerCardsAsync";
+                     ApiUtil.finishWithApiException(mActivity, error);
+                 }
+              });
+            }
+        </pre>
+        <br>
+
+        <p>And then, start the Customer cards UI with the cards you've got:</p>
+        <pre class="prettyprint"> 
+        new MercadoPago.StartActivityBuilder()
+           .setActivity(mActivity)
+           .setCards(cards)
+           .startCustomerCardsActivity();
+        </pre>
+
+        <p><b>Let's see!</b></p>
+
+          <p>A list of available saved cards will show up: </p>
+          <img class="centered" src="images/screenshots/saved_cards.png" alt="saved_cards">
+          <br>
+
+        <p>You'll get a <b><i>PaymentMethodRow</i></b> object in your launcher activity. It has a Card object that could be null if the user did not select a card, so you'll have to check that and decide what to do (start a PaymentMethod selection UI or the guessing form). If the user selected a card, the Card object provides the corresponding PaymentMethod and Issuer.
+        <br>
+        Here's an example:
+        </p>
+        <pre class="prettyprint">
+
+          protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == MercadoPago.CUSTOMER_CARDS_REQUEST_CODE) {
+              if (resultCode == RESULT_OK) {
+
+                  PaymentMethodRow selectedPaymentMethodRow = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethodRow"), PaymentMethodRow.class);
+
+                  if (selectedPaymentMethodRow.getCard() != null) {
+
+                      mSelectedPaymentMethod = mSelectedPaymentMethodRow.getCard().getPaymentMethod();
+                      mSelectedIssuer = mSelectedPaymentMethodRow.getCard().getIssuer();
+
+                  } else {
+                      startPaymentMethodsActivity(); //or startGuessingCardActivity();  
+                  }
+              } else {
+                  if ((data != null) && (data.getStringExtra("apiException") != null)) {
+                      finishWithApiException(data);
+                  }
+              } 
+            } 
+          } 
         </pre>
         </section>
 
