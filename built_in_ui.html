@@ -39,7 +39,7 @@
                   <a href="#issuers_ui">Issuers selection UI</a><br>
                   <a href="#new_card_ui">New card input UI</a></td>
                 <td><img class="bracket" src="images/bracket.png" alt="bracket"></td>
-                <td>Guessing card input UI</td>
+                <td><a href="#guessing">Guessing card input UI</a></td>
               </tr>
               <td>
                 <br>
@@ -188,17 +188,70 @@
           }
           </pre>
 
-
-        <h2>Guessing card input UI</h2>
-        <p>Instead of collecting payment method, issuer and card data at different steps, you can use our data guessing card form, which will fill the most information it can automatically.
+        <br>
+        <a name="guessing"><h2>Guessing card input UI</h2></a>
+        <p>Instead of collecting payment method, issuer and card data at different steps, you can use our data guessing card form, which will fill the most information it can automatically. Note that this feature is only available for credit and debit cards.
         <br>
         Just launch the activity like this:
         </p>
 
+        <pre class="prettyprint">
+          new MercadoPago.StartActivityBuilder()
+               .setActivity(mActivity)
+               .setPublicKey(yourPublicKey)
+               .setSupportedPaymentTypes(supportedPaymentTypes)
+               .startGuessingCardActivity();
+        </pre>
 
+        <p><b>Tip:</b> you can choose if the issuer is required or not. If your app should offer payment in installments, issuer will be required. If not, just set is as not required:</p>
 
+        <pre class="prettyprint">
+          new MercadoPago.StartActivityBuilder()
+               .setActivity(mActivity)
+               .setPublicKey(yourPublicKey)
+               .setRequireIssuer(false) //just add this
+               .setSupportedPaymentTypes(supportedPaymentTypes)
+               .startGuessingCardActivity();
+        </pre>
 
+        <p><b>Tip:</b> to avoid asking for the security code more than once, if your app does it later in the flow you can hide it from the card input form:</p>
+        <pre class="prettyprint">
+          new MercadoPago.StartActivityBuilder()
+               .setActivity(activity)
+               .setPublicKey(yourPublicKey)
+               .setRequireSecurityCode(false) //just add this
+               .setSupportedPaymentTypes(supportedPaymentTypes)
+               .startGuessingCardActivity();
+        </pre>
 
+        <p><b>Tip:</b> you can choose wheter showing bank deals or not:</p>
+        <pre class="prettyprint">
+          new MercadoPago.StartActivityBuilder()
+             .setActivity(activity)
+             .setPublicKey(yourPublicKey)
+             .setShowBankDeals(true) //true to show them, false to hide
+             .setSupportedPaymentTypes(supportedPaymentTypes)
+             .startGuessingCardActivity();
+        </pre>
+        <p>Get the <b><i>paymentMethod</i></b>, <b><i>issuer</i></b>, and <b><i>cardToken</i></b> in your launcher activity:</p>
+        <pre class="prettyprint">
+
+          protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
+              if(resultCode == RESULT_OK)
+              {
+                  
+                  paymentMehod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+                  issuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+                  cardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
+
+              }
+              else if ((data != null) && (data.getStringExtra("apiException") != null)) {
+                  finishWithApiException(data);
+              }
+            }
+          }
+        </pre>
 
 
         </section>
