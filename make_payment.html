@@ -47,7 +47,7 @@
             MerchantServer.createPayment(activity, DUMMY_MERCHANT_BASE_URL, DUMMY_MERCHANT_CREATE_PAYMENT_URI, payment, new Callback<Payment>() {
                @Override
                public void success(Payment payment, Response response) {
-                   new MercadoPago.StartActivityBuilder()
+                   new MercadoPago.StartActivityBuilder()  //when payment creation suceeded, you can launch our payment result UI
                            .setActivity(activity)
                            .setPayment(payment)
                            .setPaymentMethod(paymentMethod)
@@ -64,6 +64,11 @@
         <p>And finally, aleluya!</p>
         <img class="centered" src="images/screenshots/congratulations.png" alt="congratualtions">
         <br>
+        <p>Also, payments could remain pending...</p>
+        <img class="centered" src="images/screenshots/pending_payment.png" alt="pending_payment">
+
+        <p>...or be rejected:</p>
+        <img class="centered" src="images/screenshots/rejected_payment.png" alt="rejected_payment">
         </section>
 
         <aside id="sidebar">
