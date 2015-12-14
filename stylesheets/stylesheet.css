@@ -592,7 +592,6 @@ ul, ol, dl {
   margin-bottom: 20px;
 }
 
-
 /* COMMON STYLES */
 
 hr {
@@ -606,12 +605,19 @@ hr {
 table.withBorder{
   width: 100%;
   border: 1px solid #ebebeb;
+  table-layout: fixed;
 }
 
 table.withBorder td{
   font-weight: 300;
   text-align: center;
   border: 1px solid #ebebeb;
+  text-align: left;
+}
+
+table.withBorder th {
+  border: 1px solid #ebebeb;
+  vertical-align: middle;
 }
 
 table {
@@ -623,6 +629,7 @@ th {
 }
 
 td {
+  text-align: left;
   font-weight: 300;
   text-align: center;
 }
