@@ -31,8 +31,6 @@
         <section id="main-content">
             <h1>Built-in UI</h1>
             <p>We offer you the following UI solutions:</p>
-
-
             <table>
               <tr>
                 <td><a href="#payment_methods_ui">Payment methods selection UI</a><br>
@@ -43,7 +41,7 @@
               </tr>
               <td>
                 <br>
-                  Installments selection UI<br>
+                  <a href="#installments">Installments selection UI</a><br>
                   Customer cards UI<br>
                   Bank deals UI<br>
                   Terms and conditions UI<br>
@@ -79,7 +77,14 @@
              add("ticket");
              add("atm");
           }};
+
           </pre>
+
+          <p><b>Let's see!</b></p>
+          </p>A list of payment methods will show up:<p>
+          <br>
+          <img class="centered" src="images/screenshots/pm_list.png" alt="pm_list">
+          <br>
           <p>And in your launcher activity, get the selected payment method like this:
           </p>
           <pre class="prettyprint">
@@ -119,8 +124,11 @@
                .setPaymentMethod(mTempPaymentMethod)
                .startIssuersActivity();
           </pre>
-
-          <p>And retrieve the selected one in your launcher activity:</p>
+          <p><b>Let's see!</b></p>
+          <br>
+          <p>A list of issuers is shown:</p>
+          <img class="centered" src="images/screenshots/issuers_list.png" alt="issuers_list">
+          <p>Retrieve the selected one in your launcher activity:</p>
           <pre class="prettyprint">
           @Override
           protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -162,6 +170,11 @@
              .startNewCardActivity();
           </pre>
 
+          <p><b>Let's see!</b></p>
+          <br>
+          <p>A card form is shown:</p>
+          <img class="centered" src="images/screenshots/new_card.png" alt="new_card">
+          <br>
           <p>This activity’s result, if succeeded, is a <b><i>CardToken</i></b> object. This object is used to create a <b><i>Token</i></b> object, which is used to create a payment. 
           The <b><i>cardToken</i></b> must validate the security code according to the payment method. If the security code was hid, you’ll have to do it yourself. The following line of code validates it and throws an error if needed:
           </p>
@@ -202,6 +215,22 @@
                .setSupportedPaymentTypes(supportedPaymentTypes)
                .startGuessingCardActivity();
         </pre>
+        <p><b>Let's see!</b></p>
+
+          <p>This will show up:</p>
+          <img class="centered" src="images/screenshots/guessing_card.png" alt="guessing_card">
+          <br>
+          <p>When card BIN is entered, if it identifies an unique payment method, it’s image is shown:</p>
+          <img class="centered" src="images/screenshots/bin_entered.png" alt="bin_entered">
+          <p class="image_footer">Visa credit card identified</p>
+          <p>If the BIN doesn’t identify a unique payment method, a selector appears:</p>
+          <img class="centered" src="images/screenshots/guessing_card.png" alt="guessing_card">
+          <p class="image_footer">Payment method not identified by card BIN</p>
+
+          <p>Whether the payment method was “guessed” or not, if issuer selection is needed, another selector appears:</p>
+          <img class="centered" src="images/screenshots/issuer_required_guessing.png" alt="issuer_required_guessing">
+          <p class="image_footer">Issuer (bank) selector</p>
+          <br>
 
         <p><b>Tip:</b> you can choose if the issuer is required or not. If your app should offer payment in installments, issuer will be required. If not, just set is as not required:</p>
 
@@ -253,7 +282,78 @@
           }
         </pre>
 
+        <br>
+        <a name="installments"><h2>Installments UI</h2></a>
+        <p>
+        <br>
+        To launch our installments selection activity, you must get a list of payer costs. In order to do so, you must call a method from our SDK, providing the following information:
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Card number BIN (first six digits)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Amount to pay<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Issuer ID<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Payment type ID (accesible from the PaymentMethod object)<br>
+        <br>
+        And a Callback object.
+        <br>
+        <br>
+        Example:
+        </p>
 
+
+        <pre class="prettyprint">
+           mMercadoPago.getInstallments(bin, amount, issuerId, paymentTypeId, new Callback<List<Installment>>() {
+             @Override
+             public void success(List<Installment> installments, Response response) {
+
+                 if ((installments.size() > 0) && (installments.get(0).getPayerCosts().size() > 0)) {
+                     // Set installments card data and visibility
+                     mPayerCosts = installments.get(0).getPayerCosts();  //Here you get the payer costs
+                 }    
+
+             @Override
+             public void failure(RetrofitError error) {
+
+                 mExceptionOnMethod = "getInstallmentsAsync";
+                 ApiUtil.finishWithApiException(mActivity, error);
+             }
+           });
+        </pre>
+        <br>
+
+        <p>Once you got the payer costs, launch the Installments activity:</p>
+        <pre class="prettyprint"> 
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(mActivity)
+                .setPayerCosts(mPayerCosts)
+                .startInstallmentsActivity();
+        </pre>
+
+        <p><b>Let's see!</b></p>
+
+          <p>A list of available installments will show up: </p>
+          <img class="centered" src="images/screenshots/installments_list.png" alt="installments_list">
+          <br>
+
+        <p>Get the selected <b><i>payerCost</i></b> in your launcher activity:</p>
+        <pre class="prettyprint">
+
+          protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
+              if (resultCode == RESULT_OK) {
+
+                  // Set selection status
+                  selectedPayerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
+
+              //Error handling
+              } else {
+
+                  if ((data != null) && (data.getStringExtra("apiException") != null)) {
+                      finishWithApiException(data);
+                  }
+                }
+              } 
+            }
+        </pre>
         </section>
 
         <aside id="sidebar">
