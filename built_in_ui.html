@@ -43,9 +43,8 @@
                 <br>
                   <a href="#installments">Installments selection UI</a><br>
                   <a href="#customer_cards">Customer cards UI</a><br>
-                  Bank deals UI<br>
-                  Terms and conditions UI<br>
-                  Congrats UI
+                  <a href="#bank_deals">Bank deals UI</a><br>
+                  <a href="#congrats">Payment result UI</a>
               </td>
               </table>
 
@@ -425,6 +424,44 @@
             } 
           } 
         </pre>
+        <br>
+          <h2><a name="bank_deals"></a>Bank deals UI</h2>
+          <p>To show available bank deals, just add the following code to your project: </p>
+          <pre class="prettyprint">
+           new MercadoPago.StartActivityBuilder()
+                .setActivity(this)
+                .setPublicKey(yourPublicKey)
+                .startBankDealsActivity();
+          </pre>
+          
+          <p><b>Let's see!</b></p>
+          <br>
+          <p>Bank deals are shown:</p>
+          <img class="centered" src="images/screenshots/bank_deals.png" alt="bank_deals">
+          <p class="image_footer">Bank deals example</p>
+          <br>
+          <br>
+          <p>If selected, term and conditions of the bank deal are shown:</p>
+          <img class="centered" src="images/screenshots/terms_conditions.png" alt="terms_conditions">
+          <p class="image_footer">Bank deal’s terms and conditions</p>
+          <br>
+
+          <h2><a name="congrats"></a>Payment result UI</h2>
+          <p>Once a payment is created, you can use our UI to show it's result. Have a look at <a href="make_payment.html">Make a payment</a> to see how to create one and the possible results. Just add this code to start our UI:</p>
+          <pre class="prettyprint">
+           new MercadoPago.StartActivityBuilder()
+                 .setActivity(activity)
+                 .setPayment(payment)
+                 .setPaymentMethod(paymentMethod)
+                 .startCongratsActivity();
+          </pre>
+          
+          <p><b>Let's see!</b></p>
+          <br>
+          <p>E.g: succesful payment:</p>
+          <img class="centered" src="images/screenshots/congratulations.png" alt="congratualtions">
+          <br>
+          
         </section>
 
         <aside id="sidebar">
