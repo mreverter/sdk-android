@@ -48,9 +48,9 @@
         <h3>Payment methods</h3>
         <p>To get available payment methods, you could use this method:</p>
         <pre class="prettyprint">
-          mercadoPago.getPaymentMethods(new Callback <List<PaymentMethod>>() {
+          mercadoPago.getPaymentMethods(new Callback &lt;List&lt;PaymentMethod&gt;&gt;() {
              @Override
-             public void success(List<PaymentMethod> paymentMethods, Response response) {
+             public void success(List&lt;PaymentMethod&gt; paymentMethods, Response response) {
               //Use the list of payment methods.
              @Override
              public void failure(RetrofitError error) {
@@ -68,9 +68,9 @@
         
         <p>Then, if you have to ask for it, retrieve a list of issuers like this:</p>
         <pre class="prettyprint">
-          mercadoPago.getIssuers(paymentMethod.getId(), new Callback<List<Issuer>>() {
+          mercadoPago.getIssuers(paymentMethod.getId(), new Callback&lt;List&lt;Issuer&gt;&gt;() {
              @Override
-             public void success(List<Issuer> issuers, Response response) {
+             public void success(List&lt;Issuer&gt; issuers, Response response) {
             
             //use the list of issuers
              }
@@ -86,9 +86,9 @@
         <h3>Card data management</h3>
         <p>In your card data form, you need to get your user’s identification number. We provide tools to validate it. First, get the available identification types:</p>
         <pre class="prettyprint">
-            mercadoPago.getIdentificationTypes(new Callback<List<IdentificationType>>() {
+            mercadoPago.getIdentificationTypes(new Callback&lt;List&lt;IdentificationType&gt;&gt;() {
                  @Override
-                 public void success(List<IdentificationType> identificationTypes, Response response) {
+                 public void success(List&lt;IdentificationType&gt; identificationTypes, Response response) {
                 //we have an adapter for a Spinner of IdentificationType
                      identificationTypeSpinner.setAdapter(new IdentificationTypesAdapter(activity, identificationTypes));
 
@@ -152,16 +152,16 @@
         <h3>Installments</h3>
         <p>Once you have the PaymentMethod and, if required, the issuer, you can get the installments available for your client providing the BIN (first six digits of the card number), amount to pay, the issuer’s id and the payment type id. Do this:</p>
         <pre class="prettyprint">
-          mercadoPago.getInstallments(bin, amount, issuerId, paymentMethod.getPaymentTypeId(), new Callback<List<Installment>>() {
+          mercadoPago.getInstallments(bin, amount, issuerId, paymentMethod.getPaymentTypeId(), new Callback&lt;List&lt;Installment&gt;&gt;() {
                @Override
-               public void success(List<Installment> installments, Response response) {
+               public void success(List&lt;Installment&gt; installments, Response response) {
 
                    if ((installments.size() > 0) && (installments.get(0).getPayerCosts().size() > 0)) {
                        // Set installments card data and visibility
                        mPayerCosts = installments.get(0).getPayerCosts(); //get the FIRST element of the installments list
                        
                    } else {
-                       Toast.makeText(getApplicationContext(), getString(com.mercadopago.R.string.mpsdk_invalid_pm_for_current_amount), Toast.LENGTH_LONG).show();
+                       Toast.makeText(getApplicationContext(), "invalid payment method for current amount", Toast.LENGTH_LONG).show();
                    }
                }
                @Override
@@ -184,7 +184,7 @@
         Then, to get your Customer object in your app, just do this:</p>
         <br>
         <pre class="prettyprint">
-          MerchantServer.getCustomer(this, mMerchantBaseUrl, mMerchantGetCustomerUri, mMerchantAccessToken, new Callback<Customer>() {
+          MerchantServer.getCustomer(this, mMerchantBaseUrl, mMerchantGetCustomerUri, mMerchantAccessToken, new Callback&lt;Customer&gt;() {
                @Override
                public void success(Customer customer, Response response) {
                 //Do what you need with your Customer object
@@ -192,7 +192,8 @@
                }
 
                @Override
-               public void failure(RetrofitError error) {       ApiUtil.finishWithApiException(mActivity, error);
+               public void failure(RetrofitError error) {       
+                  ApiUtil.finishWithApiException(mActivity, error);
                }
             });
         </pre>
@@ -219,7 +220,7 @@
         <p>Just do this, providing the information you gathered:</p>
         <p>If you created a <b><i>CardToken</i></b>:</p>
         <pre class="prettyprint">
-          mercadoPago.createToken(mCardToken, new Callback<Token>() {
+          mercadoPago.createToken(mCardToken, new Callback&lt;Token&gt;() {
              @Override
              public void success(Token o, Response response) {
             //Here, do what you need what the token
@@ -236,7 +237,7 @@
         
         <p>Or if you created a <b><i>SavedCardToken</i></b>:</p>
         <pre class="prettyprint">
-          mercadoPago.createToken(savedCardToken, new Callback<Token>() {
+          mercadoPago.createToken(savedCardToken, new Callback&lt;Token&gt;() {
              @Override
              public void success(Token o, Response response) {
             //Here, do what you need what the token
@@ -254,9 +255,9 @@
         <h3>Bank deals</h3>
         <p>Get available promotions easilly adding this to your code:</p>
         <pre class="prettyprint">
-          mercadoPago.getBankDeals(new Callback<List<BankDeal>>() {
+          mercadoPago.getBankDeals(new Callback&lt;List&lt;BankDeal&gt;&gt;() {
              @Override
-             public void success(List<BankDeal> bankDeals, Response response) {
+             public void success(List&lt;BankDeal&gt; bankDeals, Response response) {
             //use the bank deals you’ve got
              }
 
@@ -271,7 +272,26 @@
         <h2>Make a payment</h2>
         <br>
         <p>Once you got all the necessary information, see how to <a href="make_payment.html">make a payment</a> and end your flow.</p>
-        
+        <br>
+       
+        <h2>Extras</h2>
+        <h3>Payment method detection by card BIN</h3>
+        <p>If you want to ask for card data before anything else, you could filter the valid payment methods for that card's BIN from the list that MercadoPago class gives you by with this method:</p>
+        <pre class="prettyprint">
+          List&lt;PaymentMethod&gt; paymentMethods = mercadoPago.getPaymentMethodsForBin(bin, paymentMethods, supportedPaymentTypes);
+        </pre>
+        <p><b>Tip:</b> to filter payment methods by their type, create a list of strings that let you filter by:<br>
+          <i>Credit card: “credit_card”<br>
+          Debit card: “debit_card”<br>
+          <br>
+          <b>Example:</b>
+          <pre class="prettyprint">
+          protected List&lt;String&gt; supportedPaymentTypes = new ArrayList&lt;String&gt;(){{
+             add("credit_card");
+             add("debit_card");
+          }};
+          </pre>
+
         </section>
 
         <aside id="sidebar">

@@ -44,7 +44,7 @@
           <br>
           <p>Create a MerchantPayment object:</p>
          <pre class="prettyprint">
-            MerchantServer.createPayment(activity, DUMMY_MERCHANT_BASE_URL, DUMMY_MERCHANT_CREATE_PAYMENT_URI, payment, new Callback<Payment>() {
+            MerchantServer.createPayment(activity, DUMMY_MERCHANT_BASE_URL, DUMMY_MERCHANT_CREATE_PAYMENT_URI, payment, new Callback&lt;Payment&gt;() {
                @Override
                public void success(Payment payment, Response response) {
                    new MercadoPago.StartActivityBuilder()  //when payment creation suceeded, you can launch our payment result UI
