@@ -487,7 +487,7 @@ header h2 {
   width: 540px;
   margin-top: 0;
   margin-bottom: 0;
-  font-size: 26px;
+  font-size: 50px;
   font-weight: normal;
   line-height: 1.3;
   color: #9ddcff;
@@ -664,7 +664,7 @@ form {
 #main-content h2 {
   margin-bottom: 8px;
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
-  font-size: 22px;
+  font-size: 30px;
   font-weight: bold;
   color: #474747;
   text-indent: 4px;
@@ -680,7 +680,7 @@ form {
   margin-top: 24px;
   margin-bottom: 8px;
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
-  font-size: 25px;
+  font-size: 20px;
   font-weight: bold;
   color: #474747;
   text-indent: 3px;
