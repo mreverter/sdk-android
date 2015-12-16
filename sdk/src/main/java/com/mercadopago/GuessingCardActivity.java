@@ -164,7 +164,51 @@ public class GuessingCardActivity extends AppCompatActivity {
             }
         });
 
+        setFocusOrder();
+
         getIdentificationTypesAsync();
+    }
+
+
+    private void setFocusOrder() {
+        mExpiryMonth.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(mExpiryMonth.getText().length() == 2)
+                {
+                    mExpiryYear.requestFocus();
+                }
+            }
+        });
+        mExpiryYear.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(mExpiryYear.getText().length() == 2)
+                {
+                    mCardHolderName.requestFocus();
+                }
+            }
+        });
     }
 
     @Override
@@ -247,7 +291,7 @@ public class GuessingCardActivity extends AppCompatActivity {
 
         }
         else{
-            if(mRequireIssuer) {
+            if(mRequireIssuer && mPaymentMethod.isIssuerRequired()) {
                 if (mIssuer == null) {
                     IssuersSpinnerAdapter adapter = (IssuersSpinnerAdapter) mSpinnerIssuers.getAdapter();
                     View view = mSpinnerIssuers.getSelectedView();
