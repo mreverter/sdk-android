@@ -10,13 +10,18 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
+import com.mercadopago.GuessingCardActivity;
 import com.mercadopago.R;
 import com.mercadopago.adapters.PaymentMethodsSpinnerAdapter;
 import com.mercadopago.callbacks.PaymentMethodSelectionCallback;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.mpcardio.CardScanner;
+import com.mercadopago.mpcardio.CardScannerCallback;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.MercadoPagoUtil;
 
 import java.util.List;
@@ -33,14 +38,19 @@ public class GuessingCardNumberController {
     private EditText mCardNumber;
     private LinearLayout mPaymentMethodLayout;
     private Spinner mSpinnerPaymentMethods;
+    private RelativeLayout mCardScannerLayout;
+
 
     private String mSavedBin;
     private String mSavedPaymentMethodId;
     private boolean mCardNumberBlocked;
     private List<String> mSupportedTypes;
     private MercadoPago mMercadoPago;
+    private CardScannerPreference mCardScannerPreference;
+    private CardScanner mCardScanner;
 
     private PaymentMethodSelectionCallback mPaymentMethodSelectionCallback;
+    private CardScannerCallback mCardScannerCallback;
 
     public GuessingCardNumberController(Activity activity, String key, List<String> supportedTypes, PaymentMethodSelectionCallback paymentMethodSelectionCallback){
         mActivity = activity;
@@ -60,7 +70,16 @@ public class GuessingCardNumberController {
         mSupportedTypes = supportedTypes;
         mPaymentMethodSelectionCallback = paymentMethodSelectionCallback;
         mMercadoPago = mercadoPago;
+        initializeComponents();
+    }
 
+    public GuessingCardNumberController(Activity activity, MercadoPago mercadoPago, List<String> supportedPaymentTypes, CardScannerPreference cardScannerPreference, CardScannerCallback cardScannerCallback, PaymentMethodSelectionCallback paymentMethodSelectionCallback) {
+        mActivity = activity;
+        mSupportedTypes = supportedPaymentTypes;
+        mPaymentMethodSelectionCallback = paymentMethodSelectionCallback;
+        mMercadoPago = mercadoPago;
+        mCardScannerPreference = cardScannerPreference;
+        mCardScannerCallback = cardScannerCallback;
         initializeComponents();
     }
 
@@ -100,7 +119,9 @@ public class GuessingCardNumberController {
         mSavedPaymentMethodId = "";
         mSpinnerPaymentMethods = (Spinner) mActivity.findViewById(R.id.spinnerPaymentMethod);
         mPaymentMethodLayout = (LinearLayout) mActivity.findViewById(R.id.layoutPaymentMethods);
+        mCardScannerLayout = (RelativeLayout) mActivity.findViewById(R.id.cardScannerLayout);
 
+        setCardScannerLayout();
         hidePaymentMethodSelector();
 
     }
@@ -246,6 +267,29 @@ public class GuessingCardNumberController {
             setCardNumberError(error);
     }
 
+    private void setCardScannerLayout() {
+        if(mCardScannerPreference != null)
+        {
+            this.mCardScannerLayout.setVisibility(View.VISIBLE);
+            setUpCardScanner();
+        }
+        else
+        {
+            this.mCardScannerLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void setUpCardScanner() {
+        this.mCardScanner = CardScanner.buildCardScanner(mActivity, mCardScannerPreference.isRequireExpiryDate(), mCardScannerPreference.getColor(), mCardScannerCallback);
+    }
+
+    public void startCardScan() {
+        mCardScanner.startCardScanning();
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.mCardNumber.setText(cardNumber);
+    }
 }
 
 

@@ -25,6 +25,7 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.SavedCardToken;
 import com.mercadopago.model.Setting;
 import com.mercadopago.model.Token;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.services.BankDealService;
 import com.mercadopago.services.GatewayService;
 import com.mercadopago.services.IdentificationService;
@@ -216,7 +217,7 @@ public class MercadoPago {
         activity.startActivityForResult(issuersIntent, ISSUERS_REQUEST_CODE);
     }
 
-    private static void startNewCardActivity(Activity activity, String keyType, String key, PaymentMethod paymentMethod, Boolean requireSecurityCode) {
+    private static void startNewCardActivity(Activity activity, String keyType, String key, PaymentMethod paymentMethod, Boolean requireSecurityCode, CardScannerPreference cardScannerPreference) {
 
         Intent newCardIntent = new Intent(activity, com.mercadopago.NewCardActivity.class);
         newCardIntent.putExtra("keyType", keyType);
@@ -225,10 +226,15 @@ public class MercadoPago {
         if (requireSecurityCode != null) {
             newCardIntent.putExtra("requireSecurityCode", requireSecurityCode);
         }
+        if(cardScannerPreference != null)
+        {
+            newCardIntent.putExtra("cardScannerPreference", JsonUtil.getInstance().toJson(cardScannerPreference));
+        }
+
         activity.startActivityForResult(newCardIntent, NEW_CARD_REQUEST_CODE);
     }
 
-    private static void startGuessingCardActivity(Activity activity, String keyType, String key, List<String> supportedPaymentTypes, Boolean requireSecurityCode, Boolean requireIssuer, Boolean showBankDeals) {
+    private static void startGuessingCardActivity(Activity activity, String keyType, String key, List<String> supportedPaymentTypes, Boolean requireSecurityCode, Boolean requireIssuer, Boolean showBankDeals, CardScannerPreference cardScannerPreference) {
 
         Intent guessingCardIntent = new Intent(activity, com.mercadopago.GuessingCardActivity.class);
         guessingCardIntent.putExtra("keyType", keyType);
@@ -244,6 +250,10 @@ public class MercadoPago {
         if(showBankDeals != null){
             guessingCardIntent.putExtra("showBankDeals", showBankDeals);
         }
+        if(cardScannerPreference != null)
+        {
+            guessingCardIntent.putExtra("cardScannerPreference", JsonUtil.getInstance().toJson(cardScannerPreference));
+        }
         activity.startActivityForResult(guessingCardIntent, GUESSING_CARD_REQUEST_CODE);
     }
 
@@ -256,7 +266,7 @@ public class MercadoPago {
         activity.startActivityForResult(paymentMethodsIntent, PAYMENT_METHODS_REQUEST_CODE);
     }
 
-    private static void startVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, BigDecimal amount, List<String> supportedPaymentTypes, Boolean showBankDeals, Boolean cardGuessingEnabled) {
+    private static void startVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, BigDecimal amount, List<String> supportedPaymentTypes, Boolean showBankDeals, Boolean cardGuessingEnabled, CardScannerPreference cardScannerPreference) {
 
         Intent vaultIntent = new Intent(activity, VaultActivity.class);
         vaultIntent.putExtra("merchantPublicKey", merchantPublicKey);
@@ -266,6 +276,10 @@ public class MercadoPago {
         vaultIntent.putExtra("amount", amount.toString());
         putListExtra(vaultIntent, "supportedPaymentTypes", supportedPaymentTypes);
         vaultIntent.putExtra("showBankDeals", showBankDeals);
+        if(cardScannerPreference != null)
+        {
+            vaultIntent.putExtra("cardScannerPreference", JsonUtil.getInstance().toJson(cardScannerPreference));
+        }
         vaultIntent.putExtra("cardGuessingEnabled", cardGuessingEnabled);
         activity.startActivityForResult(vaultIntent, VAULT_REQUEST_CODE);
     }
@@ -348,6 +362,7 @@ public class MercadoPago {
         private Boolean mShowBankDeals;
         private List<String> mSupportedPaymentTypes;
         private Boolean mCardGuessingEnabled;
+        private CardScannerPreference mCardScannerPreference;
 
         public StartActivityBuilder() {
 
@@ -456,6 +471,12 @@ public class MercadoPago {
             return this;
         }
 
+        public StartActivityBuilder setCardScannerPreference(CardScannerPreference cardScannerPreference) {
+
+            this.mCardScannerPreference = cardScannerPreference;
+            return this;
+        }
+
         public StartActivityBuilder setGuessingCardFormEnabled(boolean cardGuessingEnabled)
         {
             this.mCardGuessingEnabled = cardGuessingEnabled;
@@ -523,7 +544,7 @@ public class MercadoPago {
             if (this.mPaymentMethod == null) throw new IllegalStateException("payment method is null");
 
             MercadoPago.startNewCardActivity(this.mActivity, this.mKeyType, this.mKey,
-                    this.mPaymentMethod, this.mRequireSecurityCode);
+                    this.mPaymentMethod, this.mRequireSecurityCode, this.mCardScannerPreference);
         }
 
         public void startGuessingCardActivity() {
@@ -531,7 +552,7 @@ public class MercadoPago {
             if (this.mActivity == null) throw new IllegalStateException("activity is null");
             if (this.mKey == null) throw new IllegalStateException("key is null");
             if (this.mKeyType == null) throw new IllegalStateException("key type is null");
-            MercadoPago.startGuessingCardActivity(this.mActivity, this.mKeyType, this.mKey, this.mSupportedPaymentTypes, this.mRequireSecurityCode, this.mRequireIssuer, this.mShowBankDeals);
+            MercadoPago.startGuessingCardActivity(this.mActivity, this.mKeyType, this.mKey, this.mSupportedPaymentTypes, this.mRequireSecurityCode, this.mRequireIssuer, this.mShowBankDeals, this.mCardScannerPreference);
         }
 
         public void startPaymentMethodsActivity() {
@@ -558,7 +579,7 @@ public class MercadoPago {
             if (this.mKeyType.equals(KEY_TYPE_PUBLIC)) {
                 MercadoPago.startVaultActivity(this.mActivity, this.mKey, this.mMerchantBaseUrl,
                         this.mMerchantGetCustomerUri, this.mMerchantAccessToken,
-                        this.mAmount, this.mSupportedPaymentTypes, this.mShowBankDeals, this.mCardGuessingEnabled);
+                        this.mAmount, this.mSupportedPaymentTypes, this.mShowBankDeals, this.mCardGuessingEnabled, this.mCardScannerPreference);
             } else {
                 throw new RuntimeException("Unsupported key type for this method");
             }

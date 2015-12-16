@@ -3,6 +3,7 @@ package com.mercadopago.examples.step5;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.mercadopago.ExampleActivity;
@@ -10,6 +11,7 @@ import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.examples.utils.ExamplesUtils;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
@@ -26,10 +28,14 @@ public class Step5Activity extends ExampleActivity {
         add("ticket");
     }};
 
+    protected CardScannerPreference mCardScannerPreference;
+    protected CheckBox mCheckBoxEnableCardScanner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step5);
+        mCheckBoxEnableCardScanner = (CheckBox) findViewById(R.id.checkBoxEnableCardScanner);
     }
 
     @Override
@@ -65,6 +71,9 @@ public class Step5Activity extends ExampleActivity {
 
     public void submitSimpleForm(View view) {
         // Call final vault activity
+        if(mCheckBoxEnableCardScanner.isChecked()) {
+            setCardScannerPreference();
+        }
         new MercadoPago.StartActivityBuilder()
                 .setActivity(this)
                 .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
@@ -74,10 +83,15 @@ public class Step5Activity extends ExampleActivity {
                 .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .setShowBankDeals(true)
+                .setCardScannerPreference(mCardScannerPreference)
                 .startVaultActivity();
     }
 
     public void submitGuessingForm(View view){
+
+        if(mCheckBoxEnableCardScanner.isChecked()) {
+            setCardScannerPreference();
+        }
         // Call final vault activity
         new MercadoPago.StartActivityBuilder()
                 .setActivity(this)
@@ -87,8 +101,14 @@ public class Step5Activity extends ExampleActivity {
                 .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
                 .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
-                .setShowBankDeals(false)
+                .setShowBankDeals(true)
+                .setCardScannerPreference(mCardScannerPreference)
                 .setGuessingCardFormEnabled(true)
                 .startVaultActivity();
     }
+
+    private void setCardScannerPreference() {
+        mCardScannerPreference = new CardScannerPreference(R.color.red, true);
+    }
+
 }

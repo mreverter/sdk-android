@@ -18,6 +18,7 @@ import com.mercadopago.model.Item;
 import com.mercadopago.model.MerchantPayment;
 import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
@@ -65,16 +66,17 @@ public class ExamplesUtils {
     public static final Integer DUMMY_ITEM_QUANTITY = 1;
     public static final BigDecimal DUMMY_ITEM_UNIT_PRICE = new BigDecimal("100");
 
-    public static void startCardActivity(Activity activity, String merchantPublicKey, PaymentMethod paymentMethod) {
+    public static void startCardActivity(Activity activity, String merchantPublicKey, PaymentMethod paymentMethod, CardScannerPreference cardScannerPreference) {
 
         Intent cardIntent = new Intent(activity, CardActivity.class);
         cardIntent.putExtra("merchantPublicKey", merchantPublicKey);
         cardIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
+        cardIntent.putExtra("cardScannerPreference", JsonUtil.getInstance().toJson(cardScannerPreference));
         activity.startActivityForResult(cardIntent, CARD_REQUEST_CODE);
     }
 
 
-    public static void startGuessingCardActivity(Activity activity, String merchantPublicKey, boolean issuerRequired) {
+    public static void startGuessingCardActivity(Activity activity, String merchantPublicKey, boolean issuerRequired, CardScannerPreference cardScannerPreference) {
 
         new MercadoPago.StartActivityBuilder()
                 .setActivity(activity)
@@ -82,6 +84,7 @@ public class ExamplesUtils {
                 .setRequireSecurityCode(true)
                 .setRequireIssuer(issuerRequired)
                 .setShowBankDeals(true)
+                .setCardScannerPreference(cardScannerPreference)
                 .startGuessingCardActivity();
     }
 

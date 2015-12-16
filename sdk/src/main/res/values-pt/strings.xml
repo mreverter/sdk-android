@@ -58,5 +58,6 @@
     <string name="mpsdk_and">e</string>
     <string name="mpsdk_title_activity_terms_and_conditions">Termos e condições</string>
     <string name="mpsdk_title_activity_guessing_card">Digite os dados do seu cartão</string>
+    <string name="mpsdk_card_scanning_failed">A digitalização falhou</string>
 
 </resources>

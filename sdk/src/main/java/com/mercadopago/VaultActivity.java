@@ -27,6 +27,7 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.PaymentMethodRow;
 import com.mercadopago.model.SavedCardToken;
 import com.mercadopago.model.Token;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.ApiUtil;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
@@ -53,6 +54,7 @@ public class VaultActivity extends AppCompatActivity {
     protected String mMerchantGetCustomerUri;
     protected String mMerchantPublicKey;
     protected boolean mShowBankDeals;
+    protected CardScannerPreference mCardScannerPreference;
     protected boolean mCardGuessingEnabled;
 
 
@@ -107,6 +109,7 @@ public class VaultActivity extends AppCompatActivity {
             mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
         }
         mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
+        mCardScannerPreference = JsonUtil.getInstance().fromJson(getIntent().getStringExtra("cardScannerPreference"), CardScannerPreference.class);
         mCardGuessingEnabled = this.getIntent().getBooleanExtra("cardGuessingEnabled", false);
 
         if ((mMerchantPublicKey != null) && (mAmount != null)) {
@@ -772,6 +775,7 @@ public class VaultActivity extends AppCompatActivity {
                 .setPublicKey(mMerchantPublicKey)
                 .setPaymentMethod(mTempPaymentMethod)
                 .setRequireSecurityCode(false)
+                .setCardScannerPreference(mCardScannerPreference)
                 .startNewCardActivity();
     }
 
@@ -783,6 +787,7 @@ public class VaultActivity extends AppCompatActivity {
                 .setRequireIssuer(true)
                 .setShowBankDeals(mShowBankDeals)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setCardScannerPreference(mCardScannerPreference)
                 .startGuessingCardActivity();
     }
 

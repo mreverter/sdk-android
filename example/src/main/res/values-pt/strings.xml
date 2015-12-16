@@ -31,4 +31,6 @@
     <string name="step5_choice_description">Um ecrã de selecção do banco pode ser adicionado ao fluxo simples, ou usar formulário guessing.</string>
     <string name="simple_card_flow_label">Distintas pantallas</string>
     <string name="guessing_card_flow_label">Formulário guessing</string>
+    <string name="card_scanner_checkbox_text">Ativar scanner de cartão</string>
+
 </resources>

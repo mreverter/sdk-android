@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.adapters.IdentificationTypesAdapter;
 import com.mercadopago.adapters.IssuersSpinnerAdapter;
-import com.mercadopago.adapters.PaymentMethodsSpinnerAdapter;
 import com.mercadopago.callbacks.PaymentMethodSelectionCallback;
 import com.mercadopago.controllers.GuessingCardNumberController;
 import com.mercadopago.core.MercadoPago;
@@ -32,13 +31,14 @@ import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
 import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.mpcardio.CardScannerCallback;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.ApiUtil;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -52,6 +52,7 @@ public class GuessingCardActivity extends AppCompatActivity {
     protected Boolean mRequireSecurityCode;
     protected Boolean mRequireIssuer;
     private Boolean mShowBankDeals;
+    protected CardScannerPreference mCardScannerPreference;
 
     // Input controls
     protected EditText mCardHolderName;
@@ -91,6 +92,7 @@ public class GuessingCardActivity extends AppCompatActivity {
         mKey = this.getIntent().getStringExtra("key");
         mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
         mRequireIssuer = this.getIntent().getBooleanExtra("requireIssuer", true);
+        mCardScannerPreference = JsonUtil.getInstance().fromJson(this.getIntent().getStringExtra("cardScannerPreference"), CardScannerPreference.class);
 
         if (this.getIntent().getStringExtra("supportedPaymentTypes") != null) {
             Gson gson = new Gson();
@@ -126,8 +128,33 @@ public class GuessingCardActivity extends AppCompatActivity {
         mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
         mExpiryYear = (EditText) findViewById(R.id.expiryYear);
         mSpinnerIssuers = (Spinner) findViewById(R.id.spinnerIssuer);
+        mGuessingCardNumberController = new GuessingCardNumberController(this, mMercadoPago, mSupportedPaymentTypes, mCardScannerPreference,
+                new CardScannerCallback() {
+                    @Override
+                    public void onCardScanned(String cardNumber, Integer expiryMonth, Integer expiryYear) {
+                        mGuessingCardNumberController.setCardNumber(cardNumber);
+                        if(expiryMonth != null){
+                            mExpiryMonth.setText(String.valueOf(expiryMonth));
+                        }
+                        else {
+                            mExpiryMonth.requestFocus();
+                        }
+                        if(expiryYear != null){
+                            mExpiryYear.setText(String.valueOf(expiryYear));
+                        }
+                    }
 
-        mGuessingCardNumberController = new GuessingCardNumberController(this, mMercadoPago, mSupportedPaymentTypes,
+                    @Override
+                    public void onCardScanningCancelled() {
+
+                    }
+
+                    @Override
+                    public void onCardScanningFailed() {
+
+                    }
+                },
+
                 new PaymentMethodSelectionCallback(){
                     @Override
                     public void onPaymentMethodSet(PaymentMethod paymentMethod) {
@@ -164,7 +191,50 @@ public class GuessingCardActivity extends AppCompatActivity {
             }
         });
 
+        setFocusOrder();
+
         getIdentificationTypesAsync();
+    }
+
+    private void setFocusOrder() {
+        mExpiryMonth.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(mExpiryMonth.getText().length() == 2)
+                {
+                    mExpiryYear.requestFocus();
+                }
+            }
+        });
+        mExpiryYear.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(mExpiryYear.getText().length() == 2)
+                {
+                    mCardHolderName.requestFocus();
+                }
+            }
+        });
     }
 
     @Override
@@ -247,7 +317,7 @@ public class GuessingCardActivity extends AppCompatActivity {
 
         }
         else{
-            if(mRequireIssuer) {
+            if(mRequireIssuer && mPaymentMethod.isIssuerRequired()) {
                 if (mIssuer == null) {
                     IssuersSpinnerAdapter adapter = (IssuersSpinnerAdapter) mSpinnerIssuers.getAdapter();
                     View view = mSpinnerIssuers.getSelectedView();
@@ -565,5 +635,9 @@ public class GuessingCardActivity extends AppCompatActivity {
         } else {
             return null;
         }
+    }
+
+    public void startCardScan(View view) {
+        mGuessingCardNumberController.startCardScan();
     }
 }

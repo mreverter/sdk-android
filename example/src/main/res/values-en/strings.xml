@@ -34,5 +34,6 @@
 
     <string name="simple_card_flow_label">Different screens</string>
     <string name="guessing_card_flow_label">Guessing form</string>
+    <string name="card_scanner_checkbox_text">Try card scanner!</string>
 
 </resources>

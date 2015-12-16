@@ -35,5 +35,6 @@
 
     <string name="simple_card_flow_label">Distintas pantallas</string>
     <string name="guessing_card_flow_label">Formulario con guessing</string>
+    <string name="card_scanner_checkbox_text">Habilitar escáner de tarjetas</string>
 
 </resources>

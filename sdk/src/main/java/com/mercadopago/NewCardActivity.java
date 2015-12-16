@@ -21,6 +21,9 @@ import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.mpcardio.CardScanner;
+import com.mercadopago.mpcardio.CardScannerCallback;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.ApiUtil;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
@@ -39,6 +42,7 @@ public class NewCardActivity extends AppCompatActivity {
     protected String mKeyType;
     protected PaymentMethod mPaymentMethod;
     protected Boolean mRequireSecurityCode;
+    protected CardScannerPreference mCardScannerPreference;
 
     // Input controls
     protected EditText mCardHolderName;
@@ -53,8 +57,10 @@ public class NewCardActivity extends AppCompatActivity {
     protected Spinner mIdentificationType;
     protected RelativeLayout mSecurityCodeLayout;
     protected EditText mSecurityCode;
+    protected RelativeLayout mCardScannerLayout;
 
     // Local vars
+    protected CardScanner mCardScanner;
     protected Activity mActivity;
 
     @Override
@@ -70,6 +76,7 @@ public class NewCardActivity extends AppCompatActivity {
         mKeyType = this.getIntent().getStringExtra("keyType");
         mKey = this.getIntent().getStringExtra("key");
         mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
+        mCardScannerPreference = JsonUtil.getInstance().fromJson(this.getIntent().getStringExtra("cardScannerPreference"), CardScannerPreference.class);
         if ((paymentMethod == null) || (mKeyType == null) || (mKey == null)) {
             Intent returnIntent = new Intent();
             setResult(RESULT_CANCELED, returnIntent);
@@ -91,7 +98,7 @@ public class NewCardActivity extends AppCompatActivity {
         mExpiryError = (TextView) findViewById(R.id.expiryError);
         mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
         mExpiryYear = (EditText) findViewById(R.id.expiryYear);
-
+        mCardScannerLayout = (RelativeLayout) findViewById(R.id.cardScannerLayout);
         // Set identification type listener to control identification number keyboard
         setIdentificationNumberKeyboardBehavior();
 
@@ -127,11 +134,54 @@ public class NewCardActivity extends AppCompatActivity {
 
         // Set security code visibility
         setSecurityCodeLayout();
+        setCardScannerLayout();
+        setFocusOrder();
     }
+
 
     protected void setContentView() {
 
         setContentView(R.layout.activity_new_card);
+    }
+
+    private void setFocusOrder() {
+        mExpiryMonth.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(mExpiryMonth.getText().length() == 2)
+                {
+                    mExpiryYear.requestFocus();
+                }
+            }
+        });
+        mExpiryYear.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (mExpiryYear.getText().length() == 2) {
+                    mCardHolderName.requestFocus();
+                }
+            }
+        });
     }
 
     @Override
@@ -433,5 +483,44 @@ public class NewCardActivity extends AppCompatActivity {
         } else {
             return null;
         }
+    }
+
+    private void setCardScannerLayout() {
+        if(mCardScannerPreference != null)
+        {
+            this.mCardScannerLayout.setVisibility(View.VISIBLE);
+            setUpCardScanner();
+        }
+        else
+        {
+            this.mCardScannerLayout.setVisibility(View.GONE);
+        }
+    }
+    private void setUpCardScanner() {
+        this.mCardScanner = CardScanner.buildCardScanner(this, mCardScannerPreference.isRequireExpiryDate(), mCardScannerPreference.getColor(), new CardScannerCallback() {
+            @Override
+            public void onCardScanned(String cardNumber, Integer expiryMonth, Integer expiryYear) {
+                mCardNumber.setText(cardNumber);
+                if(expiryMonth != null){
+                    mExpiryMonth.setText(String.valueOf(expiryMonth));
+                }
+                else {
+                    mExpiryMonth.requestFocus();
+                }
+                if(expiryYear != null){
+                    mExpiryYear.setText(String.valueOf(expiryYear));
+                }
+            }
+            @Override
+            public void onCardScanningCancelled() {
+            }
+            @Override
+            public void onCardScanningFailed() {
+                mCardNumber.setText(R.string.mpsdk_card_scanning_failed);
+            }
+        });
+    }
+    public void startCardScan(View view) {
+        mCardScanner.startCardScanning();
     }
 }

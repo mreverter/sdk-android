@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.mercadopago.ExampleActivity;
@@ -14,6 +15,7 @@ import com.mercadopago.model.CardToken;
 import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.Token;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.ApiUtil;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
@@ -33,6 +35,8 @@ public class Step1Activity extends ExampleActivity {
         add("prepaid_card");
     }};
     protected Activity mActivity;
+    protected CheckBox mCheckBoxEnableCardScanner;
+    private CardScannerPreference mCardScannerPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,7 @@ public class Step1Activity extends ExampleActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step1);
         mActivity = this;
+        mCheckBoxEnableCardScanner = (CheckBox) findViewById(R.id.checkBoxEnableCardScanner);
     }
 
     @Override
@@ -52,7 +57,7 @@ public class Step1Activity extends ExampleActivity {
                 PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
 
                 // Call new card activity
-                ExamplesUtils.startCardActivity(this, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY, paymentMethod);
+                ExamplesUtils.startCardActivity(this, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY, paymentMethod, mCardScannerPreference);
             } else {
 
                 if ((data != null) && (data.getStringExtra("apiException") != null)) {
@@ -119,7 +124,7 @@ public class Step1Activity extends ExampleActivity {
             public void success(Token token, Response response) {
                 LayoutUtil.showRegularLayout(mActivity);
                 Long issuerId = null;
-                if(issuer != null)
+                if (issuer != null)
                     issuerId = issuer.getId();
 
                 ExamplesUtils.createPayment(mActivity, token.getId(),
@@ -134,7 +139,9 @@ public class Step1Activity extends ExampleActivity {
     }
 
     public void submitSimpleForm(View view) {
-
+        if(mCheckBoxEnableCardScanner.isChecked()){
+            setCardScannerPreference();
+        }
         // Call payment methods activity
         new MercadoPago.StartActivityBuilder()
                 .setActivity(this)
@@ -144,6 +151,13 @@ public class Step1Activity extends ExampleActivity {
     }
 
     public void submitGuessingForm(View view) {
-        ExamplesUtils.startGuessingCardActivity(this, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY, true);
+        if(mCheckBoxEnableCardScanner.isChecked()){
+            setCardScannerPreference();
+        }
+        ExamplesUtils.startGuessingCardActivity(this, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY, true, mCardScannerPreference);
+    }
+
+    private void setCardScannerPreference() {
+        mCardScannerPreference = new CardScannerPreference(R.color.red, true);
     }
 }
