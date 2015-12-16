@@ -135,12 +135,6 @@ public class MercadoPago {
         }
     }
 
-    private boolean isValidPaymentMethodForBin(String bin, PaymentMethod paymentMethod, List<String> supportedPaymentTypes) {
-
-            return (Setting.getSettingByBin(paymentMethod.getSettings(), bin) != null
-                && (supportedPaymentTypes == null || supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId())));
-    }
-
     public void getInstallments(String bin, BigDecimal amount, Long issuerId, String paymentTypeId, Callback<List<Installment>> callback) {
 
         if (this.mKeyType.equals(KEY_TYPE_PUBLIC)) {
@@ -170,6 +164,12 @@ public class MercadoPago {
         } else {
             throw new RuntimeException("Unsupported key type for this method");
         }
+    }
+
+    private boolean isValidPaymentMethodForBin(String bin, PaymentMethod paymentMethod, List<String> supportedPaymentTypes) {
+
+        return (Setting.getSettingByBin(paymentMethod.getSettings(), bin) != null
+                && (supportedPaymentTypes == null || supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId())));
     }
 
     // * Static methods for StartActivityBuilder implementation

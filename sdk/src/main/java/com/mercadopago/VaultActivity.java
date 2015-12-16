@@ -743,7 +743,6 @@ public class VaultActivity extends AppCompatActivity {
     protected void startCustomerCardsActivity() {
 
         new MercadoPago.StartActivityBuilder()
-                .setGuessingCardFormEnabled(mCardGuessingEnabled)
                 .setActivity(mActivity)
                 .setCards(mCards)
                 .startCustomerCardsActivity();

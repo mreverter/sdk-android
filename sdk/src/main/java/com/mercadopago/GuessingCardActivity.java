@@ -86,7 +86,7 @@ public class GuessingCardActivity extends AppCompatActivity {
         mActivity = this;
 
         // Get activity parameters
-        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", false);
+        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
         mKeyType = this.getIntent().getStringExtra("keyType");
         mKey = this.getIntent().getStringExtra("key");
         mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
