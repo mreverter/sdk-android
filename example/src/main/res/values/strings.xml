@@ -22,4 +22,6 @@
     <string name="step3_description">Flujo de pagos con cuotas y manejo de bancos.</string>
     <string name="step4_description">Flujo de pagos que incluye los medios off-line como medios de pago disponibles.</string>
     <string name="step5_description">Flujo de pagos por defecto. Incluye todos los módulos de pago.</string>
+    <string name="card_scanner_checkbox_text">Habilitar escáner de tarjetas</string>
+
 </resources>

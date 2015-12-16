@@ -36,4 +36,12 @@
         android:onClick="submitForm"
         style="@style/mpsdk_button_normal"/>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/card_scanner_checkbox_text"
+        android:id="@+id/checkBoxEnableCardScanner"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="25dp"/>
+
 </LinearLayout>

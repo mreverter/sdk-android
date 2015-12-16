@@ -22,4 +22,6 @@
     <string name="step3_description">Payment flow with installments and card issuers management.</string>
     <string name="step4_description">This payment flow includes off-line payment methods.</string>
     <string name="step5_description">Default payment flow. Includes every payment module.</string>
+    <string name="card_scanner_checkbox_text">Try card scanner!</string>
+
 </resources>

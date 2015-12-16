@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">mpcardio</string>
+    <string name="card_scanning_failed">Scan failed</string>
+</resources>

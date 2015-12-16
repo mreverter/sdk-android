@@ -3,6 +3,7 @@ package com.mercadopago.examples.step5;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.mercadopago.ExampleActivity;
@@ -10,6 +11,7 @@ import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.examples.utils.ExamplesUtils;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
@@ -26,11 +28,16 @@ public class Step5Activity extends ExampleActivity {
         add("ticket");
         add("atm");
     }};
+    protected CheckBox mCheckBoxEnableCardScanner;
+
+    protected CardScannerPreference mCardScannerPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step5);
+        mCheckBoxEnableCardScanner = (CheckBox) findViewById(R.id.checkBoxEnableCardScanner);
+
     }
 
     @Override
@@ -66,6 +73,9 @@ public class Step5Activity extends ExampleActivity {
 
     public void submitForm(View view) {
 
+        if(mCheckBoxEnableCardScanner.isChecked()) {
+            mCardScannerPreference = new CardScannerPreference(R.color.red, true);
+        }
         // Call final vault activity
         new MercadoPago.StartActivityBuilder()
                 .setActivity(this)
@@ -76,6 +86,7 @@ public class Step5Activity extends ExampleActivity {
                 .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .setShowBankDeals(true)
+                .setCardScannerPreference(mCardScannerPreference)
                 .startVaultActivity();
     }
 }

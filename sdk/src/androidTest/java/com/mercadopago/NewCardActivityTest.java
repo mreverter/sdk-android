@@ -1,16 +1,22 @@
 package com.mercadopago;
 
 import android.content.Intent;
+import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.mpcardio.CardScannerPreference;
 import com.mercadopago.test.ActivityResult;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
 import com.mercadopago.util.JsonUtil;
+
+import junit.framework.Assert;
 
 public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
@@ -22,6 +28,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
     private TextView mExpiryErrorText;
     private EditText mIdentificationNumberText;
     private EditText mSecurityCodeText;
+    private RelativeLayout mLayoutCardScanner;
 
     public NewCardActivityTest() {
 
@@ -282,8 +289,20 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         assertTrue(mSecurityCodeText.getError().equals(mActivity.getString(R.string.mpsdk_invalid_cvv_length, 3)));
     }
 
+    public void testIfScanPreferenceSetEnableCardScanning(){
+        doCardScannerEnabledStart();
+        setFields();
+        Assert.assertTrue(mLayoutCardScanner.getVisibility() == View.VISIBLE);
+    }
+
+    public void testIfScanPreferenceNotSetDisableCardScanning(){
+        doRegularStart();
+        setFields();
+        Assert.assertTrue(mLayoutCardScanner.getVisibility() != View.VISIBLE);
+    }
+
     private NewCardActivity prepareActivity(PaymentMethod paymentMethod, String keyType,
-                                     String key, Boolean requireSecurityCode) {
+                                            String key, Boolean requireSecurityCode, Boolean enableCardScan) {
 
         Intent intent = new Intent();
         if (paymentMethod != null) {
@@ -298,6 +317,14 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         if (requireSecurityCode != null) {
             intent.putExtra("requireSecurityCode", requireSecurityCode);
         }
+        if(enableCardScan != null)
+        {
+            CardScannerPreference scanPreference = null;
+            if(enableCardScan) {
+                scanPreference = new CardScannerPreference(R.color.black, true);
+            }
+            intent.putExtra("cardScannerPreference", JsonUtil.getInstance().toJson(scanPreference));
+        }
         setActivityIntent(intent);
         return getActivity();
     }
@@ -306,7 +333,17 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
         // Set activity
         mActivity = prepareActivity(StaticMock.getPaymentMethod(getApplicationContext()),
-                MercadoPago.KEY_TYPE_PUBLIC, StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, false);
+                MercadoPago.KEY_TYPE_PUBLIC, StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, false, false);
+
+        // Wait for identification types
+        sleepThread();
+    }
+
+    private void doCardScannerEnabledStart() {
+
+        // Set activity
+        mActivity = prepareActivity(StaticMock.getPaymentMethod(getApplicationContext()),
+                MercadoPago.KEY_TYPE_PUBLIC, StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, false, true);
 
         // Wait for identification types
         sleepThread();
@@ -316,7 +353,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
         // Set activity
         mActivity = prepareActivity(StaticMock.getPaymentMethod(getApplicationContext()),
-                MercadoPago.KEY_TYPE_PUBLIC, StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, true);
+                MercadoPago.KEY_TYPE_PUBLIC, StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, true, false);
 
         // Wait for identification types
         sleepThread();
@@ -330,5 +367,6 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         mExpiryYearText = (EditText) mActivity.findViewById(R.id.expiryYear);
         mExpiryErrorText = (TextView) mActivity.findViewById(R.id.expiryError);
         mIdentificationNumberText = (EditText) mActivity.findViewById(R.id.identificationNumber);
+        mLayoutCardScanner = (RelativeLayout) mActivity.findViewById(R.id.cardScannerLayout);
     }
 }
