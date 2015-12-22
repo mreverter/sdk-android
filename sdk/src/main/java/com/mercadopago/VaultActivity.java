@@ -482,16 +482,6 @@ public class VaultActivity extends AppCompatActivity {
         });
     }
 
-    private List<Card> getSupportedCustomerCards(List<Card> cards) {
-        List<Card> supportedCards = new ArrayList<Card>();
-        for(Card card : cards)
-        {
-            if(mSupportedPaymentTypes.contains(card.getPaymentMethod().getPaymentTypeId()))
-                supportedCards.add(card);
-        }
-        return supportedCards;
-    }
-
     protected void getInstallmentsAsync() {
 
         String bin = getSelectedPMBin();
@@ -794,5 +784,25 @@ public class VaultActivity extends AppCompatActivity {
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .setShowBankDeals(mShowBankDeals)
                 .startPaymentMethodsActivity();
+    }
+
+    private List<Card> getSupportedCustomerCards(List<Card> cards) {
+        List<Card> supportedCards = new ArrayList<Card>();
+
+        if(allCardSupported())
+        {
+            supportedCards = cards;
+        }
+        else {
+            for (Card card : cards) {
+                if (mSupportedPaymentTypes.contains(card.getPaymentMethod().getPaymentTypeId()))
+                    supportedCards.add(card);
+            }
+        }
+        return supportedCards;
+    }
+
+    private boolean allCardSupported() {
+        return this.mSupportedPaymentTypes == null;
     }
 }
