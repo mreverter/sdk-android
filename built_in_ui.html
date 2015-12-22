@@ -20,9 +20,11 @@
   <body>
     <header>
       <div class="inner">
-        <h1>MercadoPago</h1>
-        <h2>Client SDK for Android</h2>
-        <a href="https://github.com/mreverter/sdk-android" class="button"><small>View project on</small> GitHub</a>
+          <img src="images/logo-mercadopago.png" alt="logoMp">
+
+          <div class="right">
+              <img class="centered" src="images/logo-android.png" alt="logoAndroid">
+          </div>
       </div>
     </header>
 
@@ -115,7 +117,7 @@
           </pre>
 
           <p>if it’s required, start our issuer selection UI like this:</p>
-          
+
           <pre class="prettyprint">
           new MercadoPago.StartActivityBuilder()
                .setActivity(activity)
@@ -174,7 +176,7 @@
           <p>A card form is shown:</p>
           <img class="centered" src="images/screenshots/new_card.png" alt="new_card">
           <br>
-          <p>This activity’s result, if succeeded, is a <b><i>CardToken</i></b> object. This object is used to create a <b><i>Token</i></b> object, which is used to create a payment. 
+          <p>This activity’s result, if succeeded, is a <b><i>CardToken</i></b> object. This object is used to create a <b><i>Token</i></b> object, which is used to create a payment.
           The <b><i>cardToken</i></b> must validate the security code according to the payment method. If the security code was hid, you’ll have to do it yourself. The following line of code validates it and throws an error if needed:
           </p>
           <pre class="prettyprint">
@@ -193,10 +195,10 @@
                    if (data != null) {
                        if (data.getStringExtra("apiException") != null) {
                            finishWithApiException(data);
-                       } 
+                       }
                    }
                 }
-            } 
+            }
           }
           </pre>
 
@@ -268,7 +270,7 @@
             if (requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
               if(resultCode == RESULT_OK)
               {
-                  
+
                   paymentMehod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
                   issuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
                   cardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
@@ -307,7 +309,7 @@
                  if ((installments.size() > 0) && (installments.get(0).getPayerCosts().size() > 0)) {
                      // Set installments card data and visibility
                      mPayerCosts = installments.get(0).getPayerCosts();  //Here you get the payer costs
-                 }    
+                 }
 
              @Override
              public void failure(RetrofitError error) {
@@ -320,7 +322,7 @@
         <br>
 
         <p>Once you got the payer costs, launch the Installments activity:</p>
-        <pre class="prettyprint"> 
+        <pre class="prettyprint">
         new MercadoPago.StartActivityBuilder()
                 .setActivity(mActivity)
                 .setPayerCosts(mPayerCosts)
@@ -350,7 +352,7 @@
                       finishWithApiException(data);
                   }
                 }
-              } 
+              }
             }
         </pre>
 
@@ -383,7 +385,7 @@
         <br>
 
         <p>And then, start the Customer cards UI with the cards you've got:</p>
-        <pre class="prettyprint"> 
+        <pre class="prettyprint">
         new MercadoPago.StartActivityBuilder()
            .setActivity(mActivity)
            .setCards(cards)
@@ -414,15 +416,15 @@
                       mSelectedIssuer = mSelectedPaymentMethodRow.getCard().getIssuer();
 
                   } else {
-                      startPaymentMethodsActivity(); //or startGuessingCardActivity();  
+                      startPaymentMethodsActivity(); //or startGuessingCardActivity();
                   }
               } else {
                   if ((data != null) && (data.getStringExtra("apiException") != null)) {
                       finishWithApiException(data);
                   }
-              } 
-            } 
-          } 
+              }
+            }
+          }
         </pre>
         <br>
           <h2><a name="bank_deals"></a>Bank deals UI</h2>
@@ -433,7 +435,7 @@
                 .setPublicKey(yourPublicKey)
                 .startBankDealsActivity();
           </pre>
-          
+
           <p><b>Let's see!</b></p>
           <br>
           <p>Bank deals are shown:</p>
@@ -455,16 +457,18 @@
                  .setPaymentMethod(paymentMethod)
                  .startCongratsActivity();
           </pre>
-          
+
           <p><b>Let's see!</b></p>
           <br>
           <p>E.g: succesful payment:</p>
           <img class="centered" src="images/screenshots/congratulations.png" alt="congratualtions">
           <br>
-          
+
         </section>
 
         <aside id="sidebar">
+          <a href="https://github.com/mreverter/sdk-android" class="button"><small>View project on</small> GitHub</a>
+
           <a href="https://github.com/mreverter/sdk-android/zipball/master" class="button">
             <small>Download</small>
             .zip file

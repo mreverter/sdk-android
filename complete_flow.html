@@ -20,9 +20,11 @@
   <body>
     <header>
       <div class="inner">
-        <h1>MercadoPago</h1>
-        <h2>Client SDK for Android</h2>
-        <a href="https://github.com/mreverter/sdk-android" class="button"><small>View project on</small> GitHub</a>
+          <img src="images/logo-mercadopago.png" alt="logoMp">
+
+          <div class="right">
+              <img class="centered" src="images/logo-android.png" alt="logoAndroid">
+          </div>
       </div>
     </header>
 
@@ -84,7 +86,7 @@
 
           <a name="guessing"><h2>Guessing form feature</h2></a>
 
-          <p>By default, the flow launched by the code above will make the user go through a few screens to select payment data (payment methods and issuer if needed). However, if you’d like a unique form to collect it, we provide you one with payment method “guessing”. Our guessing form will fill payment method data if it can while your client enters it’s card number. If not, the user will have to select it within that form, altogether with the issuer, if needed. 
+          <p>By default, the flow launched by the code above will make the user go through a few screens to select payment data (payment methods and issuer if needed). However, if you’d like a unique form to collect it, we provide you one with payment method “guessing”. Our guessing form will fill payment method data if it can while your client enters it’s card number. If not, the user will have to select it within that form, altogether with the issuer, if needed.
           Note that this feature is only available for credit and debit cards.
           To enable our guessing card form, you only have to add a single line:
           </p>
@@ -152,7 +154,7 @@
                  .setAmount("100")
                  .setSupportedPaymentTypes(supportedPaymentTypes)
                  .startVaultActivity();
-          </pre>  
+          </pre>
           <br>
           <p>When registered customer’s saved cards are found, this flavor takes the default one and starts the payment flow showing it:</p>
           <img class="centered" src="images/screenshots/customer_card.png" alt="customer_card">
@@ -184,10 +186,10 @@
 
                  // Set token
                  String token = data.getStringExtra("token");
-                
+
                  // Set payment method
                  PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
-                
+
                  // Create payment
                 createPayment(this, token,
                          installments, issuerId, paymentMethod, null);
@@ -200,13 +202,15 @@
                      }
                  }
           }
-          </pre>  
+          </pre>
 
           <p>To create a payment, have a look at: <a href="make_payment.html">Make a payment</a></p>
 
         </section>
 
         <aside id="sidebar">
+          <a href="https://github.com/mreverter/sdk-android" class="button"><small>View project on</small> GitHub</a>
+
           <a href="https://github.com/mreverter/sdk-android/zipball/master" class="button">
             <small>Download</small>
             .zip file

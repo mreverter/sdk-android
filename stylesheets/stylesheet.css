@@ -465,11 +465,23 @@ a:hover {
 }
 
 header {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
-  background: #2e7bcf url(../images/header-bg.jpg) 0 0 repeat-x;
+  background: #eaeaea;
   border-bottom: solid 1px #275da1;
+}
+
+.right{
+  top: 15px;
+  position: absolute;
+  right: 150px;
+  display: inline-block;
+  background-color: #3ea1dd;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 header h1 {
@@ -642,6 +654,13 @@ form {
 
 
 /* GENERAL ELEMENT TYPE STYLES */
+
+#main-content p.logo-subtitle{
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  color: #474747;
+  font-size: 20px;
+  align-self: center;
+}
 
 #main-content h1 {
   margin-top: 0;
@@ -910,4 +929,3 @@ footer a:hover {
 
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 479px) { }
-
