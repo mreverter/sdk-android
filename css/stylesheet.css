@@ -483,6 +483,24 @@ header {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+#index {
+  height: 104px;
+  width: 104px;
+  position: fixed;
+  top: 3%;
+  left: 0;
+}
+
+#index a {
+  display: block;
+  height: 15px;
+  width: 70px;
+  padding: 8px 16px;
+  font-family: Arial, sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+  text-decoration: none;
+}
 
 header h1 {
   width: 540px;
