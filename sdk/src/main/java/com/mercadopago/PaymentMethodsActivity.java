@@ -16,12 +16,11 @@ import com.mercadopago.adapters.PaymentMethodsAdapter;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.decorations.DividerItemDecoration;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.model.PaymentMethodPreference;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -33,8 +32,14 @@ public class PaymentMethodsActivity extends AppCompatActivity {
     private Activity mActivity;
     private String mMerchantPublicKey;
     private RecyclerView mRecyclerView;
-    protected boolean mShowBankDeals;
+    private boolean mShowBankDeals;
+    private boolean mSupportMPApp;
+    private List<String> mExcludedPaymentMethodIds;
     private List<String> mSupportedPaymentTypes;
+    private List<String> mExcludedPaymentTypes;
+    private String mDefaultPaymentMethodId;
+
+    private PaymentMethodPreference mPaymentMethodPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,24 @@ public class PaymentMethodsActivity extends AppCompatActivity {
         mActivity = this;
 
         // Get activity parameters
+        getActivityParameters();
+
+        createPaymentMethodPreference();
+
+        // Set recycler view
+        mRecyclerView = (RecyclerView) findViewById(R.id.payment_methods_list);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+
+        // Set a linear layout manager
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Load payment methods
+        getPaymentMethodsAsync(mMerchantPublicKey);
+    }
+
+    private void getActivityParameters() {
+
         mMerchantPublicKey = this.getIntent().getStringExtra("merchantPublicKey");
         if (mMerchantPublicKey == null) {
             Intent returnIntent = new Intent();
@@ -58,17 +81,27 @@ public class PaymentMethodsActivity extends AppCompatActivity {
             mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
         }
         mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
+        mSupportMPApp = this.getIntent().getBooleanExtra("supportMPApp", false);
 
-        // Set recycler view
-        mRecyclerView = (RecyclerView) findViewById(R.id.payment_methods_list);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+        if (this.getIntent().getStringExtra("excludedPaymentMethodIds") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mExcludedPaymentMethodIds = gson.fromJson(this.getIntent().getStringExtra("excludedPaymentMethodIds"), listType);
+        }
+        if (this.getIntent().getStringExtra("excludedPaymentTypes") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mExcludedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("excludedPaymentTypes"), listType);
+        }
+        mDefaultPaymentMethodId = this.getIntent().getStringExtra("defaultPaymentMethodId");
+    }
 
-        // Set a linear layout manager
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Load payment methods
-        getPaymentMethodsAsync(mMerchantPublicKey);
+    private void createPaymentMethodPreference() {
+        mPaymentMethodPreference = new PaymentMethodPreference();
+        mPaymentMethodPreference.setExcludedPaymentMethodIds(this.mExcludedPaymentMethodIds);
+        mPaymentMethodPreference.setSupportedPaymentTypes(this.mSupportedPaymentTypes);
+        mPaymentMethodPreference.setExcludedPaymentTypes(this.mExcludedPaymentTypes);
+        mPaymentMethodPreference.setDefaultPaymentMethodId(this.mDefaultPaymentMethodId);
     }
 
     protected void setContentView() {
@@ -120,7 +153,7 @@ public class PaymentMethodsActivity extends AppCompatActivity {
                 .setPublicKey(merchantPublicKey)
                 .build();
 
-        mercadoPago.getPaymentMethods(new Callback <List<PaymentMethod>>() {
+        mercadoPago.getPaymentMethods(new Callback<List<PaymentMethod>>() {
             @Override
             public void success(List<PaymentMethod> paymentMethods, Response response) {
 
@@ -131,7 +164,7 @@ public class PaymentMethodsActivity extends AppCompatActivity {
                         // Return to parent
                         Intent returnIntent = new Intent();
                         PaymentMethod selectedPaymentMethod = (PaymentMethod) view.getTag();
-                        returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(selectedPaymentMethod));
+                        returnIntent.putExtra("paymentMethod", selectedPaymentMethod);
                         setResult(RESULT_OK, returnIntent);
                         finish();
                     }
@@ -149,25 +182,20 @@ public class PaymentMethodsActivity extends AppCompatActivity {
 
     private List<PaymentMethod> getSupportedPaymentMethods(List<PaymentMethod> paymentMethods) {
 
-        if (mSupportedPaymentTypes != null) {
-
-            List<PaymentMethod> spm = new ArrayList<>();
-
-            for (int i = 0; i < paymentMethods.size(); i++) {
-                for (int j = 0; j < mSupportedPaymentTypes.size(); j++) {
-                    if (paymentMethods.get(i).getPaymentTypeId().equals(mSupportedPaymentTypes.get(j))) {
-                        spm.add(paymentMethods.get(i));
-                        break;
-                    }
-                }
-            }
-
-            return spm;
-
-        } else {
-
-            return paymentMethods;
+        List<PaymentMethod> paymentMethodList = mPaymentMethodPreference.getSupportedPaymentMethods(paymentMethods);
+        if(mSupportMPApp)
+        {
+            addMPAppMethod(paymentMethodList);
         }
+        return paymentMethodList;
+    }
+
+    private void addMPAppMethod(List<PaymentMethod> list) {
+
+        PaymentMethod mpAppMethod = new PaymentMethod();
+        mpAppMethod.setId(getResources().getString(R.string.mpsdk_mp_app_id));
+        mpAppMethod.setName(getResources().getString(R.string.mpsdk_mp_app_name));
+        list.add(0, mpAppMethod);
     }
 }
 

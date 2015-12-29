@@ -9,8 +9,8 @@ import com.mercadopago.ExampleActivity;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.examples.utils.ExamplesUtils;
+import com.mercadopago.model.ApiException;
 import com.mercadopago.model.PaymentMethod;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
 import java.math.BigDecimal;
@@ -43,12 +43,13 @@ public class Step3Activity extends ExampleActivity {
                 // Create payment
                 ExamplesUtils.createPayment(this, data.getStringExtra("token"),
                         Integer.parseInt(data.getStringExtra("installments")),
-                        issuerId, JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class), null);
+                        issuerId, (PaymentMethod) data.getSerializableExtra("paymentMethod"), null);
 
             } else {
 
-                if ((data != null) && (data.getStringExtra("apiException") != null)) {
-                    Toast.makeText(getApplicationContext(), data.getStringExtra("apiException"), Toast.LENGTH_LONG).show();
+                if (data != null && data.getSerializableExtra("apiException") != null) {
+                    ApiException apiException = (ApiException) data.getSerializableExtra("apiException");
+                    Toast.makeText(getApplicationContext(), apiException.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         } else if (requestCode == MercadoPago.CONGRATS_REQUEST_CODE) {
@@ -57,10 +58,16 @@ public class Step3Activity extends ExampleActivity {
         }
     }
 
-    public void submitForm(View view) {
-
+    public void submitSimpleForm(View view) {
         // Call final vault activity
         ExamplesUtils.startAdvancedVaultActivity(this, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY,
+                ExamplesUtils.DUMMY_MERCHANT_BASE_URL, ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI,
+                ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), mSupportedPaymentTypes);
+    }
+
+    public void submitGuessingForm(View view) {
+        // Call final vault activity
+        ExamplesUtils.startAdvancedVaultActivityWithGuessing(this, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY,
                 ExamplesUtils.DUMMY_MERCHANT_BASE_URL, ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI,
                 ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), mSupportedPaymentTypes);
     }

@@ -1,5 +1,7 @@
 package com.mercadopago.services;
 
+import com.mercadopago.model.CheckoutIntent;
+import com.mercadopago.model.CheckoutPreference;
 import com.mercadopago.model.Customer;
 import com.mercadopago.model.Discount;
 import com.mercadopago.model.MerchantPayment;
@@ -20,6 +22,6 @@ public interface MerchantService {
     @POST("/{uri}")
     void createPayment(@EncodedPath("uri") String uri, @Body MerchantPayment body, Callback<Payment> callback);
 
-    @GET("/{uri}")
-    void getDiscount(@EncodedPath("uri") String uri, @Query("merchant_access_token") String merchantAccessToken, @Query("item.id") String itemId, @Query("item.quantity") Integer itemQuantity, Callback<Discount> callback);
+    @POST("/{uri}")
+    void createPreference(@EncodedPath("uri") String uri, @Body CheckoutIntent body, Callback<CheckoutPreference> callback);
 }

@@ -13,7 +13,6 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.test.ActivityResult;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
-import com.mercadopago.util.JsonUtil;
 
 public class IssuersActivityTest extends BaseTest<IssuersActivity> {
 
@@ -45,7 +44,7 @@ public class IssuersActivityTest extends BaseTest<IssuersActivity> {
 
         try {
             ActivityResult activityResult = getActivityResult(activity);
-            Issuer issuer = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("issuer"), Issuer.class);
+            Issuer issuer = (Issuer) activityResult.getExtras().getSerializable("issuer");
             assertTrue(activityResult.getResultCode() == Activity.RESULT_OK);
             assertTrue(issuer.getId().equals(issuerId));
         } catch (Exception ex) {
@@ -67,7 +66,7 @@ public class IssuersActivityTest extends BaseTest<IssuersActivity> {
 
         try {
             ActivityResult activityResult = getActivityResult(activity);
-            ApiException apiException = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("apiException"), ApiException.class);
+            ApiException apiException = (ApiException) activityResult.getExtras().getSerializable("apiException");
             assertTrue(activityResult.getResultCode() == Activity.RESULT_CANCELED);
             assertTrue(apiException.getStatus() == 404);
         } catch (Exception ex) {
@@ -88,7 +87,7 @@ public class IssuersActivityTest extends BaseTest<IssuersActivity> {
             intent.putExtra("merchantPublicKey", merchantPublicKey);
         }
         if (paymentMethod != null) {
-            intent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
+            intent.putExtra("paymentMethod", paymentMethod);
         }
         setActivityIntent(intent);
         return getActivity();

@@ -9,7 +9,6 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.test.ActivityResult;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
-import com.mercadopago.util.JsonUtil;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -40,7 +39,7 @@ public class VaultActivityWithCustomerCardTest extends BaseTest<VaultActivity> {
 
         // Mock up an ActivityResult:
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("paymentMethodRow", JsonUtil.getInstance().toJson(StaticMock.getPaymentMethodRow(getApplicationContext())));
+        returnIntent.putExtra("paymentMethodRow", StaticMock.getPaymentMethodRow(getApplicationContext()));
         Instrumentation.ActivityResult mockedResult = new Instrumentation.ActivityResult(Activity.RESULT_OK, returnIntent);
 
         // Create an ActivityMonitor that catch CustomerCardsActivity and return mock ActivityResult:
@@ -81,7 +80,7 @@ public class VaultActivityWithCustomerCardTest extends BaseTest<VaultActivity> {
         try {
             ActivityResult activityResult = getActivityResult(activity);
             assertTrue(!activityResult.getExtras().getString("token").equals(""));
-            PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("paymentMethod"), PaymentMethod.class);
+            PaymentMethod paymentMethod = (PaymentMethod) activityResult.getExtras().getSerializable("paymentMethod");
             assertTrue(paymentMethod.getId().equals("master"));
             assertTrue(activityResult.getExtras().getString("installments").equals("1"));
         } catch (Exception ex) {

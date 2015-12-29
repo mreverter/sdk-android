@@ -10,7 +10,6 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.test.ActivityResult;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
-import com.mercadopago.util.JsonUtil;
 
 public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
@@ -56,8 +55,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate the result
         try {
             ActivityResult activityResult = getActivityResult(mActivity);
-            CardToken cardToken = JsonUtil.getInstance().fromJson(
-                    activityResult.getExtras().getString("cardToken"), CardToken.class);
+            CardToken cardToken = (CardToken) activityResult.getExtras().getSerializable("cardToken");
 
             assertTrue(cardToken.getCardNumber().equals(StaticMock.DUMMY_CARD_NUMBER));
             assertTrue(cardToken.getExpirationMonth() == StaticMock.DUMMY_EXPIRATION_MONTH);
@@ -237,8 +235,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
         // Validate the result
         try {
             ActivityResult activityResult = getActivityResult(mActivity);
-            CardToken cardToken = JsonUtil.getInstance().fromJson(
-                    activityResult.getExtras().getString("cardToken"), CardToken.class);
+            CardToken cardToken = (CardToken) activityResult.getExtras().getSerializable("cardToken");
 
             assertTrue(cardToken.getCardNumber().equals(StaticMock.DUMMY_CARD_NUMBER));
             assertTrue(cardToken.getExpirationMonth() == StaticMock.DUMMY_EXPIRATION_MONTH);
@@ -287,7 +284,7 @@ public class NewCardActivityTest extends BaseTest<NewCardActivity> {
 
         Intent intent = new Intent();
         if (paymentMethod != null) {
-            intent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
+            intent.putExtra("paymentMethod", paymentMethod);
         }
         if (keyType != null) {
             intent.putExtra("keyType", keyType);

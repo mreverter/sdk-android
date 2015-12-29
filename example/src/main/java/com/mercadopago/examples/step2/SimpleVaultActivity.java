@@ -26,7 +26,6 @@ import com.mercadopago.model.PaymentMethodRow;
 import com.mercadopago.model.SavedCardToken;
 import com.mercadopago.model.Token;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
@@ -195,7 +194,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
 
-            PaymentMethodRow selectedPaymentMethodRow = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethodRow"), PaymentMethodRow.class);
+            PaymentMethodRow selectedPaymentMethodRow = (PaymentMethodRow) data.getSerializableExtra("paymentMethodRow");
 
             if (selectedPaymentMethodRow.getCard() != null) {
 
@@ -224,7 +223,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
 
-            mTempPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+            mTempPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
 
             // Call new card activity
             startNewCardActivity();
@@ -245,7 +244,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
 
             // Set selection status
-            mCardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
+            mCardToken = (CardToken) data.getSerializableExtra("cardToken");
             mSelectedPaymentMethodRow = null;
             mSelectedPaymentMethod = mTempPaymentMethod;
 
@@ -432,7 +431,7 @@ public class SimpleVaultActivity extends AppCompatActivity {
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("token", token.getId());
-                returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+                returnIntent.putExtra("paymentMethod", mSelectedPaymentMethod);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             }

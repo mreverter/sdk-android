@@ -12,6 +12,7 @@ import com.mercadopago.examples.step2.Step2Activity;
 import com.mercadopago.examples.step3.Step3Activity;
 import com.mercadopago.examples.step4.Step4Activity;
 import com.mercadopago.examples.step5.Step5Activity;
+import com.mercadopago.examples.step6.Step6Activity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
     public void runStep5(View view) {
 
         runStep(new Step5Activity());
+    }
+
+    public void runStep6(View view) {
+
+        runStep(new Step6Activity());
     }
 
     private void runStep(Activity activity) {

@@ -12,8 +12,8 @@ import android.widget.TextView;
 import com.mercadopago.adapters.CustomerCardsAdapter;
 import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.model.PaymentMethodRow;
 import com.mercadopago.util.CurrenciesUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
 public class CongratsActivity extends AppCompatActivity {
@@ -28,16 +28,14 @@ public class CongratsActivity extends AppCompatActivity {
         setContentView();
 
         // Get activity params
-        String paymentString = this.getIntent().getStringExtra("payment");
-        String paymentMethodString = this.getIntent().getStringExtra("paymentMethod");
-        if ((paymentString == null) || (paymentMethodString == null)) {
+        Payment payment = (Payment) this.getIntent().getSerializableExtra("payment");
+        mPaymentMethod = (PaymentMethod) this.getIntent().getSerializableExtra("paymentMethod");
+        if ((payment == null) || (mPaymentMethod == null)) {
             Intent returnIntent = new Intent();
             setResult(RESULT_CANCELED, returnIntent);
             finish();
             return;
         }
-        Payment payment = JsonUtil.getInstance().fromJson(paymentString, Payment.class);
-        mPaymentMethod = JsonUtil.getInstance().fromJson(paymentMethodString, PaymentMethod.class);
 
         // Set layout
         setLayout(payment);

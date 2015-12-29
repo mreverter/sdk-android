@@ -1,7 +1,6 @@
 package com.mercadopago;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +12,6 @@ import com.google.gson.reflect.TypeToken;
 import com.mercadopago.adapters.InstallmentsAdapter;
 import com.mercadopago.decorations.DividerItemDecoration;
 import com.mercadopago.model.PayerCost;
-import com.mercadopago.util.JsonUtil;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -59,7 +57,7 @@ public class InstallmentsActivity extends AppCompatActivity {
                 // Return to parent
                 Intent returnIntent = new Intent();
                 PayerCost selectedPayerCost = (PayerCost) view.getTag();
-                returnIntent.putExtra("payerCost", JsonUtil.getInstance().toJson(selectedPayerCost));
+                returnIntent.putExtra("payerCost", selectedPayerCost);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             }

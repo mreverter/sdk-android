@@ -58,4 +58,8 @@
     <string name="mpsdk_and">and</string>
     <string name="mpsdk_title_activity_terms_and_conditions">Terms and conditions</string>
     <string name="mpsdk_bank_deals_action">Promotions</string>
+    <string name="mpsdk_title_activity_guessing_card">Enter your credit card</string>
+    <string name="mpsdk_select_issuer_label">Bank</string>
+
+
 </resources>

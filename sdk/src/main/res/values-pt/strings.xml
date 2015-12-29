@@ -56,4 +56,8 @@
     <string name="mpsdk_bank_zero_rate"><![CDATA[<strong>%1$s parcelas sem juros</strong>]]></string>
     <string name="mpsdk_and">e</string>
     <string name="mpsdk_title_activity_terms_and_conditions">Termos e condições</string>
+    <string name="mpsdk_bank_deals_action">Promoções</string>
+    <string name="mpsdk_title_activity_guessing_card">Digite os dados do seu cartão</string>
+    <string name="mpsdk_select_issuer_label">Escolha o banco…</string>
+
 </resources>

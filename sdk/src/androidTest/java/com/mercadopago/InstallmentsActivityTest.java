@@ -11,9 +11,7 @@ import com.mercadopago.model.PayerCost;
 import com.mercadopago.test.ActivityResult;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
-import com.mercadopago.util.JsonUtil;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class InstallmentsActivityTest extends BaseTest<InstallmentsActivity> {
@@ -45,7 +43,7 @@ public class InstallmentsActivityTest extends BaseTest<InstallmentsActivity> {
 
         try {
             ActivityResult activityResult = getActivityResult(activity);
-            PayerCost payerCost = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("payerCost"), PayerCost.class);
+            PayerCost payerCost = (PayerCost) activityResult.getExtras().getSerializable("payerCost");
             assertTrue(activityResult.getResultCode() == Activity.RESULT_OK);
             assertTrue(payerCost.getInstallments() == 1);
         } catch (Exception ex) {

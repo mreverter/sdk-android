@@ -24,7 +24,6 @@ import com.mercadopago.model.IdentificationType;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.Token;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
@@ -94,8 +93,8 @@ public class CardActivity extends AppCompatActivity {
         setErrorTextCleaner(mCardHolderName);
 
         // Set payment method image
-        mPaymentMethod = JsonUtil.getInstance().fromJson(this.getIntent().getStringExtra("paymentMethod"), PaymentMethod.class);
-        if (mPaymentMethod.getId() != null) {
+        mPaymentMethod = (PaymentMethod) this.getIntent().getSerializableExtra("paymentMethod");
+        if ((mPaymentMethod != null) && (mPaymentMethod.getId() != null)) {
             ImageView pmImage = (ImageView) findViewById(com.mercadopago.R.id.pmImage);
             pmImage.setImageResource(MercadoPagoUtil.getPaymentMethodIcon(this, mPaymentMethod.getId()));
         }
@@ -282,7 +281,7 @@ public class CardActivity extends AppCompatActivity {
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("token", token.getId());
-                returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mPaymentMethod));
+                returnIntent.putExtra("paymentMethod", mPaymentMethod);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             }

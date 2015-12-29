@@ -1,14 +1,10 @@
 package com.mercadopago.model;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
-public class PayerCost {
+public class PayerCost implements Serializable {
 
     private Integer installments;
     private BigDecimal installmentRate;

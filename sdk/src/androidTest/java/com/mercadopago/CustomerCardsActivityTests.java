@@ -12,7 +12,6 @@ import com.mercadopago.model.PaymentMethodRow;
 import com.mercadopago.test.ActivityResult;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
-import com.mercadopago.util.JsonUtil;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class CustomerCardsActivityTests extends BaseTest<CustomerCardsActivity> 
         // Validate result
         try {
             ActivityResult activityResult = getActivityResult(activity);
-            PaymentMethodRow pmRow = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("paymentMethodRow"), PaymentMethodRow.class);
+            PaymentMethodRow pmRow = (PaymentMethodRow) activityResult.getExtras().getSerializable("paymentMethodRow");
             assertTrue(activityResult.getResultCode() == Activity.RESULT_OK);
             assertTrue(pmRow.getCard().getPaymentMethod().getId().equals("master"));
         } catch (Exception ex) {

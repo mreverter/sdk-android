@@ -1,32 +1,30 @@
 package com.mercadopago.examples.utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.core.MerchantServer;
+import com.mercadopago.examples.R;
 import com.mercadopago.examples.step2.SimpleVaultActivity;
 import com.mercadopago.examples.step3.AdvancedVaultActivity;
 import com.mercadopago.examples.step1.CardActivity;
 import com.mercadopago.examples.step4.FinalVaultActivity;
+import com.mercadopago.model.CheckoutIntent;
+import com.mercadopago.model.CheckoutPreference;
 import com.mercadopago.model.Discount;
 import com.mercadopago.model.Item;
 import com.mercadopago.model.MerchantPayment;
 import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -67,12 +65,26 @@ public class ExamplesUtils {
     public static final Integer DUMMY_ITEM_QUANTITY = 1;
     public static final BigDecimal DUMMY_ITEM_UNIT_PRICE = new BigDecimal("100");
 
+    public static final Integer DUMMY_MAX_INSTALLMENTS = 6;
+    public static final Integer DUMMY_DEFAULT_INSTALLMENTS = 3;
+
     public static void startCardActivity(Activity activity, String merchantPublicKey, PaymentMethod paymentMethod) {
 
         Intent cardIntent = new Intent(activity, CardActivity.class);
         cardIntent.putExtra("merchantPublicKey", merchantPublicKey);
-        cardIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
+        cardIntent.putExtra("paymentMethod", paymentMethod);
         activity.startActivityForResult(cardIntent, CARD_REQUEST_CODE);
+    }
+
+    public static void startGuessingCardActivity(Activity activity, String merchantPublicKey, boolean issuerRequired) {
+
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(activity)
+                .setPublicKey(merchantPublicKey)
+                .setRequireSecurityCode(true)
+                .setRequireIssuer(issuerRequired)
+                .setShowBankDeals(true)
+                .startGuessingCardActivity();
     }
 
     public static void startSimpleVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, List<String> supportedPaymentTypes) {
@@ -85,8 +97,19 @@ public class ExamplesUtils {
         putListExtra(simpleVaultIntent, "supportedPaymentTypes", supportedPaymentTypes);
         activity.startActivityForResult(simpleVaultIntent, SIMPLE_VAULT_REQUEST_CODE);
     }
-
     public static void startAdvancedVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, BigDecimal amount, List<String> supportedPaymentTypes) {
+        startAdvancedVaultActivity(activity, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY,
+                ExamplesUtils.DUMMY_MERCHANT_BASE_URL, ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI,
+                ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), supportedPaymentTypes, false);
+    }
+
+    public static void startAdvancedVaultActivityWithGuessing(Activity activity, String dummyMerchantPublicKey, String dummyMerchantBaseUrl, String dummyMerchantGetCustomerUri, String dummyMerchantAccessToken, BigDecimal bigDecimal, List<String> supportedPaymentTypes) {
+        startAdvancedVaultActivity(activity, ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY,
+                ExamplesUtils.DUMMY_MERCHANT_BASE_URL, ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI,
+                ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), supportedPaymentTypes, true);
+    }
+
+    public static void startAdvancedVaultActivity(Activity activity, String merchantPublicKey, String merchantBaseUrl, String merchantGetCustomerUri, String merchantAccessToken, BigDecimal amount, List<String> supportedPaymentTypes, Boolean guessingEnabled) {
 
         Intent advVaultIntent = new Intent(activity, AdvancedVaultActivity.class);
         advVaultIntent.putExtra("merchantPublicKey", merchantPublicKey);
@@ -153,6 +176,42 @@ public class ExamplesUtils {
 
             Toast.makeText(activity, "Invalid payment method", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static void createPreference(final Activity activity) {
+
+        Toast.makeText(activity, activity.getString(R.string.opening_mp), Toast.LENGTH_LONG).show();
+
+        // Set item
+        Item item = new Item(DUMMY_ITEM_ID, DUMMY_ITEM_QUANTITY);
+
+        // Set checkout intent
+        CheckoutIntent checkoutIntent = new CheckoutIntent(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN, item);
+
+        // Create a checkout preference
+        // TODO: cambiar lo mío por el mock de OP
+        MerchantServer.createPreference(activity, "https://mp-android-sdk.herokuapp.com", "/preferences", checkoutIntent, new Callback<CheckoutPreference>() {
+            @Override
+            public void success(CheckoutPreference checkoutPreference, Response response) {
+
+                // Call final vault activity
+                new MercadoPago.StartActivityBuilder()
+                        .setActivity(activity)
+                        .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
+                        .setCheckoutPreference(checkoutPreference)
+                        .setShowBankDeals(true)
+                        .startCheckoutActivity();
+
+                LayoutUtil.showRegularLayout(activity);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+                LayoutUtil.showRegularLayout(activity);
+                Toast.makeText(activity, error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private static void putListExtra(Intent intent, String listName, List<String> list) {

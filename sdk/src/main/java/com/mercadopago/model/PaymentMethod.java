@@ -1,8 +1,9 @@
 package com.mercadopago.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PaymentMethod {
+public class PaymentMethod implements Serializable {
 
     private List<String> additionalInfoNeeded;
     private String id;
@@ -80,5 +81,10 @@ public class PaymentMethod {
             }
         }
         return false;
+    }
+
+    public boolean isValidForBin(String bin) {
+
+        return (Setting.getSettingByBin(this.getSettings(), bin) != null);
     }
 }

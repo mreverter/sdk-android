@@ -6,7 +6,6 @@ import com.mercadopago.model.Payment;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
-import com.mercadopago.util.JsonUtil;
 
 public class CongratsActivityTest extends BaseTest<CongratsActivity> {
 
@@ -65,10 +64,10 @@ public class CongratsActivityTest extends BaseTest<CongratsActivity> {
 
         Intent intent = new Intent();
         if (payment != null) {
-            intent.putExtra("payment", JsonUtil.getInstance().toJson(payment));
+            intent.putExtra("payment", payment);
         }
         if (paymentMethod != null) {
-            intent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
+            intent.putExtra("paymentMethod", paymentMethod);
         }
         setActivityIntent(intent);
         return getActivity();

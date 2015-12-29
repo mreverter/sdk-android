@@ -1,8 +1,9 @@
 package com.mercadopago.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MerchantPayment {
+public class MerchantPayment implements Serializable {
 
     private Long cardIssuerId;
     private String cardToken;

@@ -1,8 +1,9 @@
 package com.mercadopago.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ApiException {
+public class ApiException implements Serializable {
 
     private List<Cause> cause;
     private String error;

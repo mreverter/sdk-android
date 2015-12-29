@@ -19,7 +19,6 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.PaymentMethodRow;
 import com.mercadopago.model.Token;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
@@ -40,6 +39,7 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
     protected PayerCost mSelectedPayerCost;
     protected Issuer mSelectedIssuer;
     protected Issuer mTempIssuer;
+    protected Boolean mGuessingCardEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +65,7 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
             setResult(RESULT_CANCELED, returnIntent);
             finish();
         }
+        mGuessingCardEnabled = getIntent().getBooleanExtra("cardGuessingEnabled", false);
     }
 
     @Override
@@ -121,13 +122,17 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
 
             resolveNewCardRequest(resultCode, data);
         }
+        else if (requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
+
+            resolveGuessingCardRequest(resultCode, data);
+        }
     }
 
     protected void resolveCustomerCardsRequest(int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK) {
 
-            PaymentMethodRow selectedPaymentMethodRow = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethodRow"), PaymentMethodRow.class);
+            PaymentMethodRow selectedPaymentMethodRow = (PaymentMethodRow) data.getSerializableExtra("paymentMethodRow");
 
             if (selectedPaymentMethodRow.getCard() != null) {
 
@@ -142,8 +147,10 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
                 setCustomerMethodSelection();
 
             } else {
-
-                startPaymentMethodsActivity();
+                if(mGuessingCardEnabled)
+                    startGuessingCardActivity();
+                else
+                    startPaymentMethodsActivity();
             }
         } else {
 
@@ -159,7 +166,7 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
 
             // Set selection status
             mTempIssuer = null;
-            mTempPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+            mTempPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
 
             if (MercadoPagoUtil.isCardPaymentType(mTempPaymentMethod.getPaymentTypeId())) {  // Card-like methods
 
@@ -190,7 +197,7 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
         if (resultCode == RESULT_OK) {
 
             // Set selection status
-            mSelectedPayerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
+            mSelectedPayerCost = (PayerCost) data.getSerializableExtra("payerCost");
 
             // Update installments view
             mInstallmentsText.setText(mSelectedPayerCost.getRecommendedMessage());
@@ -208,7 +215,7 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
         if (resultCode == RESULT_OK) {
 
             // Set selection status
-            mTempIssuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+            mTempIssuer = (Issuer) data.getSerializableExtra("issuer");
 
             // Call new card activity
             startNewCardActivity();
@@ -234,22 +241,13 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
 
             // Set selection status
             mPayerCosts = null;
-            mCardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
+            mCardToken = (CardToken) data.getSerializableExtra("cardToken");
             mSelectedPaymentMethodRow = null;
             mSelectedPayerCost = null;
             mSelectedPaymentMethod = mTempPaymentMethod;
             mSelectedIssuer = mTempIssuer;
 
-            // Set customer method selection
-            mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
-                    mCardToken.getCardNumber().substring(mCardToken.getCardNumber().length() - 4, mCardToken.getCardNumber().length())));
-            mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(MercadoPagoUtil.getPaymentMethodIcon(mActivity, mSelectedPaymentMethod.getId()), 0, 0, 0);
-
-            // Set security card visibility
-            showSecurityCodeCard(mSelectedPaymentMethod);
-
-            // Get installments
-            getInstallmentsAsync();
+           this.refreshCardData();
 
         } else {
 
@@ -273,6 +271,39 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
         }
     }
 
+    protected void resolveGuessingCardRequest(int resultCode, Intent data) {
+        if(resultCode == RESULT_OK)
+        {
+            mSelectedPaymentMethodRow = null;
+            mSelectedPayerCost = null;
+
+            mTempPaymentMethod = null;
+            mTempIssuer =  null;
+
+            mSelectedPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
+            mCardToken = (CardToken) data.getSerializableExtra("cardToken");
+            mSelectedIssuer = (Issuer) data.getSerializableExtra("issuer");
+
+            this.refreshCardData();
+
+        }
+        else if ((data != null) && (data.getStringExtra("apiException") != null)) {
+            finishWithApiException(data);
+        }
+    }
+
+    protected void refreshCardData() {
+        // Set customer method selection
+        mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
+                mCardToken.getCardNumber().substring(mCardToken.getCardNumber().length() - 4, mCardToken.getCardNumber().length())));
+        mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(MercadoPagoUtil.getPaymentMethodIcon(mActivity, mSelectedPaymentMethod.getId()), 0, 0, 0);
+
+        // Set security card visibility
+        showSecurityCodeCard(mSelectedPaymentMethod);
+
+        // Get installments
+        getInstallmentsAsync();
+    }
     private void getInstallmentsAsync() {
 
         String bin = getSelectedPMBin();
@@ -373,7 +404,7 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
                     returnIntent.putExtra("issuerId", Long.toString(mSelectedIssuer.getId()));
                 }
                 returnIntent.putExtra("installments", Integer.toString(mSelectedPayerCost.getInstallments()));
-                returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+                returnIntent.putExtra("paymentMethod", mSelectedPaymentMethod);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             }
@@ -394,5 +425,14 @@ public class AdvancedVaultActivity extends SimpleVaultActivity {
                 .setPublicKey(mMerchantPublicKey)
                 .setPaymentMethod(mTempPaymentMethod)
                 .startIssuersActivity();
+    }
+
+    private void startGuessingCardActivity() {
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(mActivity)
+                .setPublicKey(mMerchantPublicKey)
+                .setRequireIssuer(true)
+                .setRequireSecurityCode(false)
+                .startGuessingCardActivity();
     }
 }

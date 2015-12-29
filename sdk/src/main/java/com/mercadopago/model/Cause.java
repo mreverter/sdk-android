@@ -1,6 +1,8 @@
 package com.mercadopago.model;
 
-public class Cause {
+import java.io.Serializable;
+
+public class Cause implements Serializable {
 
     private String code;
     private String description;

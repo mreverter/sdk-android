@@ -1,6 +1,8 @@
 package com.mercadopago.model;
 
-public class Phone {
+import java.io.Serializable;
+
+public class Phone implements Serializable {
 
     private String areaCode;
     private String number;

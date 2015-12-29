@@ -9,8 +9,8 @@ import com.mercadopago.ExampleActivity;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.examples.utils.ExamplesUtils;
+import com.mercadopago.model.ApiException;
 import com.mercadopago.model.PaymentMethod;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
 import java.util.ArrayList;
@@ -38,12 +38,13 @@ public class Step2Activity extends ExampleActivity {
 
                 // Create payment
                 ExamplesUtils.createPayment(this, data.getStringExtra("token"),
-                        1, null, JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class), null);
+                        1, null, (PaymentMethod) data.getSerializableExtra("paymentMethod"), null);
 
-            } else {
+            } else if(data != null){
 
-                if ((data != null) && (data.getStringExtra("apiException") != null)) {
-                    Toast.makeText(getApplicationContext(), data.getStringExtra("apiException"), Toast.LENGTH_LONG).show();
+                if (data.getSerializableExtra("apiException") != null) {
+                    ApiException apiException = (ApiException) data.getSerializableExtra("apiException");
+                    Toast.makeText(getApplicationContext(), apiException.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         } else if (requestCode == MercadoPago.CONGRATS_REQUEST_CODE) {

@@ -1,10 +1,8 @@
 package com.mercadopago.model;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.Serializable;
 
-public class Issuer {
+public class Issuer implements Serializable {
 
     private Long id;
     private String name;

@@ -22,7 +22,6 @@ import com.mercadopago.model.CardToken;
 import com.mercadopago.model.IdentificationType;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
@@ -66,17 +65,12 @@ public class NewCardActivity extends AppCompatActivity {
         mActivity = this;
 
         // Get activity parameters
-        String paymentMethod = this.getIntent().getStringExtra("paymentMethod");
         mKeyType = this.getIntent().getStringExtra("keyType");
         mKey = this.getIntent().getStringExtra("key");
         mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
-        if ((paymentMethod == null) || (mKeyType == null) || (mKey == null)) {
-            Intent returnIntent = new Intent();
-            setResult(RESULT_CANCELED, returnIntent);
-            finish();
-            return;
-        }
-        mPaymentMethod = JsonUtil.getInstance().fromJson(paymentMethod, PaymentMethod.class);
+        mPaymentMethod = (PaymentMethod) this.getIntent().getSerializableExtra("paymentMethod");
+
+        verifyValidCreate();
 
         // Set input controls
         mCardNumber = (EditText) findViewById(R.id.cardNumber);
@@ -102,12 +96,7 @@ public class NewCardActivity extends AppCompatActivity {
         getIdentificationTypesAsync();
 
         // Set payment method image
-        if (mPaymentMethod.getId() != null) {
-            ImageView pmImage = (ImageView) findViewById(R.id.pmImage);
-            if (pmImage != null) {
-                pmImage.setImageResource(MercadoPagoUtil.getPaymentMethodIcon(this, mPaymentMethod.getId()));
-            }
-        }
+        setPaymentMethodImage();
 
         // Set up expiry edit texts
         mExpiryMonth.setOnKeyListener(new View.OnKeyListener() {
@@ -127,6 +116,23 @@ public class NewCardActivity extends AppCompatActivity {
 
         // Set security code visibility
         setSecurityCodeLayout();
+    }
+
+    protected void setPaymentMethodImage() {
+        if (mPaymentMethod.getId() != null) {
+            ImageView pmImage = (ImageView) findViewById(R.id.pmImage);
+            if (pmImage != null) {
+                pmImage.setImageResource(MercadoPagoUtil.getPaymentMethodIcon(this, mPaymentMethod.getId()));
+            }
+        }
+    }
+
+    protected void verifyValidCreate() {
+        if ((mPaymentMethod == null) || (mKeyType == null) || (mKey == null)) {
+            Intent returnIntent = new Intent();
+            setResult(RESULT_CANCELED, returnIntent);
+            finish();
+        }
     }
 
     protected void setContentView() {
@@ -159,7 +165,7 @@ public class NewCardActivity extends AppCompatActivity {
         if (validateForm(cardToken)) {
             // Return to parent
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("cardToken", JsonUtil.getInstance().toJson(cardToken));
+            returnIntent.putExtra("cardToken", cardToken);
             setResult(RESULT_OK, returnIntent);
             finish();
         }
@@ -168,75 +174,106 @@ public class NewCardActivity extends AppCompatActivity {
     protected boolean validateForm(CardToken cardToken) {
 
         boolean result = true;
-        boolean focusSet = false;
+        boolean requestFocus = true;
 
-        // Validate card number
+        if(!validateCardNumber(cardToken, requestFocus)) {
+            result = false;
+            requestFocus = false;
+        }
+
+        if (!validateSecurityCode(cardToken, requestFocus)) {
+            result = false;
+            requestFocus = false;
+        }
+
+        if (!validateExpiryDate(cardToken, requestFocus)) {
+            result = false;
+            requestFocus = false;
+        }
+
+        if (!validateCardHolderName(cardToken, requestFocus)) {
+            result = false;
+            requestFocus = false;
+        }
+
+        if(!validateIdentificationNumber(cardToken, requestFocus)) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    protected boolean validateCardNumber(CardToken cardToken, boolean requestFocus) {
+
         try {
             validateCardNumber(cardToken);
             mCardNumber.setError(null);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             mCardNumber.setError(ex.getMessage());
-            mCardNumber.requestFocus();
-            result = false;
-            focusSet = true;
+            if(requestFocus)
+                mCardNumber.requestFocus();
+            return false;
         }
+        return true;
+    }
 
-        // Validate security code
+    protected boolean validateIdentificationNumber(CardToken cardToken, boolean requestFocus) {
+        if (getIdentificationType() != null) {
+            if (!cardToken.validateIdentificationNumber(getIdentificationType())) {
+                mIdentificationNumber.setError(getString(R.string.mpsdk_invalid_field));
+                if (requestFocus) {
+                    mIdentificationNumber.requestFocus();
+                }
+                return false;
+            } else {
+                mIdentificationNumber.setError(null);
+            }
+        }
+        return true;
+    }
+
+    protected boolean validateCardHolderName(CardToken cardToken, Boolean requestFocus) {
+        if (!cardToken.validateCardholderName()) {
+            mCardHolderName.setError(getString(R.string.mpsdk_invalid_field));
+            if (requestFocus) {
+                mCardHolderName.requestFocus();
+            }
+            return false;
+        } else {
+            mCardHolderName.setError(null);
+        }
+        return true;
+    }
+
+    protected boolean validateExpiryDate(CardToken cardToken, Boolean requestFocus) {
+        if (!cardToken.validateExpiryDate()) {
+            mExpiryError.setVisibility(View.VISIBLE);
+            mExpiryError.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
+            if (requestFocus) {
+                mExpiryMonth.requestFocus();
+            }
+            return false;
+        } else {
+            mExpiryError.setError(null);
+            mExpiryError.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
+    protected boolean validateSecurityCode(CardToken cardToken, boolean requestFocus) {
         if (mRequireSecurityCode) {
             try {
                 validateSecurityCode(cardToken);
                 mSecurityCode.setError(null);
             } catch (Exception ex) {
                 mSecurityCode.setError(ex.getMessage());
-                if (!focusSet) {
+                if (requestFocus) {
                     mSecurityCode.requestFocus();
-                    focusSet = true;
                 }
-                result = false;
+                return false;
             }
         }
-
-        // Validate expiry month and year
-        if (!cardToken.validateExpiryDate()) {
-            mExpiryError.setVisibility(View.VISIBLE);
-            mExpiryError.setError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
-            if (!focusSet) {
-                mExpiryMonth.requestFocus();
-                focusSet = true;
-            }
-            result = false;
-        } else {
-            mExpiryError.setError(null);
-            mExpiryError.setVisibility(View.GONE);
-        }
-
-        // Validate card holder name
-        if (!cardToken.validateCardholderName()) {
-            mCardHolderName.setError(getString(R.string.mpsdk_invalid_field));
-            if (!focusSet) {
-                mCardHolderName.requestFocus();
-                focusSet = true;
-            }
-            result = false;
-        } else {
-            mCardHolderName.setError(null);
-        }
-
-        // Validate identification number
-        if (getIdentificationType() != null) {
-            if (!cardToken.validateIdentificationNumber(getIdentificationType())) {
-                mIdentificationNumber.setError(getString(R.string.mpsdk_invalid_field));
-                if (!focusSet) {
-                    mIdentificationNumber.requestFocus();
-                }
-                result = false;
-            } else {
-                mIdentificationNumber.setError(null);
-            }
-        }
-
-        return result;
+        return true;
     }
 
     protected void validateCardNumber(CardToken cardToken) throws Exception {
@@ -385,7 +422,7 @@ public class NewCardActivity extends AppCompatActivity {
         return this.mSecurityCode.getText().toString();
     }
 
-    private Integer getMonth() {
+    protected Integer getMonth() {
 
         Integer result;
         try {
@@ -396,7 +433,7 @@ public class NewCardActivity extends AppCompatActivity {
         return result;
     }
 
-    private Integer getYear() {
+    protected Integer getYear() {
 
         Integer result;
         try {

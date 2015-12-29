@@ -1,8 +1,9 @@
 package com.mercadopago.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class FeeDetail {
+public class FeeDetail implements Serializable {
 
     private BigDecimal amount;
     private String feePayer;

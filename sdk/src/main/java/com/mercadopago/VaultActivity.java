@@ -2,7 +2,6 @@ package com.mercadopago;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -26,10 +25,10 @@ import com.mercadopago.model.Installment;
 import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.model.PaymentMethodRow;
+import com.mercadopago.model.PaymentMethodPreference;
 import com.mercadopago.model.SavedCardToken;
 import com.mercadopago.model.Token;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 import com.mercadopago.model.Card;
@@ -38,6 +37,7 @@ import com.mercadopago.model.PayerCost;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -53,6 +53,13 @@ public class VaultActivity extends AppCompatActivity {
     protected String mMerchantGetCustomerUri;
     protected String mMerchantPublicKey;
     protected boolean mShowBankDeals;
+    protected boolean mCardGuessingEnabled;
+    protected Integer mDefaultInstallments;
+    protected Integer mMaxInstallments;
+    protected List<String> mExcludedPaymentMethodIds;
+    protected List<String> mSupportedPaymentTypes;
+    protected List<String> mExcludedPaymentTypes;
+    protected String mDefaultPaymentMethodId;
 
     // Input controls
     protected View mInstallmentsCard;
@@ -74,7 +81,6 @@ public class VaultActivity extends AppCompatActivity {
     protected PayerCost mSelectedPayerCost;
     protected PaymentMethod mSelectedPaymentMethod;
     protected Issuer mSelectedIssuer;
-    protected List<String> mSupportedPaymentTypes;
     protected Issuer mTempIssuer;
     protected PaymentMethod mTempPaymentMethod;
 
@@ -82,6 +88,7 @@ public class VaultActivity extends AppCompatActivity {
     protected Activity mActivity;
     protected String mExceptionOnMethod;
     protected MercadoPago mMercadoPago;
+    protected PaymentMethodPreference mPaymentMethodPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,28 +96,12 @@ public class VaultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView();
 
-        // Get activity parameters
-        try {
-            mAmount = new BigDecimal(this.getIntent().getStringExtra("amount"));
-        } catch (Exception ex) {
-            mAmount = null;
-        }
-        mMerchantPublicKey = this.getIntent().getStringExtra("merchantPublicKey");
-        mMerchantBaseUrl = this.getIntent().getStringExtra("merchantBaseUrl");
-        mMerchantGetCustomerUri = this.getIntent().getStringExtra("merchantGetCustomerUri");
-        mMerchantAccessToken = this.getIntent().getStringExtra("merchantAccessToken");
-        if (this.getIntent().getStringExtra("supportedPaymentTypes") != null) {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<String>>(){}.getType();
-            mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
-        }
-        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
+        getActivityParameters();
+        createPaymentMethodPreference();
 
-        if ((mMerchantPublicKey != null) && (mAmount != null)) {
+        if (validParameters()) {
 
-            // Set activity
-            mActivity = this;
-            mActivity.setTitle(getString(R.string.mpsdk_title_activity_vault));
+            setActivity();
 
             // Set layout controls
             mInstallmentsCard = findViewById(R.id.installmentsCard);
@@ -137,15 +128,9 @@ public class VaultActivity extends AppCompatActivity {
             // Set customer method first value
             mCustomerMethodsText.setText(getString(com.mercadopago.R.string.mpsdk_select_pm_label));
 
-            // Set "Go" button
             setFormGoButton(mSecurityCodeText);
 
-            // Hide main layout and go for customer's cards
-            if ((mMerchantBaseUrl != null) && (!mMerchantBaseUrl.equals("") && (mMerchantGetCustomerUri != null) && (!mMerchantGetCustomerUri.equals("")))) {
-                getCustomerCardsAsync();
-            } else {
-                startPaymentMethodsActivity();
-            }
+            initPaymentFlow();
         }
         else {
             Intent returnIntent = new Intent();
@@ -155,9 +140,86 @@ public class VaultActivity extends AppCompatActivity {
         }
     }
 
+    public void getActivityParameters()
+    {
+        setAmount();
+        mMerchantPublicKey = this.getIntent().getStringExtra("merchantPublicKey");
+        mMerchantBaseUrl = this.getIntent().getStringExtra("merchantBaseUrl");
+        mMerchantGetCustomerUri = this.getIntent().getStringExtra("merchantGetCustomerUri");
+        mMerchantAccessToken = this.getIntent().getStringExtra("merchantAccessToken");
+        mCardGuessingEnabled = this.getIntent().getBooleanExtra("cardGuessingEnabled", false);
+        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
+        if (this.getIntent().getStringExtra("excludedPaymentMethodIds") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
+        }
+        if (this.getIntent().getStringExtra("excludedPaymentMethodIds") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mExcludedPaymentMethodIds = gson.fromJson(this.getIntent().getStringExtra("excludedPaymentMethodIds"), listType);
+        }
+        if (this.getIntent().getStringExtra("excludedPaymentTypes") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mExcludedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("excludedPaymentTypes"), listType);
+        }
+        mDefaultPaymentMethodId = this.getIntent().getStringExtra("defaultPaymentMethodId");
+
+        mMaxInstallments = (Integer) this.getIntent().getExtras().get("maxInstallments");
+        mDefaultInstallments = (Integer) this.getIntent().getExtras().get("defaultInstallments");
+
+    }
+
+    private void createPaymentMethodPreference() {
+        mPaymentMethodPreference = new PaymentMethodPreference();
+        mPaymentMethodPreference.setExcludedPaymentMethodIds(this.mExcludedPaymentMethodIds);
+        mPaymentMethodPreference.setSupportedPaymentTypes(this.mSupportedPaymentTypes);
+        mPaymentMethodPreference.setExcludedPaymentTypes(this.mExcludedPaymentTypes);
+        mPaymentMethodPreference.setDefaultPaymentMethodId(this.mDefaultPaymentMethodId);
+        mPaymentMethodPreference.setDefaultInstallments(this.mDefaultInstallments);
+        mPaymentMethodPreference.setMaxInstallments(this.mMaxInstallments);
+    }
+
     protected void setContentView() {
 
         setContentView(R.layout.activity_vault);
+    }
+
+    protected void setAmount() {
+
+        try {
+            mAmount = new BigDecimal(this.getIntent().getStringExtra("amount"));
+        } catch (Exception ex) {
+            mAmount = null;
+        }
+    }
+
+    protected boolean validParameters() {
+
+        if ((mMerchantPublicKey != null) && (mAmount != null)) {
+            return true;
+        }
+        return false;
+    }
+
+    protected void setActivity() {
+
+        mActivity = this;
+        mActivity.setTitle(getString(R.string.mpsdk_title_activity_vault));
+    }
+
+    protected void initPaymentFlow() {
+
+        // Show payment method selection or go for customer's cards
+        if ((mMerchantBaseUrl != null) && (!mMerchantBaseUrl.equals("") && (mMerchantGetCustomerUri != null) && (!mMerchantGetCustomerUri.equals("")))) {
+            getCustomerCardsAsync();
+        } else {
+            if(mCardGuessingEnabled)
+                startGuessingCardActivity();
+            else
+                startPaymentMethodsActivity();
+        }
     }
 
     @Override
@@ -206,6 +268,11 @@ public class VaultActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        onVaultActivityResult(requestCode, resultCode, data);
+    }
+
+    protected boolean onVaultActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == MercadoPago.CUSTOMER_CARDS_REQUEST_CODE) {
 
             resolveCustomerCardsRequest(resultCode, data);
@@ -225,14 +292,28 @@ public class VaultActivity extends AppCompatActivity {
         } else if (requestCode == MercadoPago.NEW_CARD_REQUEST_CODE) {
 
             resolveNewCardRequest(resultCode, data);
+
+        } else if (requestCode == MercadoPago.GUESSING_CARD_REQUEST_CODE) {
+
+            resolveGuessingCardRequest(resultCode, data);
         }
+
+        if ((requestCode == MercadoPago.CUSTOMER_CARDS_REQUEST_CODE) ||
+                (requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) ||
+                (requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) ||
+                (requestCode == MercadoPago.ISSUERS_REQUEST_CODE) ||
+                (requestCode == MercadoPago.NEW_CARD_REQUEST_CODE)) {
+            return true;
+        }
+
+        return false;
     }
 
     protected void resolveCustomerCardsRequest(int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK) {
 
-            PaymentMethodRow selectedPaymentMethodRow = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethodRow"), PaymentMethodRow.class);
+            PaymentMethodRow selectedPaymentMethodRow = (PaymentMethodRow) data.getSerializableExtra("paymentMethodRow");
 
             if (selectedPaymentMethodRow.getCard() != null) {
 
@@ -248,12 +329,14 @@ public class VaultActivity extends AppCompatActivity {
 
             } else {
 
-                startPaymentMethodsActivity();
-
+                if(mCardGuessingEnabled)
+                    startGuessingCardActivity();
+                else
+                    startPaymentMethodsActivity();
             }
         } else {
 
-            if ((data != null) && (data.getStringExtra("apiException") != null)) {
+            if ((data != null) && (data.getSerializableExtra("apiException") != null)) {
                 finishWithApiException(data);
             }
         }
@@ -265,7 +348,7 @@ public class VaultActivity extends AppCompatActivity {
 
             // Set selection status
             mTempIssuer = null;
-            mTempPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+            mTempPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
 
             if (MercadoPagoUtil.isCardPaymentType(mTempPaymentMethod.getPaymentTypeId())) {  // Card-like methods
 
@@ -286,7 +369,7 @@ public class VaultActivity extends AppCompatActivity {
                 mCardToken = null;
                 mSelectedPaymentMethodRow = null;
                 mSelectedPayerCost = null;
-                mSelectedPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+                mSelectedPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
                 mSelectedIssuer = null;
 
                 // Set customer method selection
@@ -304,7 +387,7 @@ public class VaultActivity extends AppCompatActivity {
             }
         } else {
 
-            if ((data != null) && (data.getStringExtra("apiException") != null)) {
+            if ((data != null) && (data.getSerializableExtra("apiException") != null)) {
                 finishWithApiException(data);
             } else if ((mSelectedPaymentMethodRow == null) && (mCardToken == null)) {
                 // if nothing is selected
@@ -318,14 +401,14 @@ public class VaultActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
 
             // Set selection status
-            mSelectedPayerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
+            mSelectedPayerCost = (PayerCost) data.getSerializableExtra("payerCost");
 
             // Update installments view
             mInstallmentsText.setText(mSelectedPayerCost.getRecommendedMessage());
 
         } else {
 
-            if ((data != null) && (data.getStringExtra("apiException") != null)) {
+            if ((data != null) && (data.getSerializableExtra("apiException") != null)) {
                 finishWithApiException(data);
             }
         }
@@ -336,7 +419,7 @@ public class VaultActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
 
             // Set selection status
-            mTempIssuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
+            mTempIssuer = (Issuer) data.getSerializableExtra("issuer");
 
             // Call new card activity
             startNewCardActivity();
@@ -344,7 +427,7 @@ public class VaultActivity extends AppCompatActivity {
         } else {
 
             if (data != null) {
-                if (data.getStringExtra("apiException") != null) {
+                if (data.getSerializableExtra("apiException") != null) {
 
                     finishWithApiException(data);
 
@@ -362,27 +445,18 @@ public class VaultActivity extends AppCompatActivity {
 
             // Set selection status
             mPayerCosts = null;
-            mCardToken = JsonUtil.getInstance().fromJson(data.getStringExtra("cardToken"), CardToken.class);
+            mCardToken = (CardToken) data.getSerializableExtra("cardToken");
             mSelectedPaymentMethodRow = null;
             mSelectedPayerCost = null;
             mSelectedPaymentMethod = mTempPaymentMethod;
             mSelectedIssuer = mTempIssuer;
 
-            // Set customer method selection
-            mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
-                    mCardToken.getCardNumber().substring(mCardToken.getCardNumber().length() - 4, mCardToken.getCardNumber().length())));
-            mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(MercadoPagoUtil.getPaymentMethodIcon(mActivity, mSelectedPaymentMethod.getId()), 0, 0, 0);
-
-            // Set security card visibility
-            showSecurityCodeCard(mSelectedPaymentMethod);
-
-            // Get installments
-            getInstallmentsAsync();
+            this.refreshCardData();
 
         } else {
 
             if (data != null) {
-                if (data.getStringExtra("apiException") != null) {
+                if (data.getSerializableExtra("apiException") != null) {
 
                     finishWithApiException(data);
 
@@ -394,11 +468,48 @@ public class VaultActivity extends AppCompatActivity {
 
                     } else {
 
-                        startPaymentMethodsActivity();
+                        if(mCardGuessingEnabled)
+                            startGuessingCardActivity();
+                        else
+                            startPaymentMethodsActivity();
                     }
                 }
             }
         }
+    }
+
+    protected void resolveGuessingCardRequest(int resultCode, Intent data) {
+        if(resultCode == RESULT_OK)
+        {
+            mSelectedPaymentMethodRow = null;
+            mSelectedPayerCost = null;
+
+            mTempPaymentMethod = null;
+            mTempIssuer =  null;
+
+            mSelectedPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
+            mCardToken = (CardToken) data.getSerializableExtra("cardToken");
+            mSelectedIssuer = (Issuer) data.getSerializableExtra("issuer");
+
+            this.refreshCardData();
+
+        }
+        else if ((data != null) && (data.getStringExtra("apiException") != null)) {
+            finishWithApiException(data);
+        }
+    }
+
+    protected void refreshCardData() {
+        // Set customer method selection
+        mCustomerMethodsText.setText(CustomerCardsAdapter.getPaymentMethodLabel(mActivity, mSelectedPaymentMethod.getName(),
+                mCardToken.getCardNumber().substring(mCardToken.getCardNumber().length() - 4, mCardToken.getCardNumber().length())));
+        mCustomerMethodsText.setCompoundDrawablesWithIntrinsicBounds(MercadoPagoUtil.getPaymentMethodIcon(mActivity, mSelectedPaymentMethod.getId()), 0, 0, 0);
+
+        // Set security card visibility
+        showSecurityCodeCard(mSelectedPaymentMethod);
+
+        // Get installments
+        getInstallmentsAsync();
     }
 
     protected void getCustomerCardsAsync() {
@@ -408,7 +519,9 @@ public class VaultActivity extends AppCompatActivity {
             @Override
             public void success(Customer customer, Response response) {
 
-                mCards = customer.getCards();
+                List<Card> customerCards = customer.getCards();
+                if (customerCards != null)
+                    mCards = getSupportedCustomerCards(customerCards);
 
                 // If the customer has saved cards show the first one, else show the payment methods step
                 if ((mCards != null) && (mCards.size() > 0)) {
@@ -422,7 +535,10 @@ public class VaultActivity extends AppCompatActivity {
                 } else {
 
                     // Show payment methods step
-                    startPaymentMethodsActivity();
+                    if (mCardGuessingEnabled)
+                        startGuessingCardActivity();
+                    else
+                        startPaymentMethodsActivity();
 
                     LayoutUtil.showRegularLayout(mActivity);
                 }
@@ -455,10 +571,20 @@ public class VaultActivity extends AppCompatActivity {
                     if ((installments.size() > 0) && (installments.get(0).getPayerCosts().size() > 0)) {
 
                         // Set installments card data and visibility
-                        mPayerCosts = installments.get(0).getPayerCosts();
-                        mSelectedPayerCost = installments.get(0).getPayerCosts().get(0);
+                        List<PayerCost> availablePayerCosts = installments.get(0).getPayerCosts();
 
-                        if (installments.get(0).getPayerCosts().size() == 1) {
+                        mPayerCosts = mPaymentMethodPreference.getInstallmentsBelowMax(availablePayerCosts);
+
+                        PayerCost defaultPayerCost = mPaymentMethodPreference.getDefaultInstallments(mPayerCosts);
+
+                        if(defaultPayerCost != null) {
+                            mSelectedPayerCost = defaultPayerCost;
+                        }
+                        else {
+                            mSelectedPayerCost = installments.get(0).getPayerCosts().get(0);
+                        }
+
+                        if (mPayerCosts.size() == 1) {
 
                             mInstallmentsCard.setVisibility(View.GONE);
 
@@ -493,8 +619,10 @@ public class VaultActivity extends AppCompatActivity {
             startCustomerCardsActivity();
 
         } else {  // payment method activity
-
-            startPaymentMethodsActivity();
+            if(mCardGuessingEnabled)
+                startGuessingCardActivity();
+            else
+                startPaymentMethodsActivity();
         }
     }
 
@@ -597,7 +725,7 @@ public class VaultActivity extends AppCompatActivity {
             // Return payment method id
             LayoutUtil.showRegularLayout(mActivity);
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+            returnIntent.putExtra("paymentMethod", mSelectedPaymentMethod);
             setResult(RESULT_OK, returnIntent);
             finish();
         }
@@ -648,15 +776,7 @@ public class VaultActivity extends AppCompatActivity {
             @Override
             public void success(Token o, Response response) {
 
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("token", o.getId());
-                if (mSelectedIssuer != null) {
-                    returnIntent.putExtra("issuerId", Long.toString(mSelectedIssuer.getId()));
-                }
-                returnIntent.putExtra("installments", Integer.toString(mSelectedPayerCost.getInstallments()));
-                returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
-                setResult(RESULT_OK, returnIntent);
-                finish();
+                resolveCreateTokenSuccess(o.getId());
             }
 
             @Override
@@ -667,6 +787,33 @@ public class VaultActivity extends AppCompatActivity {
             }
         };
     }
+
+    protected void resolveCreateTokenSuccess(String token) {
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("token", token);
+        if (mSelectedIssuer != null) {
+            returnIntent.putExtra("issuerId", Long.toString(mSelectedIssuer.getId()));
+        }
+        returnIntent.putExtra("installments", Integer.toString(mSelectedPayerCost.getInstallments()));
+        returnIntent.putExtra("paymentMethod", mSelectedPaymentMethod);
+        setResult(RESULT_OK, returnIntent);
+        finish();
+    }
+
+    private List<Card> getSupportedCustomerCards(List<Card> cards) {
+        List<Card> supportedCards = new ArrayList<>();
+        if(mPaymentMethodPreference != null) {
+            for (Card card : cards) {
+                if (mPaymentMethodPreference.isPaymentMethodSupported(card.getPaymentMethod()))
+                    supportedCards.add(card);
+            }
+            return supportedCards;
+        }
+        else
+            return cards;
+    }
+
 
     protected void finishWithApiException(Intent data) {
 
@@ -725,5 +872,16 @@ public class VaultActivity extends AppCompatActivity {
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
                 .setShowBankDeals(mShowBankDeals)
                 .startPaymentMethodsActivity();
+    }
+
+    protected void startGuessingCardActivity(){
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(mActivity)
+                .setPublicKey(mMerchantPublicKey)
+                .setRequireSecurityCode(false)
+                .setRequireIssuer(true)
+                .setShowBankDeals(mShowBankDeals)
+                .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .startGuessingCardActivity();
     }
 }

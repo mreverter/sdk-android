@@ -1,10 +1,11 @@
 package com.mercadopago.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public class BankDeal {
+public class BankDeal implements Serializable {
 
     private Date dateExpired;
     private Date dateStarted;

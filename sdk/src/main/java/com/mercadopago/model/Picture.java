@@ -1,6 +1,8 @@
 package com.mercadopago.model;
 
-public class Picture {
+import java.io.Serializable;
+
+public class Picture implements Serializable {
 
     private String id;
     private String secureUrl;

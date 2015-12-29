@@ -20,6 +20,7 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
 
     private List<PaymentMethodRow> mData;
     private View.OnClickListener mListener = null;
+    private boolean mSupportMPApp;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -35,8 +36,9 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
         }
     }
 
-    public CustomerCardsAdapter(Activity activity, List<Card> data, View.OnClickListener listener) {
+    public CustomerCardsAdapter(Activity activity, List<Card> data, boolean supportMPApp, View.OnClickListener listener) {
 
+        mSupportMPApp = supportMPApp;
         mData = getRows(activity, data);
         mListener = listener;
     }
@@ -75,6 +77,11 @@ public class CustomerCardsAdapter extends  RecyclerView.Adapter<CustomerCardsAda
     private List<PaymentMethodRow> getRows(Context context, List<Card> data) {
 
         List<PaymentMethodRow> rows = new ArrayList<>();
+
+        // Add MercadoPago App
+        if (mSupportMPApp) {
+            rows.add(new PaymentMethodRow(null, context.getResources().getString(R.string.mpsdk_mp_app_name), MercadoPagoUtil.getPaymentMethodIcon(context, "account_money")));
+        }
 
         // Add cards
         for (int i = 0; i < data.size(); i++) {

@@ -1,7 +1,6 @@
 package com.mercadopago;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +13,6 @@ import com.mercadopago.adapters.CustomerCardsAdapter;
 import com.mercadopago.decorations.DividerItemDecoration;
 import com.mercadopago.model.Card;
 import com.mercadopago.model.PaymentMethodRow;
-import com.mercadopago.util.JsonUtil;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -44,6 +42,7 @@ public class CustomerCardsActivity extends AppCompatActivity {
             finish();
             return;
         }
+        boolean supportMPApp = this.getIntent().getBooleanExtra("supportMPApp", false);
 
         // Set recycler view
         mRecyclerView = (RecyclerView) findViewById(R.id.customer_cards_list);
@@ -54,14 +53,14 @@ public class CustomerCardsActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Load cards
-        mRecyclerView.setAdapter(new CustomerCardsAdapter(this, cards, new View.OnClickListener() {
+        mRecyclerView.setAdapter(new CustomerCardsAdapter(this, cards, supportMPApp, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 // Return to parent
                 Intent returnIntent = new Intent();
                 PaymentMethodRow selectedRow = (PaymentMethodRow) view.getTag();
-                returnIntent.putExtra("paymentMethodRow", JsonUtil.getInstance().toJson(selectedRow));
+                returnIntent.putExtra("paymentMethodRow", selectedRow);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             }

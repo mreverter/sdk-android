@@ -2,7 +2,6 @@ package com.mercadopago;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +14,6 @@ import com.mercadopago.decorations.DividerItemDecoration;
 import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
 import java.util.List;
@@ -41,14 +39,13 @@ public class IssuersActivity extends AppCompatActivity {
 
         // Get activity parameters
         mMerchantPublicKey = this.getIntent().getStringExtra("merchantPublicKey");
-        String paymentMethod = this.getIntent().getStringExtra("paymentMethod");
-        if ((mMerchantPublicKey == null) || (paymentMethod == null)) {
+        mPaymentMethod = (PaymentMethod) this.getIntent().getSerializableExtra("paymentMethod");
+        if ((mMerchantPublicKey == null) || (mPaymentMethod == null)) {
             Intent returnIntent = new Intent();
             setResult(RESULT_CANCELED, returnIntent);
             finish();
             return;
         }
-        mPaymentMethod = JsonUtil.getInstance().fromJson(paymentMethod, PaymentMethod.class);
 
         // Set recycler view
         mRecyclerView = (RecyclerView) findViewById(R.id.issuers_list);
@@ -101,7 +98,7 @@ public class IssuersActivity extends AppCompatActivity {
                         // Return to parent
                         Intent returnIntent = new Intent();
                         Issuer selectedIssuer = (Issuer) view.getTag();
-                        returnIntent.putExtra("issuer", JsonUtil.getInstance().toJson(selectedIssuer));
+                        returnIntent.putExtra("issuer", selectedIssuer);
                         setResult(RESULT_OK, returnIntent);
                         finish();
                     }
@@ -111,7 +108,6 @@ public class IssuersActivity extends AppCompatActivity {
 
             @Override
             public void failure(RetrofitError error) {
-
                 ApiUtil.finishWithApiException(mActivity, error);
             }
         });

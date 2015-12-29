@@ -12,7 +12,6 @@ import com.mercadopago.model.PaymentMethod;
 import com.mercadopago.test.ActivityResult;
 import com.mercadopago.test.BaseTest;
 import com.mercadopago.test.StaticMock;
-import com.mercadopago.util.JsonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,7 @@ public class PaymentMethodsActivityTest extends BaseTest<PaymentMethodsActivity>
 
         try {
             ActivityResult activityResult = getActivityResult(activity);
-            PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("paymentMethod"), PaymentMethod.class);
+            PaymentMethod paymentMethod = (PaymentMethod) activityResult.getExtras().getSerializable("paymentMethod");
             assertTrue(activityResult.getResultCode() == Activity.RESULT_OK);
             assertTrue(paymentMethod.getId().equals("visa"));
         } catch (Exception ex) {
@@ -66,7 +65,7 @@ public class PaymentMethodsActivityTest extends BaseTest<PaymentMethodsActivity>
 
         try {
             ActivityResult activityResult = getActivityResult(activity);
-            ApiException apiException = JsonUtil.getInstance().fromJson(activityResult.getExtras().getString("apiException"), ApiException.class);
+            ApiException apiException = (ApiException) activityResult.getExtras().getSerializable("apiException");
             assertTrue(activityResult.getResultCode() == Activity.RESULT_CANCELED);
             assertTrue(apiException.getStatus() == 404);
         } catch (Exception ex) {

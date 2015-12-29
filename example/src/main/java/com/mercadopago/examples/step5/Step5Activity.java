@@ -9,11 +9,10 @@ import com.mercadopago.ExampleActivity;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.examples.utils.ExamplesUtils;
+import com.mercadopago.model.ApiException;
 import com.mercadopago.model.PaymentMethod;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,12 +49,13 @@ public class Step5Activity extends ExampleActivity {
                 // Create payment
                 ExamplesUtils.createPayment(this, data.getStringExtra("token"),
                         installments, issuerId,
-                        JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class), null);
+                        (PaymentMethod) data.getSerializableExtra("paymentMethod"), null);
 
             } else {
 
-                if ((data != null) && (data.getStringExtra("apiException") != null)) {
-                    Toast.makeText(getApplicationContext(), data.getStringExtra("apiException"), Toast.LENGTH_LONG).show();
+                if (data != null && data.getSerializableExtra("apiException") != null) {
+                    ApiException apiException = (ApiException) data.getSerializableExtra("apiException");
+                    Toast.makeText(getApplicationContext(), apiException.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         } else if (requestCode == MercadoPago.CONGRATS_REQUEST_CODE) {
@@ -64,8 +64,7 @@ public class Step5Activity extends ExampleActivity {
         }
     }
 
-    public void submitForm(View view) {
-
+    public void submitSimpleForm(View view) {
         // Call final vault activity
         new MercadoPago.StartActivityBuilder()
                 .setActivity(this)
@@ -75,7 +74,26 @@ public class Step5Activity extends ExampleActivity {
                 .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
                 .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setMaxInstallments(ExamplesUtils.DUMMY_MAX_INSTALLMENTS)
+                .setDefaultInstallments(ExamplesUtils.DUMMY_DEFAULT_INSTALLMENTS)
                 .setShowBankDeals(true)
+                .startVaultActivity();
+    }
+
+    public void submitGuessingForm(View view){
+        // Call final vault activity
+        new MercadoPago.StartActivityBuilder()
+                .setActivity(this)
+                .setPublicKey(ExamplesUtils.DUMMY_MERCHANT_PUBLIC_KEY)
+                .setMerchantBaseUrl(ExamplesUtils.DUMMY_MERCHANT_BASE_URL)
+                .setMerchantGetCustomerUri(ExamplesUtils.DUMMY_MERCHANT_GET_CUSTOMER_URI)
+                .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
+                .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
+                .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setMaxInstallments(ExamplesUtils.DUMMY_MAX_INSTALLMENTS)
+                .setDefaultInstallments(ExamplesUtils.DUMMY_DEFAULT_INSTALLMENTS)
+                .setShowBankDeals(false)
+                .setGuessingCardFormEnabled(true)
                 .startVaultActivity();
     }
 }

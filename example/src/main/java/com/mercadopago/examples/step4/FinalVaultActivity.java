@@ -4,11 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.mercadopago.core.MercadoPago;
 import com.mercadopago.examples.R;
 import com.mercadopago.examples.step3.AdvancedVaultActivity;
 import com.mercadopago.model.PaymentMethod;
-import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
@@ -41,7 +39,7 @@ public class FinalVaultActivity extends AdvancedVaultActivity {
 
             // Set selection status
             mTempIssuer = null;
-            mTempPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+            mTempPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
 
             if (MercadoPagoUtil.isCardPaymentType(mTempPaymentMethod.getPaymentTypeId())) {  // Card-like methods
 
@@ -62,7 +60,7 @@ public class FinalVaultActivity extends AdvancedVaultActivity {
                 mCardToken = null;
                 mSelectedPaymentMethodRow = null;
                 mSelectedPayerCost = null;
-                mSelectedPaymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
+                mSelectedPaymentMethod = (PaymentMethod) data.getSerializableExtra("paymentMethod");
                 mSelectedIssuer = null;
 
                 // Set customer method selection
@@ -113,7 +111,7 @@ public class FinalVaultActivity extends AdvancedVaultActivity {
             // Return payment method id
             LayoutUtil.showRegularLayout(mActivity);
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(mSelectedPaymentMethod));
+            returnIntent.putExtra("paymentMethod", mSelectedPaymentMethod);
             setResult(RESULT_OK, returnIntent);
             finish();
         }
