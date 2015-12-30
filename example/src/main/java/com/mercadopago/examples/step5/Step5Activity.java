@@ -25,6 +25,13 @@ public class Step5Activity extends ExampleActivity {
         add("ticket");
         add("atm");
     }};
+    protected List<String> mExcludedPaymentTypes = new ArrayList<String>(){{
+        add("prepaid_card");
+        add("ticket");
+    }};
+    protected List<String> mExcludedPaymentMethodIds = new ArrayList<String>(){{
+        add("visa");
+    }};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +81,8 @@ public class Step5Activity extends ExampleActivity {
                 .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
                 .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setExcludedPaymentTypes(mExcludedPaymentTypes)
+                .setExcludedPaymentMethodIds(mExcludedPaymentMethodIds)
                 .setMaxInstallments(ExamplesUtils.DUMMY_MAX_INSTALLMENTS)
                 .setDefaultInstallments(ExamplesUtils.DUMMY_DEFAULT_INSTALLMENTS)
                 .setShowBankDeals(true)
@@ -90,9 +99,11 @@ public class Step5Activity extends ExampleActivity {
                 .setMerchantAccessToken(ExamplesUtils.DUMMY_MERCHANT_ACCESS_TOKEN)
                 .setAmount(ExamplesUtils.DUMMY_ITEM_UNIT_PRICE)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setExcludedPaymentTypes(mExcludedPaymentTypes)
+                .setExcludedPaymentMethodIds(mExcludedPaymentMethodIds)
                 .setMaxInstallments(ExamplesUtils.DUMMY_MAX_INSTALLMENTS)
                 .setDefaultInstallments(ExamplesUtils.DUMMY_DEFAULT_INSTALLMENTS)
-                .setShowBankDeals(false)
+                .setShowBankDeals(true)
                 .setGuessingCardFormEnabled(true)
                 .startVaultActivity();
     }

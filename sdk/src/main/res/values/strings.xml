@@ -2,9 +2,9 @@
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
     <string name="mpsdk_app_name">MercadoPago Android SDK</string>
     <string name="mpsdk_continue_label">Continuar</string>
-    <string name="mpsdk_select_pm_label">Selecciona un medio de pago ...</string>
+    <string name="mpsdk_select_pm_label">Selecciona un medio de pago…</string>
     <string name="mpsdk_last_digits_label">terminada en</string>
-    <string name="mpsdk_other_pm_label">Otro medio de pago ...</string>
+    <string name="mpsdk_other_pm_label">Otro medio de pago…</string>
     <string name="mpsdk_invalid_pm_for_current_amount">El medio de pago que elegiste no se puede usar para pagar ese monto. Por favor selecciona otro</string>
     <string name="mpsdk_transition_view_name">transitionView</string>
     <string name="mpsdk_title_activity_customer_pms">Medios de pago</string>
@@ -66,6 +66,6 @@
 
     <string name="mpsdk_title_activity_guessing_card">Ingresa los datos de tu tarjeta</string>
     <string name="mpsdk_issuer_label">Banco</string>
-    <string name="mpsdk_select_issuer_label">Select your bank…</string>
+    <string name="mpsdk_select_issuer_label">Selecciona un banco…</string>
 
 </resources>

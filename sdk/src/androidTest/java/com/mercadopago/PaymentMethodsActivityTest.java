@@ -24,7 +24,7 @@ public class PaymentMethodsActivityTest extends BaseTest<PaymentMethodsActivity>
 
     public void testGetPaymentMethod() {
 
-        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, null);
+        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, null, null, null);
 
         sleepThread();
 
@@ -51,15 +51,9 @@ public class PaymentMethodsActivityTest extends BaseTest<PaymentMethodsActivity>
         }
     }
 
-    public void testNullMerchantPublicKey() {
-
-        Activity activity = prepareActivity(null, null);
-        assertFinishCalledWithResult(activity, Activity.RESULT_CANCELED);
-    }
-
     public void testWrongMerchantPublicKey() {
 
-        Activity activity = prepareActivity("wrong_public_key", null);
+        Activity activity = prepareActivity("wrong_public_key", null, null, null);
 
         sleepThread();
 
@@ -78,7 +72,7 @@ public class PaymentMethodsActivityTest extends BaseTest<PaymentMethodsActivity>
         List<String> supportedPaymentTypes = new ArrayList<String>(){{
             add("credit_card");
         }};
-        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, supportedPaymentTypes);
+        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, supportedPaymentTypes, null, null);
 
         sleepThread();
 
@@ -99,20 +93,74 @@ public class PaymentMethodsActivityTest extends BaseTest<PaymentMethodsActivity>
         }
     }
 
+    public void testExcludedPaymentTypesFilter() {
+
+        List<String> excludedPaymentTypes = new ArrayList<String>(){{
+            add("credit_card");
+        }};
+        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, null, excludedPaymentTypes, null);
+
+        sleepThread();
+
+        RecyclerView list = (RecyclerView) activity.findViewById(R.id.payment_methods_list);
+        PaymentMethodsAdapter adapter = (PaymentMethodsAdapter) list.getAdapter();
+        if (adapter != null) {
+            assertTrue(adapter.getItemCount() > 0);
+            boolean incorrectPaymentTypeFound = false;
+            for (int i = 0; i < adapter.getItemCount(); i++) {
+                if (adapter.getItem(i).getPaymentTypeId().equals("credit_card")) {
+                    incorrectPaymentTypeFound = true;
+                    break;
+                }
+            }
+            assertTrue(!incorrectPaymentTypeFound);
+        } else {
+            fail("Excluded payment types filter test failed, no items found");
+        }
+    }
+    public void testExcludedPaymentMethodIdsFilter() {
+
+        List<String> excludedPaymentMethodIds = new ArrayList<String>(){{
+            add("visa");
+        }};
+        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, null, null, excludedPaymentMethodIds);
+
+        sleepThread();
+
+        RecyclerView list = (RecyclerView) activity.findViewById(R.id.payment_methods_list);
+        PaymentMethodsAdapter adapter = (PaymentMethodsAdapter) list.getAdapter();
+        if (adapter != null) {
+            assertTrue(adapter.getItemCount() > 0);
+            boolean incorrectPaymentMethodId = false;
+            for (int i = 0; i < adapter.getItemCount(); i++) {
+                if (adapter.getItem(i).getId().equals("visa")) {
+                    incorrectPaymentMethodId = true;
+                    break;
+                }
+            }
+            assertTrue(!incorrectPaymentMethodId);
+        } else {
+            fail("Excluded payment types filter test failed, no items found");
+        }
+    }
+
     public void testBackPressed() {
 
-        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, null);
+        Activity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY, null, null, null);
         activity.onBackPressed();
         assertFinishCalledWithResult(activity, Activity.RESULT_CANCELED);
     }
 
-    private Activity prepareActivity(String merchantPublicKey, List<String> supportedPaymentTypes) {
+    private Activity prepareActivity(String merchantPublicKey, List<String> supportedPaymentTypes, List<String> excludedPaymentTypes, List<String> excludedPaymentMethodIds) {
 
         Intent intent = new Intent();
         if (merchantPublicKey != null) {
             intent.putExtra("merchantPublicKey", merchantPublicKey);
         }
         putListExtra(intent, "supportedPaymentTypes", supportedPaymentTypes);
+        putListExtra(intent, "excludedPaymentTypes", excludedPaymentTypes);
+        putListExtra(intent, "excludedPaymentMethodIds", excludedPaymentMethodIds);
+
         setActivityIntent(intent);
         return getActivity();
     }

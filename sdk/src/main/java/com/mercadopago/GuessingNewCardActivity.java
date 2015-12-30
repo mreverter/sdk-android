@@ -3,6 +3,8 @@ package com.mercadopago;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -13,16 +15,16 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.adapters.IssuersSpinnerAdapter;
 import com.mercadopago.callbacks.PaymentMethodSelectionCallback;
-import com.mercadopago.controllers.GuessingCardNumberController;
+import com.mercadopago.controllers.PaymentMethodGuessingController;
 import com.mercadopago.core.MercadoPago;
 import com.mercadopago.model.CardToken;
 import com.mercadopago.model.Issuer;
 import com.mercadopago.model.PaymentMethod;
+import com.mercadopago.model.PaymentMethodPreference;
 import com.mercadopago.util.LayoutUtil;
 import com.mercadopago.util.MercadoPagoUtil;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -34,43 +36,76 @@ public class GuessingNewCardActivity extends NewCardActivity {
     //Activity parameters
     protected Boolean mRequireIssuer;
     protected Boolean mShowBankDeals;
+    private List<String> mExcludedPaymentMethodIds;
+    private List<String> mSupportedPaymentTypes;
+    private List<String> mExcludedPaymentTypes;
+    private String mDefaultPaymentMethodId;
+
 
     //Input controls
     protected Spinner mSpinnerIssuers;
     protected LinearLayout mIssuerLayout;
-    protected GuessingCardNumberController mGuessingCardNumberController;
+    protected PaymentMethodGuessingController mPaymentMethodGuessingController;
 
 
     //Local vars
     protected Issuer mIssuer;
     protected MercadoPago mMercadoPago;
-    protected List<String> mSupportedPaymentTypes;
+    private PaymentMethodPreference mPaymentMethodPreference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Get activity parameters
-        if (this.getIntent().getStringExtra("supportedPaymentTypes") != null) {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<String>>(){}.getType();
-            mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
-        }
-        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
-        mRequireIssuer = this.getIntent().getBooleanExtra("requireIssuer", true);
+        LayoutUtil.showProgressLayout(this);
 
-        //Set input controls
-        mIssuerLayout = (LinearLayout) findViewById(R.id.issuerSelectionLayout);
-        mSpinnerIssuers = (Spinner) findViewById(R.id.spinnerIssuer);
+        getActivityParameters();
+
+        createPaymentMethodPreference();
+
+        setInputControls();
 
         mMercadoPago = new MercadoPago.Builder()
                 .setContext(mActivity)
                 .setKey(mKey, mKeyType)
                 .build();
 
-        LayoutUtil.showProgressLayout(this);
         getPaymentMethodsAsync();
+        setFocusOrder();
+        setLayouts();
+    }
 
+    @Override
+    protected void getActivityParameters(){
+        super.getActivityParameters();
+        if (this.getIntent().getStringExtra("supportedPaymentTypes") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
+        }
+
+        if (this.getIntent().getStringExtra("excludedPaymentMethodIds") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mExcludedPaymentMethodIds = gson.fromJson(this.getIntent().getStringExtra("excludedPaymentMethodIds"), listType);
+        }
+        if (this.getIntent().getStringExtra("excludedPaymentTypes") != null) {
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            mExcludedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("excludedPaymentTypes"), listType);
+        }
+        mDefaultPaymentMethodId = this.getIntent().getStringExtra("defaultPaymentMethodId");
+        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
+        mRequireIssuer = this.getIntent().getBooleanExtra("requireIssuer", true);
+    }
+
+    @Override
+    protected void setInputControls()
+    {
+        super.setInputControls();
+        mIssuerLayout = (LinearLayout) findViewById(R.id.issuerSelectionLayout);
+        mSpinnerIssuers = (Spinner) findViewById(R.id.spinnerIssuer);
     }
 
     protected void getPaymentMethodsAsync() {
@@ -90,9 +125,9 @@ public class GuessingNewCardActivity extends NewCardActivity {
 
     protected void initializeGuessingCardNumberController(List<PaymentMethod> paymentMethods) {
 
-        List<PaymentMethod> supportedPaymentMethods = getSupportedPaymentMethods(paymentMethods);
+        List<PaymentMethod> supportedPaymentMethods = mPaymentMethodPreference.getSupportedPaymentMethods(paymentMethods);
 
-        mGuessingCardNumberController = new GuessingCardNumberController(this, supportedPaymentMethods,
+        mPaymentMethodGuessingController = new PaymentMethodGuessingController(this, supportedPaymentMethods,
                 new PaymentMethodSelectionCallback(){
                     @Override
                     public void onPaymentMethodSet(PaymentMethod paymentMethod) {
@@ -108,17 +143,12 @@ public class GuessingNewCardActivity extends NewCardActivity {
                 });
     }
 
-    protected List<PaymentMethod> getSupportedPaymentMethods(List<PaymentMethod> paymentMethods) {
-
-        if(mSupportedPaymentTypes != null) {
-            List<PaymentMethod> supportedPaymentMethods = new ArrayList<>();
-            for (PaymentMethod pm : paymentMethods) {
-                if (mSupportedPaymentTypes.contains(pm.getPaymentTypeId()))
-                    supportedPaymentMethods.add(pm);
-            }
-            return supportedPaymentMethods;
-        }
-        else return paymentMethods;
+    private void createPaymentMethodPreference() {
+        mPaymentMethodPreference = new PaymentMethodPreference();
+        mPaymentMethodPreference.setExcludedPaymentMethodIds(this.mExcludedPaymentMethodIds);
+        mPaymentMethodPreference.setSupportedPaymentTypes(this.mSupportedPaymentTypes);
+        mPaymentMethodPreference.setExcludedPaymentTypes(this.mExcludedPaymentTypes);
+        mPaymentMethodPreference.setDefaultPaymentMethodId(this.mDefaultPaymentMethodId);
 
     }
 
@@ -143,6 +173,27 @@ public class GuessingNewCardActivity extends NewCardActivity {
     public void setContentView()
     {
         setContentView(R.layout.activity_guessing_new_card);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mShowBankDeals) {
+            getMenuInflater().inflate(R.menu.payment_methods, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_bank_deals) {
+            new MercadoPago.StartActivityBuilder()
+                    .setActivity(this)
+                    .setPublicKey(mKey)
+                    .startBankDealsActivity();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override
@@ -200,9 +251,9 @@ public class GuessingNewCardActivity extends NewCardActivity {
     }
 
     protected boolean validatePaymentMethod() {
-        if(mGuessingCardNumberController.getCardNumberText().length() >= MercadoPago.BIN_LENGTH && mPaymentMethod == null)
+        if(mPaymentMethodGuessingController.getCardNumberText().length() >= MercadoPago.BIN_LENGTH && mPaymentMethod == null)
         {
-            mGuessingCardNumberController.setPaymentMethodError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
+            mPaymentMethodGuessingController.setPaymentMethodError(getString(com.mercadopago.R.string.mpsdk_invalid_field));
             return false;
         }
         return true;
@@ -212,21 +263,21 @@ public class GuessingNewCardActivity extends NewCardActivity {
     public boolean validateCardNumber(CardToken cardToken, boolean requestFocus)
     {
         boolean valid = true;
-        if(mGuessingCardNumberController.getCardNumberText().equals(""))
+        if(mPaymentMethodGuessingController.getCardNumberText().equals(""))
         {
-            mGuessingCardNumberController.setCardNumberError(getString(R.string.mpsdk_invalid_empty_card));
+            mPaymentMethodGuessingController.setCardNumberError(getString(R.string.mpsdk_invalid_empty_card));
 
             if(requestFocus)
-                mGuessingCardNumberController.requestFocusForCardNumber();
+                mPaymentMethodGuessingController.requestFocusForCardNumber();
             valid = false;
         }
         else {
             try {
                 validateCardNumber(cardToken);
             } catch (Exception ex) {
-                mGuessingCardNumberController.setCardNumberError(ex.getMessage());
+                mPaymentMethodGuessingController.setCardNumberError(ex.getMessage());
                 if (requestFocus)
-                    mGuessingCardNumberController.requestFocusForCardNumber();
+                    mPaymentMethodGuessingController.requestFocusForCardNumber();
                 valid = false;
             }
         }

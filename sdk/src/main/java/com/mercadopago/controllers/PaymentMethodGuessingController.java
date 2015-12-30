@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by mreverter on 28/12/15.
  */
-public class GuessingCardNumberController {
+public class PaymentMethodGuessingController {
 
     private Activity mActivity;
 
@@ -41,7 +41,7 @@ public class GuessingCardNumberController {
 
     private PaymentMethodSelectionCallback mPaymentMethodSelectionCallback;
 
-    public GuessingCardNumberController(Activity activity, List<PaymentMethod> paymentMethods, PaymentMethodSelectionCallback paymentMethodSelectionCallback){
+    public PaymentMethodGuessingController(Activity activity, List<PaymentMethod> paymentMethods, PaymentMethodSelectionCallback paymentMethodSelectionCallback){
         this.mActivity = activity;
         this.mPaymentMethods = paymentMethods;
         this.mPaymentMethodSelectionCallback = paymentMethodSelectionCallback;
@@ -70,7 +70,7 @@ public class GuessingCardNumberController {
                     clearGuessing();
                 }
                 else
-                    getDataForBin(cardNumber.subSequence(0, MercadoPago.BIN_LENGTH).toString());
+                    setPaymentMethodLayoutForBin(cardNumber.subSequence(0, MercadoPago.BIN_LENGTH).toString());
             }
         });
         mCardNumber.setOnKeyListener(new View.OnKeyListener() {
@@ -86,14 +86,16 @@ public class GuessingCardNumberController {
         mSpinnerPaymentMethods = (Spinner) mActivity.findViewById(R.id.spinnerPaymentMethod);
         mPaymentMethodLayout = (LinearLayout) mActivity.findViewById(R.id.paymentMethodSelectionLayout);
 
-        hidePaymentMethodSelector();
+        mPaymentMethodLayout.setVisibility(View.GONE);
+        mImagePaymentMethod.setImageDrawable(null);
 
     }
-    private void getDataForBin(String bin) {
+
+    private void setPaymentMethodLayoutForBin(String bin) {
         if(!bin.equals(mSavedBin)) {
             mSavedBin = bin;
             List<PaymentMethod> validPaymentMethods = getValidPaymentMethodsForBin(mSavedBin);
-            processPaymentMethods(validPaymentMethods);
+            refreshPaymentMethodLayout(validPaymentMethods);
         }
     }
 
@@ -113,12 +115,12 @@ public class GuessingCardNumberController {
 
     private void clearGuessing() {
         mSavedBin = "";
-        refreshPaymentMethodLayout();
+        clearPaymentMethodLayout();
     }
 
-    private void processPaymentMethods(List<PaymentMethod> paymentMethods) {
+    private void refreshPaymentMethodLayout(List<PaymentMethod> paymentMethods) {
 
-        refreshPaymentMethodLayout();
+        clearPaymentMethodLayout();
 
         if(paymentMethods.isEmpty()) {
             blockCardNumbersInput(mCardNumber);
@@ -169,12 +171,6 @@ public class GuessingCardNumberController {
         return mCardNumber.getText().toString();
     }
 
-    public void hidePaymentMethodSelector() {
-        mPaymentMethodLayout.setVisibility(View.GONE);
-        mImagePaymentMethod.setImageDrawable(null);
-        mPaymentMethodSelectionCallback.onPaymentMethodCleared();
-    }
-
     public void showPaymentMethodsSelector() {
         mPaymentMethodLayout.setVisibility(View.VISIBLE);
     }
@@ -211,9 +207,10 @@ public class GuessingCardNumberController {
         mImagePaymentMethod.setImageResource(MercadoPagoUtil.getPaymentMethodIcon(mActivity, paymentMethod.getId()));
     }
 
-    public void refreshPaymentMethodLayout() {
+    public void clearPaymentMethodLayout() {
+        mPaymentMethodLayout.setVisibility(View.GONE);
         mImagePaymentMethod.setImageDrawable(null);
-        hidePaymentMethodSelector();
+        mPaymentMethodSelectionCallback.onPaymentMethodCleared();
     }
 
     public void setPaymentMethodError(String error) {

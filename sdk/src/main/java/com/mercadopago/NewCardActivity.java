@@ -9,6 +9,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -64,27 +65,11 @@ public class NewCardActivity extends AppCompatActivity {
 
         mActivity = this;
 
-        // Get activity parameters
-        mKeyType = this.getIntent().getStringExtra("keyType");
-        mKey = this.getIntent().getStringExtra("key");
-        mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
-        mPaymentMethod = (PaymentMethod) this.getIntent().getSerializableExtra("paymentMethod");
+        getActivityParameters();
 
         verifyValidCreate();
 
-        // Set input controls
-        mCardNumber = (EditText) findViewById(R.id.cardNumber);
-        mCardHolderName = (EditText) findViewById(R.id.cardholderName);
-        mIdentificationNumber = (EditText) findViewById(R.id.identificationNumber);
-        mIdentificationType = (Spinner) findViewById(R.id.identificationType);
-        mIdentificationLayout = (RelativeLayout) findViewById(R.id.identificationLayout);
-        mSecurityCodeLayout = (RelativeLayout) findViewById(R.id.securityCodeLayout);
-        mCVVImage = (ImageView) findViewById(R.id.cVVImage);
-        mCVVDescriptor = (TextView) findViewById(R.id.cVVDescriptor);
-        mSecurityCode = (EditText) findViewById(R.id.securityCode);
-        mExpiryError = (TextView) findViewById(R.id.expiryError);
-        mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
-        mExpiryYear = (EditText) findViewById(R.id.expiryYear);
+        setInputControls();
 
         // Set identification type listener to control identification number keyboard
         setIdentificationNumberKeyboardBehavior();
@@ -92,10 +77,8 @@ public class NewCardActivity extends AppCompatActivity {
         // Error text cleaning hack
         setErrorTextCleaner(mCardHolderName);
 
-        // Get identification types
         getIdentificationTypesAsync();
 
-        // Set payment method image
         setPaymentMethodImage();
 
         // Set up expiry edit texts
@@ -116,6 +99,29 @@ public class NewCardActivity extends AppCompatActivity {
 
         // Set security code visibility
         setSecurityCodeLayout();
+        setFocusOrder();
+    }
+
+    protected void getActivityParameters() {
+        mKeyType = this.getIntent().getStringExtra("keyType");
+        mKey = this.getIntent().getStringExtra("key");
+        mRequireSecurityCode = this.getIntent().getBooleanExtra("requireSecurityCode", true);
+        mPaymentMethod = (PaymentMethod) this.getIntent().getSerializableExtra("paymentMethod");
+    }
+
+    protected void setInputControls() {
+        mCardNumber = (EditText) findViewById(R.id.cardNumber);
+        mCardHolderName = (EditText) findViewById(R.id.cardholderName);
+        mIdentificationNumber = (EditText) findViewById(R.id.identificationNumber);
+        mIdentificationType = (Spinner) findViewById(R.id.identificationType);
+        mIdentificationLayout = (RelativeLayout) findViewById(R.id.identificationLayout);
+        mSecurityCodeLayout = (RelativeLayout) findViewById(R.id.securityCodeLayout);
+        mCVVImage = (ImageView) findViewById(R.id.cVVImage);
+        mCVVDescriptor = (TextView) findViewById(R.id.cVVDescriptor);
+        mSecurityCode = (EditText) findViewById(R.id.securityCode);
+        mExpiryError = (TextView) findViewById(R.id.expiryError);
+        mExpiryMonth = (EditText) findViewById(R.id.expiryMonth);
+        mExpiryYear = (EditText) findViewById(R.id.expiryYear);
     }
 
     protected void setPaymentMethodImage() {
@@ -138,6 +144,11 @@ public class NewCardActivity extends AppCompatActivity {
     protected void setContentView() {
 
         setContentView(R.layout.activity_new_card);
+    }
+
+    protected void setFocusOrder() {
+        mCardNumber.setNextFocusDownId(R.id.expiryMonth);
+        mExpiryMonth.setNextFocusDownId(R.id.expiryYear);
     }
 
     @Override

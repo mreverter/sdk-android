@@ -49,7 +49,6 @@ public class PaymentMethodsActivity extends AppCompatActivity {
 
         mActivity = this;
 
-        // Get activity parameters
         getActivityParameters();
 
         createPaymentMethodPreference();
@@ -75,13 +74,15 @@ public class PaymentMethodsActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
+        mSupportMPApp = this.getIntent().getBooleanExtra("supportMPApp", false);
+
         if (this.getIntent().getStringExtra("supportedPaymentTypes") != null) {
             Gson gson = new Gson();
             Type listType = new TypeToken<List<String>>(){}.getType();
             mSupportedPaymentTypes = gson.fromJson(this.getIntent().getStringExtra("supportedPaymentTypes"), listType);
         }
-        mShowBankDeals = this.getIntent().getBooleanExtra("showBankDeals", true);
-        mSupportMPApp = this.getIntent().getBooleanExtra("supportMPApp", false);
 
         if (this.getIntent().getStringExtra("excludedPaymentMethodIds") != null) {
             Gson gson = new Gson();

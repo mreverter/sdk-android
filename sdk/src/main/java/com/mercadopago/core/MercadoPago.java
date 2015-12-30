@@ -345,8 +345,8 @@ public class MercadoPago {
         putListExtra(vaultIntent, "excludedPaymentTypes", excludedPaymentTypes);
         vaultIntent.putExtra("defaultPaymentMethodId", defaultPaymentMethodId);
 
-        vaultIntent.putExtra("defaultInstallments", defaultInstallments);
-        vaultIntent.putExtra("maxInstallments", maxInstallments);
+        vaultIntent.putExtra("defaultInstallments", defaultInstallments.toString());
+        vaultIntent.putExtra("maxInstallments", maxInstallments.toString());
         activity.startActivityForResult(vaultIntent, VAULT_REQUEST_CODE);
     }
 

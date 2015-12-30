@@ -97,6 +97,7 @@ public class VaultActivity extends AppCompatActivity {
         setContentView();
 
         getActivityParameters();
+
         createPaymentMethodPreference();
 
         if (validParameters()) {
@@ -166,8 +167,12 @@ public class VaultActivity extends AppCompatActivity {
         }
         mDefaultPaymentMethodId = this.getIntent().getStringExtra("defaultPaymentMethodId");
 
-        mMaxInstallments = (Integer) this.getIntent().getExtras().get("maxInstallments");
-        mDefaultInstallments = (Integer) this.getIntent().getExtras().get("defaultInstallments");
+        if(this.getIntent().getStringExtra("maxInstallments") != null) {
+            mMaxInstallments = Integer.valueOf(this.getIntent().getStringExtra("maxInstallments"));
+        }
+        if(this.getIntent().getStringExtra("defaultInstallments") != null) {
+            mDefaultInstallments = Integer.valueOf(this.getIntent().getStringExtra("defaultInstallments"));
+        }
 
     }
 
@@ -870,6 +875,9 @@ public class VaultActivity extends AppCompatActivity {
                 .setActivity(mActivity)
                 .setPublicKey(mMerchantPublicKey)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setExcludedPaymentTypes(mExcludedPaymentTypes)
+                .setExcludedPaymentMethodIds(mExcludedPaymentMethodIds)
+                .setDefaultPaymentMethodId(mDefaultPaymentMethodId)
                 .setShowBankDeals(mShowBankDeals)
                 .startPaymentMethodsActivity();
     }
@@ -882,6 +890,9 @@ public class VaultActivity extends AppCompatActivity {
                 .setRequireIssuer(true)
                 .setShowBankDeals(mShowBankDeals)
                 .setSupportedPaymentTypes(mSupportedPaymentTypes)
+                .setExcludedPaymentTypes(mExcludedPaymentTypes)
+                .setExcludedPaymentMethodIds(mExcludedPaymentMethodIds)
+                .setDefaultPaymentMethodId(mDefaultPaymentMethodId)
                 .startGuessingCardActivity();
     }
 }

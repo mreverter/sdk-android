@@ -36,7 +36,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
 
         final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
-                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
+                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null, 1);
 
         // Assume a pre-selected credit card
 
@@ -132,7 +132,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
 
         final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
-                "", new BigDecimal("20"), null);
+                "", new BigDecimal("20"), null, 1);
 
         // Assume a pre-selected credit card
 
@@ -155,7 +155,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
 
         final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
-                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
+                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null, 1);
 
         // Assume a pre-selected credit card
 
@@ -202,7 +202,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
 
         final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
-                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
+                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null, 1);
 
         // Assume a pre-selected credit card
 
@@ -232,7 +232,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
         // Simulate customer card selection
         getInstrumentation().runOnMainSync(new Runnable() {
             public void run() {
-            activity.onCustomerMethodsClick(null);
+                activity.onCustomerMethodsClick(null);
             }
         });
 
@@ -255,7 +255,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
 
         final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
-                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
+                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null, 1);
 
         // Assume a pre-selected credit card
 
@@ -318,7 +318,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
 
         final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
-                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
+                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null, 1);
 
         // Assume a pre-selected credit card
 
@@ -353,7 +353,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
         // Simulate customer card selection
         getInstrumentation().runOnMainSync(new Runnable() {
             public void run() {
-            activity.onCustomerMethodsClick(null);
+                activity.onCustomerMethodsClick(null);
             }
         });
 
@@ -377,7 +377,7 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
 
         final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
                 StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
-                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null);
+                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null, 1);
 
         // Assume a pre-selected credit card
 
@@ -470,9 +470,48 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
         }
     }
 
+    public void testDefaultInstallments() {
+
+        final VaultActivity activity = prepareActivity(StaticMock.DUMMY_MERCHANT_PUBLIC_KEY,
+                StaticMock.DUMMY_MERCHANT_BASE_URL, StaticMock.DUMMY_MERCHANT_GET_CUSTOMER_URI,
+                StaticMock.DUMMY_MERCHANT_ACCESS_TOKEN, new BigDecimal("20"), null, 3);
+
+        // Assume a pre-selected credit card
+
+        // Wait for get customer cards and installments api call
+        sleepThread();  // customer cards
+        sleepThread();  // installments
+
+        // Complete security code
+        getInstrumentation().runOnMainSync(new Runnable() {
+            public void run() {
+                EditText securityCodeText = (EditText) activity.findViewById(R.id.securityCode);
+                securityCodeText.setText(StaticMock.DUMMY_SECURITY_CODE);
+            }
+        });
+
+        // Simulate button click
+        getInstrumentation().runOnMainSync(new Runnable() {
+            public void run() {
+                activity.submitForm(null);
+            }
+        });
+
+        // Wait for create token api call
+        sleepThread();
+
+        // Validate activity result
+        try {
+            ActivityResult activityResult = getActivityResult(activity);
+            assertTrue(activityResult.getExtras().getString("installments").equals("3"));
+        } catch (Exception ex) {
+            fail("Regular start test failed, cause: " + ex.getMessage());
+        }
+    }
+
     private VaultActivity prepareActivity(String merchantPublicKey, String merchantBaseUrl,
                                           String merchantGetCustomerUri, String merchantAccessToken,
-                                          BigDecimal amount, List<String> supportedPaymentTypes) {
+                                          BigDecimal amount, List<String> supportedPaymentTypes, Integer defaultInstallments) {
 
         Intent intent = new Intent();
         if (merchantPublicKey != null) {
@@ -489,6 +528,9 @@ public class VaultActivityWithNewCardTest extends BaseTest<VaultActivity> {
         }
         if (amount != null) {
             intent.putExtra("amount", amount.toString());
+        }
+        if (defaultInstallments != null) {
+            intent.putExtra("defaultInstallments", defaultInstallments.toString());
         }
         putListExtra(intent, "supportedPaymentTypes", supportedPaymentTypes);
         setActivityIntent(intent);

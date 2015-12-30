@@ -23,6 +23,8 @@ public class StaticMock {
 
     // * Merchant public key
     public static final String DUMMY_MERCHANT_PUBLIC_KEY = "444a9ef5-8a6b-429f-abdf-587639155d88";
+    public static final String DUMMY_MX_MERCHANT_PUBLIC_KEY = "6c0d81bc-99c1-4de8-9976-c8d1d62cd4f2";
+
     // DUMMY_MERCHANT_PUBLIC_KEY_AR = "444a9ef5-8a6b-429f-abdf-587639155d88";
     // DUMMY_MERCHANT_PUBLIC_KEY_BR = "561ebf1c-d45a-4b44-99f5-cb5311697a60";
     // DUMMY_MERCHANT_PUBLIC_KEY_MX = "6c0d81bc-99c1-4de8-9976-c8d1d62cd4f2";
@@ -44,6 +46,7 @@ public class StaticMock {
 
     // * Card token
     public final static String DUMMY_CARD_NUMBER = "4444444444440008";
+    public final static String DUMMY_CARD_NUMBER_MASTER = "5444444444440008";
     public final static String DUMMY_CARDHOLDER_NAME = "john";
     public final static int DUMMY_EXPIRATION_MONTH = 11;
     public final static int DUMMY_EXPIRATION_YEAR_SHORT = 18;

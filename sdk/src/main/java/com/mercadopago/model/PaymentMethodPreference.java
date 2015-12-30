@@ -15,25 +15,14 @@ public class PaymentMethodPreference implements Serializable {
     private List<String> excludedPaymentTypes;
     private String defaultPaymentMethodId;
 
-    public Integer getMaxInstallments() {
-        return maxInstallments;
-    }
-
     public void setMaxInstallments(Integer maxInstallments) {
         this.maxInstallments = maxInstallments;
-    }
-
-    public Integer getDefaultInstallments() {
-        return defaultInstallments;
     }
 
     public void setDefaultInstallments(Integer defaultInstallments) {
         this.defaultInstallments = defaultInstallments;
     }
 
-    public List<String> getExcludedPaymentMethodIds() {
-        return excludedPaymentMethodIds;
-    }
 
     public void setExcludedPaymentMethodIds(List<String> excludedPaymentMethodIds) {
         this.excludedPaymentMethodIds = excludedPaymentMethodIds;
@@ -47,16 +36,8 @@ public class PaymentMethodPreference implements Serializable {
         this.supportedPaymentTypes = supportedPaymentTypes;
     }
 
-    public List<String> getExcludedPaymentTypes() {
-        return excludedPaymentTypes;
-    }
-
     public void setExcludedPaymentTypes(List<String> excludedPaymentTypes) {
         this.excludedPaymentTypes = excludedPaymentTypes;
-    }
-
-    public String getDefaultPaymentMethodId() {
-        return defaultPaymentMethodId;
     }
 
     public void setDefaultPaymentMethodId(String defaultPaymentMethodId) {
@@ -131,23 +112,49 @@ public class PaymentMethodPreference implements Serializable {
     }
 
     public boolean isPaymentMethodSupported(PaymentMethod paymentMethod) {
-        boolean isSupported = false;
-        if(this.excludedPaymentTypes == null && this.supportedPaymentTypes != null) {
-            if(this.supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId()))
-                isSupported = true;
-        }
-        else if(this.excludedPaymentTypes != null && this.supportedPaymentTypes == null)
+        boolean isSupported = true;
+
+        if(this.excludedPaymentMethodIds != null && this.excludedPaymentMethodIds.contains(paymentMethod.getId()))
         {
-            if(!this.excludedPaymentTypes.contains(paymentMethod.getPaymentTypeId()))
-                isSupported = true;
+            isSupported = false;
         }
-        else if(this.excludedPaymentTypes == null && this.supportedPaymentTypes == null) {
-            isSupported = true;
+
+        if(isSupported) {
+            if (this.excludedPaymentTypes == null && this.supportedPaymentTypes != null) {
+
+                if (!this.supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId())) {
+                    isSupported = false;
+                }
+
+            } else if (this.excludedPaymentTypes != null && this.supportedPaymentTypes == null) {
+
+                if (this.excludedPaymentTypes.contains(paymentMethod.getPaymentTypeId())){
+                    isSupported = false;
+                }
+
+            } else if (this.excludedPaymentTypes != null) {
+
+                if (!this.supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId())
+                        || this.excludedPaymentTypes.contains(paymentMethod.getPaymentTypeId())) {
+                    isSupported = false;
+                }
+            }
         }
-        else if (this.supportedPaymentTypes.contains(paymentMethod.getPaymentTypeId())
-                && !this.excludedPaymentTypes.contains(paymentMethod.getPaymentTypeId())) {
-            isSupported = true;
-        }
+
         return isSupported;
     }
+
+    public PaymentMethod getDefaultPaymentMethod(List<PaymentMethod> paymentMethods) {
+        PaymentMethod defaultPaymentMethod = null;
+        if(this.defaultPaymentMethodId != null) {
+            for (PaymentMethod pm : paymentMethods) {
+                if (pm.getId().equals(this.defaultPaymentMethodId)) {
+                    defaultPaymentMethod = pm;
+                    break;
+                }
+            }
+        }
+        return defaultPaymentMethod;
+    }
+
 }
