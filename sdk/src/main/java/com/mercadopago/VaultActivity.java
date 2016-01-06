@@ -303,15 +303,12 @@ public class VaultActivity extends AppCompatActivity {
             resolveGuessingCardRequest(resultCode, data);
         }
 
-        if ((requestCode == MercadoPago.CUSTOMER_CARDS_REQUEST_CODE) ||
+        return (requestCode == MercadoPago.CUSTOMER_CARDS_REQUEST_CODE) ||
                 (requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) ||
                 (requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) ||
                 (requestCode == MercadoPago.ISSUERS_REQUEST_CODE) ||
-                (requestCode == MercadoPago.NEW_CARD_REQUEST_CODE)) {
-            return true;
-        }
+                (requestCode == MercadoPago.NEW_CARD_REQUEST_CODE);
 
-        return false;
     }
 
     protected void resolveCustomerCardsRequest(int resultCode, Intent data) {

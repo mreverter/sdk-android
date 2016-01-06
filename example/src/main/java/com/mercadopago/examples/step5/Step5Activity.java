@@ -84,7 +84,6 @@ public class Step5Activity extends ExampleActivity {
                 .setExcludedPaymentTypes(mExcludedPaymentTypes)
                 .setExcludedPaymentMethodIds(mExcludedPaymentMethodIds)
                 .setMaxInstallments(ExamplesUtils.DUMMY_MAX_INSTALLMENTS)
-                .setDefaultInstallments(ExamplesUtils.DUMMY_DEFAULT_INSTALLMENTS)
                 .setShowBankDeals(true)
                 .startVaultActivity();
     }

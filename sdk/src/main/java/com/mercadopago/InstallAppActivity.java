@@ -51,7 +51,6 @@ public class InstallAppActivity extends AppCompatActivity {
 
     public void submit(View view) {
 
-        //callMPApp();
         goToPlayStore();
     }
 

@@ -25,8 +25,7 @@ public class Step6Activity extends ExampleActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == MercadoPago.CHECKOUT_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-
+            if (resultCode == RESULT_OK && data != null) {
                 // Set message
                 String msg = "external reference: " + data.getStringExtra("externalReference") + "\n";
                 msg += "payment id: " + Long.toString(data.getLongExtra("paymentId", 0L)) + "\n";

@@ -50,11 +50,12 @@ public class CheckoutActivity extends VaultActivity {
             Intent checkoutResult = null;
             if (requestCode == MercadoPago.INSTALL_APP_REQUEST_CODE) {
 
-                // from MP App
-                if (!data.getBooleanExtra("backButtonPressed", false)) {
-                    checkoutResult = data;
-                } else {
-                    return;
+                if(data != null) {
+                    if (!data.getBooleanExtra("backButtonPressed", false)) {
+                        checkoutResult = data;
+                    } else {
+                        return;
+                    }
                 }
 
             } else if (requestCode == MercadoPago.CONGRATS_REQUEST_CODE) {
